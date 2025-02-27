@@ -65,7 +65,7 @@ Link Final Presentation:
 ## Project Structure
 <h2>WEEK 1</h2>
 
-The contents of the first week are in the folder `week1`. The `README` file can be found in 
+The contents of the first week are in the folder `week1`. The `README` file can be found in [here](week1/README.md)
 
 ## Team Members
 
