@@ -1,5 +1,5 @@
 <p align="center">
-<h3 align="center">Module C6 Project</h3>
+<h3 align="center">Module C5 Project</h3>
 
   <p align="center">
     Project for the Module C5-Visual Recognition in Master's in Computer Vision in Barcelona.
