@@ -28,6 +28,10 @@ Link Final Presentation:
 
 ### Prerequisites
 
+- Python >= 3.12
+- `pip` or `conda` package managers
+- `uv` (optional, but recommended)
+
 ### Setup
 
 1. **Clone the repository:**
@@ -36,31 +40,48 @@ Link Final Presentation:
    ```
 
 2. **Navigate to the corresponding week's folder:**
-   
-   For example, to enter the folder for week 1:
    ```bash
    cd week1
    ```
-   
-4. **Create a virtual environment:**
+#### Option 1: Using Conda Environment (Recommended)
    ```bash
-   python -m venv env
+   # Create and activate conda environment using our provided environment.yml file
+   conda env create -f environment.yml
+   conda activate mcv-c5
+   
+   # Install Detectron2
+   (uv) pip install 'git+https://github.com/facebookresearch/detectron2.git'
+   
+   # Install HuggingFace Transformers
+   (uv) pip install transformers
    ```
 
-5. **Activate the virtual environment:**
-    - On Windows:
-      ```bash
-      .\env\Scripts\activate
-      ```
-    - On MacOS/Linux:
-      ```bash
-      source env/bin/activate
-      ```
+#### Option 2: Using Python Virtual Environment
+   ```bash
+   # Create and activate virtual environment
+   python -m venv env (or uv venv env)
+   
+   # On Windows:
+   .\env\Scripts\activate
+   
+   # On MacOS/Linux:
+   source env/bin/activate
+   
+   # Install dependencies
+   (uv) pip install -r requirements.txt
+   
+   # Install Detectron2
+   (uv) pip install 'git+https://github.com/facebookresearch/detectron2.git'
+   
+   # Install HuggingFace Transformers
+   (uv) pip install transformers
+   ```
 
-6. **Install the dependencies:**
-  ```bash
-  pip install -r requirements.txt
-  ```
+> [!NOTE]  
+> For detailed Detectron2 installation instructions, please refer to the [official Detectron2 installation guide](https://detectron2.readthedocs.io/en/latest/tutorials/install.html).
+> If you encounter CUDA compatibility issues with Detectron2, you may need to install specific versions compatible with your CUDA version.
+
+Make sure you have either conda or pip package manager installed on your system before proceeding with the installation. 
 
 ## Project Structure
 <h2>WEEK 1</h2>
