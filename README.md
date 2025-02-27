@@ -61,3 +61,20 @@ Link Final Presentation:
   ```bash
   pip install -r requirements.txt
   ```
+
+## Project Structure
+<h2>WEEK 1</h2>
+
+The contents of the first week are in the folder `week1`. The `README` file can be found in 
+
+## Team Members
+
+This project was developed by the following team members:
+
+- **[Judit Salavedra](https://github.com/juditsalavedra)**
+- **[Judith Caldés](https://github.com/judithcaldes)**
+- **[Carme Corbi](https://github.com/carmecorbi)**
+- **[Yeray Cordero](https://github.com/yeray142)**
+
+## License
+The MIT License (MIT). Please see [LICENSE File](LICENSE) for more information.
