@@ -10,12 +10,10 @@
 - [Task G: Analyse the difference among the different object detector methods models]
 
 
-
-
 ### Project Structure W1
  week1/
     ├── checkpoints/
     ├── src/
     │   ├── detectron/
     │   ├── ultralytics/
-    │   
+    │   ├── ...
