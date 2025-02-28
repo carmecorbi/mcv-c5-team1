@@ -13,3 +13,9 @@
 
 
 ### Project Structure W1
+ week1/
+    ├── checkpoints/
+    ├── src/
+    │   ├── detectron/
+    │   ├── ultralytics/
+    │   
