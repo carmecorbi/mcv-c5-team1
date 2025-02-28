@@ -17,3 +17,16 @@
     │   ├── detectron/
     │   ├── ultralytics/
     │   ├── ...
+
+### Task C: Run inference with pre-trained Faster R-CNN, DeTR and YOLOv11n on KITTI-MOTS dataset.
+
+#### Dataset description
+The KITTI Multi-Object Tracking and Segmentation (KITTI-MOTS) dataset is an extension of the KITTI dataset, designed for multi-object tracking and instance segmentation in autonomous driving scenarios. It contains annotated sequences of real-world traffic scenes, focusing on pedestrians and vehicles.
+
+The dataset is divided into three subsets:
+
+| Subset      | Number of Sequences |
+|------------|--------------------|
+| **Train**  | 12                |
+| **Validation** | 9 |
+| **Test**   | 29                 |
