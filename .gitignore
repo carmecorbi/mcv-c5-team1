@@ -1,3 +1,23 @@
+# Data files
+data/
+
+# Log files
+*.out
+*.err
+
+# Video files
+*.avi
+*.mp4
+
+# Don't commit ultralytics files
+week1/src/ultralytics/runs/
+week1/src/ultralytics/results_inference/
+week1/src/ultralytics/data/
+
+# Checkpoint files
+*.pt 
+*.ptx
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
