@@ -31,6 +31,6 @@ The **Validation** set was created by taking 9 sequences from the original train
 
 #### DeTR
 
-#### YOLOv1nn
-
+#### YOLOv11n
+YOLOv11n (You Only Look Once) is a real-time object detection model that is part of the YOLO family, known for its speed and efficiency in detecting objects. For this task, we used the **Ultralytics implementation** of YOLOv11n, which is optimized to provide high accuracy and fast inference times. YOLOv11n works by dividing the input image into a grid and predicting bounding boxes and class probabilities directly from each grid cell. 
 #### Qualitative results
