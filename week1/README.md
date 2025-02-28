@@ -12,12 +12,6 @@
 
 ### Project Structure W1
 
-week1/
-    ├── checkpoints/
-    ├── src/
-    │   ├── detectron/
-    │   ├── ultralytics/
-    │   ├── ...
 
 ### Task C: Run inference with pre-trained Faster R-CNN, DeTR and YOLOv11n on KITTI-MOTS dataset.
 
