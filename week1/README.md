@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [Project Structure W1](#project-structure-w1)
-- [Task C: Run inference with pre-trained Faster R-CNN, DeTR and YOLOv11n on KITTI-MOTS dataset.]
+- [Task C: Run inference with pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset](#task-c-run-inference-with-pre-trained-faster-r-cnn-detr-and-yolov11n-on-kitti-mots-dataset)
 - [Task D:  Evaluate pre-trained Faster R-CNN, DeTR and YOLOv11n on KITTI-MOTS dataset.]
 - [Task E:  Fine-tune Faster R-CNN, DeTR and YOLO on KITTI-MOTS (Similar Domain)]
 - [Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)]
@@ -11,7 +11,7 @@
 
 
 ### Project Structure W1
-```bash
+
 week1/
     ├── checkpoints/
     ├── src/
