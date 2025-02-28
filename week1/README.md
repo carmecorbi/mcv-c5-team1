@@ -31,3 +31,12 @@ The dataset is divided into three subsets:
 | **Train**  | 12                |
 | **Validation** | 9 |
 | **Test**   | 29                 |
+
+The **Validation** set was created by taking 9 sequences from the original training set, which had 20 sequences in total. This approach is documented in the official paper of the dataset, which can be found here: [KITTI-MOTS Paper](https://arxiv.org/pdf/1902.03604).
+#### Faster R-CNN
+
+#### DeTR
+
+#### YOLOv1nn
+
+#### Qualitative results
