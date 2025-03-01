@@ -67,7 +67,9 @@ Here are some example images from the sequence 0014 that show the output after r
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
-### YOLOv11n
+#### YOLOv11n
+
+##### Conversion Process
 In this task, the KITTI-MOTS dataset annotations were converted into the format required for YOLOv11 evaluation. The conversion process involved mapping the KITTI-MOTS class IDs to COCO class IDs, extracting bounding boxes from RLE masks, and normalizing them for YOLO annotations.
 
 YOLO annotations follow this format:
@@ -82,6 +84,28 @@ Where:
 - **`y_center`**: The **normalized** y-coordinate of the center of the bounding box (relative to the image height).
 - **`width`**: The **normalized** width of the bounding box (relative to the image width).
 - **`height`**: The **normalized** height of the bounding box (relative to the image height).
+
+Keys steps in the conversion process:
+
+1. **Class Mapping**: 
+   - KITTI class 1 (car) was mapped to class 2 (COCO car).
+   - KITTI class 2 (pedestrian) was mapped to class 0 (COCO person).
+
+2. **Bounding Box Calculation**: 
+   - RLE segmentation masks were used to generate bounding boxes.
+   - Bounding boxes were normalized to YOLO format: `class_id x_center y_center width height`.
+
+3. **Output**: 
+   - YOLO annotations were saved in `.txt` files for each frame, with one file per image in the sequence.
+   - Annotations are saved in the `val/labels` directory under each sequence folder.
+
+To perform this conversion, run the following command:
+
+```bash
+python convert_ultralytics.py
+```
+
+##### Evaluation
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
