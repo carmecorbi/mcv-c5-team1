@@ -67,6 +67,16 @@ Here are some example images from the sequence 0014 that show the output after r
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
+### YOLOv11n
+In this task, the KITTI-MOTS dataset annotations were converted into the format required for YOLOv11 evaluation. The conversion process involved mapping the KITTI-MOTS class IDs to COCO class IDs, extracting bounding boxes from RLE masks, and normalizing them for YOLO annotations.
+
+YOLO annotations follow this format:
+
+```bash
+class_id   x_center  y_center  width  height
+```
+
+
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
 
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
