@@ -50,11 +50,10 @@ week1/
 │       ├── results_inference/  # Folder for saving results
 │       └── inference_c.py  # Inference script
 
+To execute the inference on a specific sequence, run the following command from the terminal:
 
+python inference_c.py <numbersequence>
 
-
-
-To run inference using the pre-trained YOLOv11n model, we use the following code:
 
 
 
