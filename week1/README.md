@@ -54,7 +54,7 @@ To execute the inference on a specific sequence, run the following command from 
 
 ```bash
 python inference_c.py <numbersequence>
-
+```
 
 
 
