@@ -55,7 +55,7 @@ To execute the inference on a specific sequence, run the following command from 
 ```bash
 python inference_c.py <numbersequence>
 ```
-
+The inference will only detect objects of interest: person and car. This is specified by the **classes** parameter in the code, which is set to detect only class IDs corresponding to **person** (ID 0) and **car** (ID 2). 
 
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
