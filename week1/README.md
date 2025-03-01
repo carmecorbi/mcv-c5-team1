@@ -59,7 +59,7 @@ The inference will only detect objects of interest: person and car. This is spec
 
 Here are some example images from the sequence 0014 that show the output after running the inference:
 
-| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99.png) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8.png) |
+| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
 |---------------------------------------|---------------------------------------|
 | 000037.png          | 000101.png       |
 
