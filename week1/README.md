@@ -34,9 +34,28 @@ The **Validation** set was created by taking 9 sequences from the original train
 #### YOLOv11n
 YOLOv11n (You Only Look Once) is a real-time object detection model that is part of the YOLO family, known for its speed and efficiency in detecting objects. For this task, we used the **Ultralytics implementation** of YOLOv11n, which is optimized to provide high accuracy and fast inference times. YOLOv11n works by dividing the input image into a grid and predicting bounding boxes and class probabilities directly from each grid cell. 
 
+The code assumes the following directory structure: 
+
+week1/
+│── checkpoints/
+│   └── yolo/
+│       └── yolo11n.pt  # Pre-trained model
+│── src/
+│   └── ultralytics/
+│       ├── data/
+│       │   ├── images/val/  # Folder containing input images
+│       │   │   ├── 0002/
+│       │   │   ├── 0006/
+│       │   │   └── ...
+│       ├── results_inference/  # Folder for saving results
+│       └── inference_c.py  # Inference script
+
+
+
+
 To run inference using the pre-trained YOLOv11n model, we use the following code:
 
-#### Qualitative results
+
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
