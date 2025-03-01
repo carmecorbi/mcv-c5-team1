@@ -126,6 +126,18 @@ To evaluate the model, simply run the following command:
 ```bash
 python evaluation_d.py
 ```
+| Metric                                             | Value                                      |
+|----------------------------------------------------|--------------------------------------------|
+| **Average precision**                              | 0.41 (person), 0.55 (car)           |
+| **Average precision at IoU=0.50**                  | 0.67 (person), 0.77 (car)           |
+| **F1 score**                                       | 0.67 (person), 0.72 (car)            |
+| **Mean average precision**                        | 0.48                                    |
+| **Mean average precision at IoU=0.50**            | 0.72                                    |
+| **Mean average precision at IoU=0.75**            | 0.52                                   |
+| **Mean precision**                                 | 0.78                                    |
+| **Mean recall**                                    | 0.63                                    |
+| **Precision**                                      | 0.69 (person), 0.87 (car)           |
+| **Recall**                                         | 0.64 (person), 0.62 (car)           |
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
