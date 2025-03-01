@@ -75,6 +75,13 @@ YOLO annotations follow this format:
 ```bash
 class_id   x_center  y_center  width  height
 ```
+Where:
+
+- **`class_id`**: The ID of the object class. For example, `0` represents a **person** and `2` represents a **car**.
+- **`x_center`**: The **normalized** x-coordinate of the center of the bounding box (relative to the image width).
+- **`y_center`**: The **normalized** y-coordinate of the center of the bounding box (relative to the image height).
+- **`width`**: The **normalized** width of the bounding box (relative to the image width).
+- **`height`**: The **normalized** height of the bounding box (relative to the image height).
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
