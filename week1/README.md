@@ -52,6 +52,7 @@ week1/
 
 To execute the inference on a specific sequence, run the following command from the terminal:
 
+```bash
 python inference_c.py <numbersequence>
 
 
