@@ -106,6 +106,26 @@ python convert_ultralytics.py
 ```
 
 ##### Evaluation
+The evaluation process helps assess the performance of the YOLOv11 model by calculating key metrics that indicate how well the model performs in detecting objects across different classes.
+
+#### 1. **Creating the `data.yaml` File**
+The `data.yaml` file contains essential information required by the evaluation function:
+- **Train and Val directories**: Paths to training and validation image datasets.
+- **Class names**: Mapping of class indices to class names (e.g., `0: person`, `2: car`).
+
+#### 2. **Model Evaluation**
+The model is evaluated using the `.val()` method, which computes several important metrics:
+- **Average Precision (AP)**: Measures the detection accuracy for each class.
+- **Mean Average Precision (mAP)**: The average AP across all classes.
+- **Precision**: The fraction of correct predictions out of all predicted instances.
+- **Recall**: The fraction of correct predictions out of all actual objects in the dataset.
+- **F1 Score**: The harmonic mean of precision and recall.
+
+#### 3. **Running the Evaluation**
+To evaluate the model, simply run the following command:
+```bash
+python evaluation_d.py
+
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
