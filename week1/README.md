@@ -125,7 +125,7 @@ The model is evaluated using the `.val()` method, which computes several importa
 To evaluate the model, simply run the following command:
 ```bash
 python evaluation_d.py
-
+```
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
