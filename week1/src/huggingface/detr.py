@@ -6,65 +6,85 @@ import cv2
 class DeTR:
     def __init__(self, model_name: str = "facebook/detr-resnet-50", score_threshold: float = 0.5):
         """Initializes the DeTR model"""
-        # Load processor and model
         self.processor = DetrImageProcessor.from_pretrained(model_name)
         self.model = DetrForObjectDetection.from_pretrained(model_name)
         self.score_threshold = score_threshold
 
     def run_inference(self, image: np.ndarray) -> dict:
         """Run inference on the input image"""
-        # Convert image to RGB and preprocess
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         inputs = self.processor(images=image_rgb, return_tensors="pt")
-        
-        # Run model
+
         with torch.no_grad():
             outputs = self.model(**inputs)
-        
         return outputs
 
     def visualize_predictions(self, image: np.ndarray, outputs) -> np.ndarray:
-        """Visualize the predictions on the input image"""
+        """Visualize predictions for 'person' and 'car' only, with custom colors"""
         scores = outputs.logits.softmax(-1)[0, :, :-1].max(-1)[0]
         keep = scores > self.score_threshold
+
+        if keep.sum() == 0:
+            print("No objects detected with the required confidence")
+            return image
+
+        h, w, _ = image.shape
         boxes = outputs.pred_boxes[0, keep].detach().cpu().numpy()
-        
-        # Draw boxes on image
-        for box in boxes:
-            x_min, y_min, width, height = box
-            x_min, y_min, x_max, y_max = int(x_min), int(y_min), int(x_min + width), int(y_min + height)
-            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
-        
+        labels = outputs.logits.argmax(-1)[0, keep].detach().cpu().numpy()
+
+        # Convert box format: (center_x, center_y, width, height) -> (x_min, y_min, x_max, y_max)
+        boxes[:, [0, 2]] *= w
+        boxes[:, [1, 3]] *= h
+        boxes[:, 0] -= boxes[:, 2] / 2
+        boxes[:, 1] -= boxes[:, 3] / 2
+        boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
+        boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
+
+        # Class names and filtering
+        category_names = [self.model.config.id2label[label] for label in labels]
+        filtered_indices = [i for i, name in enumerate(category_names) if name in ["person", "car"]]
+
+        # Define colors
+        color_map = {"person": (255, 0, 0), "car": (255, 0, 255)}  # Blue for person, pink for car
+
+        # Draw only filtered objects
+        for i in filtered_indices:
+            box = boxes[i]
+            class_name = category_names[i]
+            confidence = f"{scores[keep][i] * 100:.1f}%"
+            x_min, y_min, x_max, y_max = map(int, box)
+
+            # Draw bounding box (thinner lines)
+            color = color_map[class_name]  
+            cv2.rectangle(image, (x_min, y_min), (x_max, y_max), color, 1)  # Line thickness = 1
+
+            # Draw background for text
+            text = f"{class_name} {confidence}"
+            font_scale = 0.5
+            font_thickness = 1
+            (text_w, text_h), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)
+            text_x, text_y = x_min, y_min - 5
+            cv2.rectangle(image, (text_x, text_y - text_h - 2), (text_x + text_w + 2, text_y + 2), (255, 255, 255), -1)
+
+            # Draw label with confidence score
+            cv2.putText(image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, font_thickness)
+
         return image
+
 
 # Example usage
 if __name__ == "__main__":
     # Initialize model
     model = DeTR()
     
-    # Load image
+    # Task c: Run inference on single image
     image = cv2.imread("/ghome/c3mcv02/mcv-c5-team1/data/testing/0000/000000.png")
+    if image is None:
+        raise ValueError("Error: Unable to load the image. Check the path.")
+    
     print(f"Image shape: {image.shape}")
-    
-    # Run inference
     predictions = model.run_inference(image)
-    
-    # Visualize predictions
     visualized_image = model.visualize_predictions(image, predictions)
     print(f"Visualized image shape: {visualized_image.shape}")
-    
-    # Save the image
-    cv2.imwrite("visualized_detr.png", visualized_image)
-    
-    # Test with a batch of images
-    batch_images = np.stack([image, image], axis=0)
-    predictions = model.run_inference(batch_images)
-    
-    # Visualize the predictions
-    visualized_images = []
-    for i, img in enumerate(batch_images):
-        visualized_image = model.visualize_predictions(img, predictions[i])
-        visualized_images.append(visualized_image)
-    print(f"Visualized images shape: {visualized_images[0].shape}")
-    cv2.imwrite("visualized_image_batch.png", visualized_images[0])
-    cv2.imwrite("visualized_image_batch2.png", visualized_images[1])
+    cv2.imwrite("visualized_image.png", visualized_image)
+

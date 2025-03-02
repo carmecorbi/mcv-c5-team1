@@ -1,6 +1,10 @@
+# Job files
+job*
+
 # Data files
 data/
 week1/src/detectron/output
+week1/src/huggingface/results_inference
 
 # Log files
 *.out
@@ -9,6 +13,10 @@ week1/src/detectron/output
 # Video files
 *.avi
 *.mp4
+
+# Image files
+*.png
+*.jpg
 
 # Don't commit ultralytics files
 week1/src/ultralytics/runs/

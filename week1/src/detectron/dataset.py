@@ -1,3 +1,4 @@
+from typing import Literal
 from PIL import Image
 from detectron2.structures import BoxMode
 from pycocotools import mask as mask_utils
@@ -5,7 +6,7 @@ import os
 
 
 class CustomKittiMotsDataset:
-    def __init__(self, data_dir, use_coco_ids = True):
+    def __init__(self, data_dir, use_coco_ids = True, split: str = Literal['val', 'train']):
         """
         Custom dataset for KITTI-MOTS format
         
@@ -17,7 +18,7 @@ class CustomKittiMotsDataset:
         """
         self.data_dir = data_dir
         self.instances_dir = os.path.join(data_dir, 'instances_txt')
-        self.image_dir = os.path.join(data_dir, 'training_original')
+        self.image_dir = os.path.join(data_dir, 'training', split)
         
         # Class mapping (original KITTI-MOTS uses integers)
         self.classes = ["car", "pedestrian"]
@@ -131,3 +132,4 @@ class CustomKittiMotsDataset:
         }
         
         return record
+    

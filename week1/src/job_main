@@ -16,6 +16,10 @@ export PYTHONUNBUFFERED=1
 echo "Job started at: $(date)"
 echo "Running on node: $(hostname)"
 
-python3 main.py -v /ghome/c3mcv02/mcv-c5-team1/data/training/val
+python3 main.py \
+    -t infer -i /ghome/c3mcv02/mcv-c5-team1/data/testing/0000/000000.png  \
+    -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml \
+    -w /ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/train/model_final.pth -s 0.5 \
+    -o /ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/eval_finetuned
 
 echo "Job finished at: $(date)"

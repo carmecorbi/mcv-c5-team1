@@ -1,93 +1,53 @@
-from torch.utils.data import DataLoader, Dataset
-from torchvision import datasets, transforms
-import torch
-
-import numpy as np
-from detectron.faster_rcnn import FasterRCNN
-
-import matplotlib.pyplot as plt
-from pathlib import Path
 import argparse
-from tqdm import tqdm
+import cv2
 
-
-class KittiMotsDataset(Dataset):
-    def __init__(self, root: str | Path, transform: any=None):
-        """Create a dataset class for KittiMots dataset.
-
-        Args:
-            root (str | Path): Path to the dataset.
-            transform (any, optional): Transformations to apply to the dataset. Defaults to None.
-        """
-        self.root = root
-        self.transform = transform
-        self.data = datasets.ImageFolder(root, transform=transform)
-
-    def __len__(self) -> int:
-        return len(self.data)
-
-    def __getitem__(self, idx) -> torch.Tensor:
-        return self.data[idx]
+from detectron.faster_rcnn import FasterRCNN
     
     
 if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser(description='KittiMots Dataset')
-    parser.add_argument('-v', '--val', help="Path to validation dataset", required=True)
-    parser.add_argument('-b', '--batch_size', type=int, default=32)
-    parser.add_argument('-c', '--config_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-    parser.add_argument('-w', '--weights_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-    parser.add_argument('-t', '--score_threshold', type=float, default=0.5)
+    parser.add_argument('-d', '--data_dir', help="Path to validation dataset", required=False)
+    parser.add_argument('-t', '--task', help="Task to do (infer, train, eval)", required=True)
+    parser.add_argument('-i', '--input_image', help="Input image to infer on (only for infer task)", type=str, required=False)
+    parser.add_argument('-c', '--config_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", help="Path to the model config yaml from model zoo.")
+    parser.add_argument('-w', '--weights_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", help="Path to the weights file or model zoo config yaml.")
+    parser.add_argument('-s', '--score_threshold', type=float, default=0.5, help="Score threshold for predictions.")
+    parser.add_argument('-o', '--output_dir', help="Output directory for the model", default=None)
+    parser.add_argument('--num_workers', required=False, default=4, type=int, help="Number of workers to load dataset.")
     args = parser.parse_args()
     
-    # Load validation dataset
-    val_transforms = transforms.Compose([
-        transforms.Resize((375, 1242)),
-        transforms.ToTensor(),
-    ])
-    val_dataset = KittiMotsDataset(args.val, transform=val_transforms)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
+    # Get the arguments from CLI
+    data_dir = args.data_dir
+    config_file = args.config_file
+    weights_file = args.weights_file
+    score_threshold = args.score_threshold
+    num_workers = args.num_workers
+    task = args.task
+    output_dir = args.output_dir
     
-    # Define model
-    model = FasterRCNN(config_file=args.config_file, weights_file=args.weights_file, score_threshold=args.score_threshold)
+    # Get the model
+    model = FasterRCNN(config_file, weights_file, score_threshold, num_workers)
     
-    print("-"*50)
-    # Run inference
-    output_images = []
-    preds = []
-    for images, _ in tqdm(val_loader):
-        images = images.permute(0, 2, 3, 1)  # Change shape from (B,C,H,W) to (B,H,W,C)
-        images = (images.numpy() * 255).astype(np.uint8)  # Now shape will be (B,H,W,C)
+    if task == "train":
+        assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
+        model.train_model(data_dir=data_dir, output_dir=output_dir)
+    elif task == "eval":
+        assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
+        model.evaluate_model(data_dir=data_dir, output_dir=output_dir)
+    elif task == 'infer':
+        assert args.input_image, "You should include an input image for infer task (use --input_image <PATH_TO_IMAGE>)"
+        input_image = args.input_image
         
-        # Debug: Check image values
-        print(f"Image min/max values: {images.min()}, {images.max()}")
-        print(f"Images shape: {images.shape}")
+        # Get the image
+        image = cv2.imread(input_image)
+        print(f"Image shape: {image.shape}")
         
-        predictions = model.run_inference(images)
+        # Get the predictions
+        predictions = model.run_inference(image)
+        visualized_image = model.visualize_predictions(image, predictions)
         
-        print(f"Predictions shape: {len(predictions)}")
-        print(f"Number of instances: {len(predictions[0]['instances'])}")
-        
-        for i, image in enumerate(images):
-            # Debug: Check if image is valid
-            if image.max() == 0:
-                print("Warning: Image is all black!")
-            visualized_image = model.visualize_predictions(image, predictions[i])
-            output_images.append(visualized_image)
-        preds.append(predictions)
-        print("-"*50)
-        
-    # Show some images in matplotlib
-    fig, axes = plt.subplots(2, 2, figsize=(20, 15))  # Larger figure size
-    plt.subplots_adjust(hspace=0.3, wspace=0.3)  # Add spacing between subplots
-    for idx, ax in enumerate(axes.flat):
-        if idx < len(output_images):
-            ax.imshow(output_images[idx])
-            ax.set_title(f'Detection {idx+1}')
-            ax.axis('off')  # Hide axes
-        else:
-            ax.axis('off')  # Hide empty subplots
-    plt.tight_layout()  # Adjust layout to prevent overlap
-    plt.savefig("output.png", bbox_inches='tight', dpi=300)
-    plt.close()
+        # Save image for processing
+        print(f"Visualized image shape: {visualized_image.shape}")
+        cv2.imwrite(f"{output_dir}/visualized_image_finetuned.png", visualized_image)
     

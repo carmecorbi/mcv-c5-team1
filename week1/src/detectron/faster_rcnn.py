@@ -7,7 +7,7 @@ from detectron2.data import MetadataCatalog
 from detectron2.evaluation import COCOEvaluator
 from detectron2.evaluation import inference_on_dataset
 
-from dataset import CustomKittiMotsDataset
+from detectron.dataset import CustomKittiMotsDataset
 
 import numpy as np
 import cv2
@@ -105,7 +105,7 @@ class FasterRCNN:
             dict: Inference results
         """
         # Register dataset
-        DatasetCatalog.register(dataset_name, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=self.is_coco))
+        DatasetCatalog.register(dataset_name, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=self.is_coco, split="val"))
         
         if not self.is_coco:
             print("Evaluating with custom class IDs...")
@@ -144,15 +144,17 @@ class FasterRCNN:
             dict: Results of the training process.
         """
         # Register dataset
-        DatasetCatalog.register(dataset_name, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False))
-        MetadataCatalog.get(dataset_name).set(thing_classes=["0", "1"]) 
+        DatasetCatalog.register(dataset_name + "_train", lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split="train"))
+        DatasetCatalog.register(dataset_name + "_val", lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split="val"))
+        MetadataCatalog.get(dataset_name + "_train").set(thing_classes=["0", "1"]) 
+        MetadataCatalog.get(dataset_name + "_val").set(thing_classes=["0", "1"]) 
         
         # Set the number of classes
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
         
         # TRAINING SPECIFIC CONFIGURATION
-        self.cfg.DATASETS.TRAIN = (dataset_name,) # TODO: Make it so that the training is done in the train set.
-        self.cfg.DATASETS.TEST = (dataset_name,) # TODO: Make it so that the evaluation is done in the validation set.
+        self.cfg.DATASETS.TRAIN = (dataset_name + "_train",)
+        self.cfg.DATASETS.TEST = (dataset_name + "_val",)
 
         # Solver parameters
         self.cfg.SOLVER.IMS_PER_BATCH = 4  # Batch size (adjust based on GPU memory)
@@ -195,14 +197,15 @@ if __name__ == "__main__":
     """
     
     # Task e: Train on custom dataset
-    #model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-    #results = model.train_model("/ghome/c3mcv02/mcv-c5-team1/data", num_classes=2, output_dir="./output/train")
+    model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
+    results = model.train_model("/ghome/c3mcv02/mcv-c5-team1/data", num_classes=2, output_dir="./output/train")
     
-    # Task f: Evaluate fine-tuned
+    # Task f_1: Evaluate fine-tuned
     #model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "/ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/train/model_final.pth")
     #results = model.evaluate_model("/ghome/c3mcv02/mcv-c5-team1/data", num_classes=2, output_dir="./output/eval_finetuned")
     
-    # Task c: Run inference on single image
+    """
+    # Task f_2: Run inference on single image with finetuned
     model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "/ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/train/model_final.pth")
     image = cv2.imread("/ghome/c3mcv02/mcv-c5-team1/data/testing/0000/000000.png")
     print(f"Image shape: {image.shape}")
@@ -210,3 +213,4 @@ if __name__ == "__main__":
     visualized_image = model.visualize_predictions(image, predictions)
     print(f"Visualized image shape: {visualized_image.shape}")
     cv2.imwrite("visualized_image_finetuned.png", visualized_image)
+    """
