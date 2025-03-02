@@ -1,5 +1,6 @@
 # Data files
 data/
+week1/src/detectron/output
 
 # Log files
 *.out
