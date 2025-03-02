@@ -34,11 +34,111 @@ The **Validation** set was created by taking 9 sequences from the original train
 #### YOLOv11n
 YOLOv11n (You Only Look Once) is a real-time object detection model that is part of the YOLO family, known for its speed and efficiency in detecting objects. For this task, we used the **Ultralytics implementation** of YOLOv11n, which is optimized to provide high accuracy and fast inference times. YOLOv11n works by dividing the input image into a grid and predicting bounding boxes and class probabilities directly from each grid cell. 
 
-To run inference using the pre-trained YOLOv11n model, we use the following code:
+The code assumes the following directory structure: 
+  
+  week1/
+  │── checkpoints/
+  │   └── yolo/
+  │       └── yolo11n.pt  # Pre-trained model
+  │── src/
+  │   └── ultralytics/
+  │       ├── data/
+  │       │   ├── images/val/  # Folder containing input images
+  │       │   │   ├── 0002/
+  │       │   │   ├── 0006/
+  │       │   │   └── ...
+  │       ├── results_inference/  # Folder for saving results
+  │       └── inference_c.py  # Inference script
 
-#### Qualitative results
+To execute the inference on a specific sequence, run the following command from the terminal:
+
+```bash
+python inference_c.py <numbersequence>
+```
+The inference will only detect objects of interest: person and car. This is specified by the **classes** parameter in the code, which is set to detect only class IDs corresponding to **person** (ID 0) and **car** (ID 2). 
+
+Here are some example images from the sequence 0014 that show the output after running the inference:
+
+| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
+|---------------------------------------|---------------------------------------|
+| 000037.png          | 000101.png       |
+
+
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
+
+#### YOLOv11n
+
+##### Conversion Process
+In this task, the KITTI-MOTS dataset annotations were converted into the format required for YOLOv11 evaluation. The conversion process involved mapping the KITTI-MOTS class IDs to COCO class IDs, extracting bounding boxes from RLE masks, and normalizing them for YOLO annotations.
+
+YOLO annotations follow this format:
+
+```bash
+class_id   x_center  y_center  width  height
+```
+Where:
+
+- **`class_id`**: The ID of the object class. For example, `0` represents a **person** and `2` represents a **car**.
+- **`x_center`**: The **normalized** x-coordinate of the center of the bounding box (relative to the image width).
+- **`y_center`**: The **normalized** y-coordinate of the center of the bounding box (relative to the image height).
+- **`width`**: The **normalized** width of the bounding box (relative to the image width).
+- **`height`**: The **normalized** height of the bounding box (relative to the image height).
+
+Keys steps in the conversion process:
+
+1. **Class Mapping**: 
+   - KITTI class 1 (car) was mapped to class 2 (COCO car).
+   - KITTI class 2 (pedestrian) was mapped to class 0 (COCO person).
+
+2. **Bounding Box Calculation**: 
+   - RLE segmentation masks were used to generate bounding boxes.
+   - Bounding boxes were normalized to YOLO format: `class_id x_center y_center width height`.
+
+3. **Output**: 
+   - YOLO annotations were saved in `.txt` files for each frame, with one file per image in the sequence.
+   - Annotations are saved in the `val/labels` directory under each sequence folder.
+
+To perform this conversion, run the following command:
+
+```bash
+python convert_ultralytics.py
+```
+
+##### Evaluation
+The evaluation process helps assess the performance of the YOLOv11 model by calculating key metrics that indicate how well the model performs in detecting objects across different classes.
+
+#### 1. **Creating the `data.yaml` File**
+The `data.yaml` file contains essential information required by the evaluation function:
+- **Train and Val directories**: Paths to training and validation image datasets.
+- **Class names**: Mapping of class indices to class names (e.g., `0: person`, `2: car`).
+
+#### 2. **Model Evaluation**
+The model is evaluated using the `.val()` method, which computes several important metrics:
+- **Average Precision (AP)**: Measures the detection accuracy for each class.
+- **Mean Average Precision (mAP)**: The average AP across all classes.
+- **Precision**: The fraction of correct predictions out of all predicted instances.
+- **Recall**: The fraction of correct predictions out of all actual objects in the dataset.
+- **F1 Score**: The harmonic mean of precision and recall.
+
+#### 3. **Running the Evaluation**
+To evaluate the model, simply run the following command:
+```bash
+python evaluation_d.py
+```
+| Metric                                             | Value                                      |
+|----------------------------------------------------|--------------------------------------------|
+| **Average precision**                              | 0.41 (person), 0.55 (car)           |
+| **Average precision at IoU=0.50**                  | 0.67 (person), 0.77 (car)           |
+| **F1 score**                                       | 0.67 (person), 0.72 (car)            |
+| **Mean average precision**                        | 0.48                                    |
+| **Mean average precision at IoU=0.50**            | 0.72                                    |
+| **Mean average precision at IoU=0.75**            | 0.52                                   |
+| **Mean precision**                                 | 0.78                                    |
+| **Mean recall**                                    | 0.63                                    |
+| **Precision**                                      | 0.69 (person), 0.87 (car)           |
+| **Recall**                                         | 0.64 (person), 0.62 (car)           |
+
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
 
