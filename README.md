@@ -47,10 +47,13 @@ Link Final Presentation:
    ```bash
    # Create and activate conda environment using our provided environment.yml file
    conda env create -f environment.yml
-   conda activate mcv-c5
+   conda activate mcv-c5-team1
+
+   # Install PyTorch for your CUDA version.
+   (uv) pip install torch torchvision torchaudio
    
    # Install Detectron2
-   (uv) pip install 'git+https://github.com/facebookresearch/detectron2.git'
+   pip install 'git+https://github.com/facebookresearch/detectron2.git'
    
    # Install HuggingFace Transformers
    (uv) pip install transformers
@@ -71,7 +74,7 @@ Link Final Presentation:
    (uv) pip install -r requirements.txt
    
    # Install Detectron2
-   (uv) pip install 'git+https://github.com/facebookresearch/detectron2.git'
+   pip install 'git+https://github.com/facebookresearch/detectron2.git'
    
    # Install HuggingFace Transformers
    (uv) pip install transformers
