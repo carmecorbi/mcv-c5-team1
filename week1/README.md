@@ -53,7 +53,7 @@ The code assumes the following directory structure:
 To execute the inference on a specific sequence, run the following command from the terminal:
 
 ```bash
-python inference_c.py <numbersequence>
+python inference.py --seq <sequence_number> --out <output_directory>
 ```
 The inference will only detect objects of interest: person and car. This is specified by the **classes** parameter in the code, which is set to detect only class IDs corresponding to **person** (ID 0) and **car** (ID 2). 
 
@@ -124,7 +124,7 @@ The model is evaluated using the `.val()` method, which computes several importa
 #### 3. **Running the Evaluation**
 To evaluate the model, simply run the following command:
 ```bash
-python evaluation_d.py
+python evaluation.py --m <model_path>
 ```
 | Metric                                             | Value                                      |
 |----------------------------------------------------|--------------------------------------------|
