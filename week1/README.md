@@ -60,6 +60,37 @@ The code assumes the following directory structure:
     │   │   │   ├── detr.py  # DeTR model class
     │   │   │   ├── inference_detr_txt_files.py  # Inference script
 
+To run the inference en the validation dataset, use the following command:
+
+```bash
+python3 inference_detr_txt_files.py
+```
+
+The inference is limited to detecting **person** and **car**, as defined in the **CLASS_MAP** parameter. These class IDs follow the **COCO dataset** format, where **person** is **1** and **car** is **3**, which is the standard used by DeTR.
+
+The script will:
+
+- Save the visualized images with bounding boxes in the `results_inference` folder.
+- Store the detection results in a `.txt` file inside the `results_txt` folder.
+
+Each detection in the `.txt` file follows this format:
+
+```bash
+frame_id, -1, class_id, x_min, y_min, x_max, y_max, confidence_score
+```
+
+Where:
+- **frame_id**: Index of the image in the sequence.
+- **-1**: Placeholder for `object_id` (not used in this case).
+- **class_id**: Object class (1 = person, 3 = car).
+- **x_min, y_min, x_max, y_max**: Bounding box coordinates in pixels.
+- **confidence_score**: Model confidence score.
+
+Here are some example images from the sequence 0014 that show the output after running the inference:
+
+| 000037.png | 000101.png |
+|---------------------------------------|---------------------------------------|
+| ![000037](https://github.com/user-attachments/assets/b19a19f0-4ca3-496f-b5df-6bbf96f49f85) | ![000101](https://github.com/user-attachments/assets/68864b3c-4ab1-4261-be44-472bc91af3d7)|
 
 
 #### YOLOv11n
@@ -90,11 +121,9 @@ The inference will only detect objects of interest: person and car. This is spec
 
 Here are some example images from the sequence 0014 that show the output after running the inference:
 
-| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
-|---------------------------------------|---------------------------------------|
 | 000037.png          | 000101.png       |
-
-
+|---------------------------------------|---------------------------------------|
+| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
