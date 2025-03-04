@@ -13,8 +13,7 @@ class CustomKittiMotsDataset:
         Args:
             data_dir (str): Base directory containing the dataset
             split (str, optional): Either "train", "val", or None for all data
-            train_fraction (float): Fraction of data to use for training if split is specified
-            seed (int): Random seed for train/val split reproducibility
+            use_coco_ids (bool, optional): Whether to use COCO class IDs (True) or KITTI-MOTS IDs (False)
         """
         self.data_dir = data_dir
         self.instances_dir = os.path.join(data_dir, 'instances_txt')
