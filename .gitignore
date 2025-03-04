@@ -3,6 +3,8 @@ job*
 
 # Data files
 data/
+config/
+results/
 week1/src/detectron/output
 week1/src/huggingface/results_inference
 

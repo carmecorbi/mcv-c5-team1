@@ -1,21 +1,23 @@
-from ultralytics import YOLO
+import argparse
 import time
 import os
 import sys
+from ultralytics import YOLO
 
-# Check if a sequence number is provided
-if len(sys.argv) != 2:
-    print("Usage: python inference_c.py <sequence_number>")
-    sys.exit(1)
+# Argument parser setup
+parser = argparse.ArgumentParser(description="Run YOLO inference on a specific sequence.")
+parser.add_argument("--seq", type=str, required=True, help="Sequence number for inference.")
+parser.add_argument("--out", type=str, required=True, help="Output directory for results.")
+args = parser.parse_args()
 
-sequence_number = sys.argv[1]
+sequence_number = args.seq
+output_dir = args.out
 
 # Load the YOLO model
 model = YOLO("/ghome/c3mcv02/mcv-c5-team1/week1/checkpoints/yolo/yolo11n.pt")
 
-# Define dataset paths dynamically based on sequence number
+# Define dataset path dynamically based on sequence number
 VAL_IMAGES_PATH = f"/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/data/images/val/{sequence_number}"
-output_dir = f"/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/results_inference/{sequence_number}"
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -28,7 +30,7 @@ results_inference = model.predict(source=VAL_IMAGES_PATH, save=True, classes=[0,
 
 # Compute inference time
 inference_time = time.time() - start_time
-print(f"Inference time: {inference_time} seconds.")
+print(f"Inference time: {inference_time:.2f} seconds.")
 
 
 

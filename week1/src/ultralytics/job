@@ -5,4 +5,4 @@
 #SBATCH --gres gpu:1 # Para pedir Pascales MAX 8
 #SBATCH -o %x_%u_%j.out # File to which STDOUT will be written
 #SBATCH -e %x_%u_%j.err # File to which STDERR will be written
-python inference_c.py
+python evaluation.py --m /ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/finetune_backbone_frozen/train3/weights/best.pt
