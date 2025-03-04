@@ -27,9 +27,40 @@ The dataset is divided into three subsets:
 | **Test**   | 29                 |
 
 The **Validation** set was created by taking 9 sequences from the original training set, which had 21 sequences in total. This approach is documented in the official paper of the dataset, which can be found here: [KITTI-MOTS Paper](https://arxiv.org/pdf/1902.03604).
+
 #### Faster R-CNN
 
 #### DeTR
+DeTR (DEtection TRansformer) is an object detection model based on Transformers, developed by Facebook AI. Unlike traditional methods such as Faster R-CNN and YOLO, DeTR replaces conventional detection components with an attention-based architecture, allowing it to capture long-range relationships within an image without the need for predefined anchors.
+
+For this task, we used the **Hugging Face Transformers** implementation with the pre-trained model **facebook/detr-resnet-50**. This model takes an input image, processes it using `DetrImageProcessor`, and generates object predictions with `DetrForObjectDetection`.
+
+DeTR directly predicts bounding boxes and object classes in a single pass, eliminating the need for steps such as region proposal generation or Non-Maximum Suppression (NMS). However, its inference is generally slower compared to YOLO due to its Transformer-based architecture.
+
+The code assumes the following directory structure: 
+
+    mcv-c5-team1/
+    │── data/
+    │   ├── instances_txt/  # Ground truth annotations
+    │   │   ├── 0000.txt
+    │   │   └── ...
+    │   ├── training/
+    │   │   ├── val/  # Folder containing input images
+    │   │   │   ├── 0002/
+    │   │   │   ├── 0006/
+    │   │   │   └── ...
+    │── week1/
+    │   ├── src/
+    │   │   ├── huggingface/
+    │   │   │   ├── config/
+    │   │   │   │   ├── gt_annotations/  # Ground truth annotations converted
+    │   │   │   ├── results/
+    │   │   │   │   ├── results_inference/  # Folder for saving visualized images
+    │   │   │   │   ├── results_txt/  # Folder for saving inference results in txt format
+    │   │   │   ├── detr.py  # DeTR model class
+    │   │   │   ├── inference_detr_txt_files.py  # Inference script
+
+
 
 #### YOLOv11n
 YOLOv11n (You Only Look Once) is a real-time object detection model that is part of the YOLO family, known for its speed and efficiency in detecting objects. For this task, we used the **Ultralytics implementation** of YOLOv11n, which is optimized to provide high accuracy and fast inference times. YOLOv11n works by dividing the input image into a grid and predicting bounding boxes and class probabilities directly from each grid cell. 
