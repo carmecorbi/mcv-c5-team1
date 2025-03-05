@@ -8,7 +8,7 @@ from detr import DeTR
 
 # Define dataset path
 VAL_IMAGES_PATH = "/ghome/c3mcv02/mcv-c5-team1/data/training/val/"
-OUTPUT_BASE_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results_inference/"
+OUTPUT_BASE_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_inference/"
 
 # Ensure the output base directory exists
 os.makedirs(OUTPUT_BASE_DIR, exist_ok=True)

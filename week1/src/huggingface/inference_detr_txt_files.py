@@ -6,8 +6,8 @@ from detr import DeTR
 
 # Define dataset path
 VAL_IMAGES_PATH = "/ghome/c3mcv02/mcv-c5-team1/data/training/val/"
-OUTPUT_BASE_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results_inference/"
-TXT_OUTPUT_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results_txt/"
+OUTPUT_BASE_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_inference/"
+TXT_OUTPUT_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_txt/"
 
 # Ensure the output directories exist
 os.makedirs(OUTPUT_BASE_DIR, exist_ok=True)
@@ -59,7 +59,7 @@ for sequence_number in os.listdir(VAL_IMAGES_PATH):
             # Save predictions to txt file
             for x1, y1, x2, y2, class_name, score in bboxes:
                 if class_name in CLASS_MAP:
-                    class_id = CLASS_MAP[class_name]  # Convertir nombre de clase a ID numérico
+                    class_id = CLASS_MAP[class_name] 
                     txt_file.write(f"{frame_id}, -1, {class_id}, {x1}, {y1}, {x2}, {y2}, {score:.4f}\n")
 
 # Compute inference time

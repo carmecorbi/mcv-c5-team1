@@ -28,9 +28,9 @@ class DeTR:
         results = []
         for i in range(len(boxes)):
             results.append({
-                "class_id": int(labels[i]),  # Convierte a int explícitamente
+                "class_id": int(labels[i]),  
                 "bbox": boxes[i].tolist(),
-                "score": float(scores[keep][i])  # Convierte a float
+                "score": float(scores[keep][i])  
             })
         
         return results
@@ -59,27 +59,27 @@ class DeTR:
             bbox = obj["bbox"]
             score = obj["score"]
 
-            # Obtener el nombre de la clase
+            # Get class name
             class_name = self.model.config.id2label[class_id]
 
-            # Filtrar solo "person" y "car"
+            # Filter only "person" and "car"
             if class_name not in color_map:
                 continue  
 
-            # Convertir bbox (center_x, center_y, width, height) → (x_min, y_min, x_max, y_max)
+            # Convert bbox (center_x, center_y, width, height) → (x_min, y_min, x_max, y_max)
             x_min = int((bbox[0] - bbox[2] / 2) * w)
             y_min = int((bbox[1] - bbox[3] / 2) * h)
             x_max = int((bbox[0] + bbox[2] / 2) * w)
             y_max = int((bbox[1] + bbox[3] / 2) * h)
 
-            # Guardar la caja en la lista
+            # Store the box in the list
             bboxes.append((x_min, y_min, x_max, y_max, class_name, score))
 
-            # Dibujar bounding box
+            # Draw bounding box
             color = color_map[class_name]
             cv2.rectangle(image, (x_min, y_min), (x_max, y_max), color, 1)
 
-            # Dibujar el fondo del texto
+            # Draw text background
             text = f"{class_name} {score * 100:.1f}%"
             font_scale = 0.5
             font_thickness = 1
@@ -87,7 +87,7 @@ class DeTR:
             text_x, text_y = x_min, y_min - 5
             cv2.rectangle(image, (text_x, text_y - text_h - 2), (text_x + text_w + 2, text_y + 2), (255, 255, 255), -1)
 
-            # Dibujar la etiqueta con la confianza
+            # Draw label with confidence score
             cv2.putText(image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, font_thickness)
 
         return image, bboxes
