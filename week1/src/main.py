@@ -1,7 +1,7 @@
 import argparse
 import cv2
 
-from detectron.faster_rcnn import FasterRCNN
+from week1.src.detectron.faster_rcnn import FasterRCNN
     
     
 if __name__ == '__main__':
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         model.train_model(data_dir=data_dir, output_dir=output_dir)
     elif task == "eval":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
-        model.evaluate_model(data_dir=data_dir, output_dir=output_dir)
+        print(model.evaluate_model(data_dir=data_dir, output_dir=output_dir))
     elif task == 'infer':
         assert args.input_image, "You should include an input image for infer task (use --input_image <PATH_TO_IMAGE>)"
         input_image = args.input_image

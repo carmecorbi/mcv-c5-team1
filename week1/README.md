@@ -27,9 +27,71 @@ The dataset is divided into three subsets:
 | **Test**   | 29                 |
 
 The **Validation** set was created by taking 9 sequences from the original training set, which had 21 sequences in total. This approach is documented in the official paper of the dataset, which can be found here: [KITTI-MOTS Paper](https://arxiv.org/pdf/1902.03604).
+
 #### Faster R-CNN
 
 #### DeTR
+DeTR (DEtection TRansformer) is an object detection model based on Transformers, developed by Facebook AI. Unlike traditional methods such as Faster R-CNN and YOLO, DeTR replaces conventional detection components with an attention-based architecture, allowing it to capture long-range relationships within an image without the need for predefined anchors.
+
+For this task, we used the **Hugging Face Transformers** implementation with the pre-trained model **facebook/detr-resnet-50**. This model takes an input image, processes it using `DetrImageProcessor`, and generates object predictions with `DetrForObjectDetection`.
+
+DeTR directly predicts bounding boxes and object classes in a single pass, eliminating the need for steps such as region proposal generation or Non-Maximum Suppression (NMS). However, its inference is generally slower compared to YOLO due to its Transformer-based architecture.
+
+The code assumes the following directory structure: 
+
+    mcv-c5-team1/
+    │── data/
+    │   ├── instances_txt/  # Ground truth annotations
+    │   │   ├── 0000.txt
+    │   │   └── ...
+    │   ├── training/
+    │   │   ├── val/  # Folder containing input images
+    │   │   │   ├── 0002/
+    │   │   │   ├── 0006/
+    │   │   │   └── ...
+    │── week1/
+    │   ├── src/
+    │   │   ├── huggingface/
+    │   │   │   ├── config/
+    │   │   │   │   ├── gt_annotations/  # Ground truth annotations converted
+    │   │   │   ├── results/
+    │   │   │   │   ├── results_inference/  # Folder for saving visualized images
+    │   │   │   │   ├── results_txt/  # Folder for saving inference results in txt format
+    │   │   │   ├── detr.py  # DeTR model class
+    │   │   │   ├── inference_detr_txt_files.py  # Inference script
+
+To run the inference en the validation dataset, use the following command:
+
+```bash
+python3 inference_detr_txt_files.py
+```
+
+The inference is limited to detecting **person** and **car**, as defined in the **CLASS_MAP** parameter. These class IDs follow the **COCO dataset** format, where **person** is **1** and **car** is **3**, which is the standard used by DeTR.
+
+The script will:
+
+- Save the visualized images with bounding boxes in the `results_inference` folder.
+- Store the detection results in a `.txt` file inside the `results_txt` folder.
+
+Each detection in the `.txt` file follows this format:
+
+```bash
+frame_id, -1, class_id, x_min, y_min, x_max, y_max, confidence_score
+```
+
+Where:
+- **frame_id**: Index of the image in the sequence.
+- **-1**: Placeholder for `object_id` (not used in this case).
+- **class_id**: Object class (1 = person, 3 = car).
+- **x_min, y_min, x_max, y_max**: Bounding box coordinates in pixels.
+- **confidence_score**: Model confidence score.
+
+Here are some example images from the sequence 0014 that show the output after running the inference:
+
+| 000037.png | 000101.png |
+|---------------------------------------|---------------------------------------|
+| ![000037](https://github.com/user-attachments/assets/b19a19f0-4ca3-496f-b5df-6bbf96f49f85) | ![000101](https://github.com/user-attachments/assets/68864b3c-4ab1-4261-be44-472bc91af3d7)|
+
 
 #### YOLOv11n
 YOLOv11n (You Only Look Once) is a real-time object detection model that is part of the YOLO family, known for its speed and efficiency in detecting objects. For this task, we used the **Ultralytics implementation** of YOLOv11n, which is optimized to provide high accuracy and fast inference times. YOLOv11n works by dividing the input image into a grid and predicting bounding boxes and class probabilities directly from each grid cell. 
@@ -59,13 +121,96 @@ The inference will only detect objects of interest: person and car. This is spec
 
 Here are some example images from the sequence 0014 that show the output after running the inference:
 
-| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
-|---------------------------------------|---------------------------------------|
 | 000037.png          | 000101.png       |
-
-
+|---------------------------------------|---------------------------------------|
+| ![000037](https://github.com/user-attachments/assets/24638324-6819-4d08-914f-24484e012a99) | ![000101](https://github.com/user-attachments/assets/2111ff43-98a5-43b6-9a85-e3d8322a76e8) |
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
+
+#### DeTR
+
+##### 1. Ground Truth Conversion
+
+Before evaluating the object detection models, we need to convert the KITTI-MOTS ground truth annotations into the same format used for storing inference results. This allows for a direct comparison between predictions and ground truth data.
+
+To achieve this, we use the script `convert_gt_for_detr.py`, which processes the original KITTI-MOTS annotations and converts them into the following format:
+
+```bash
+frame_id, object_id, class_id, x_min, y_min, x_max, y_max, confidence_score
+```
+
+where:
+- **frame_id**: Image index in the sequence.
+- **object_id**: Unique object identifier.
+- **class_id**: Mapped class ID (1 = person, 3 = car following COCO format).
+- **x_min, y_min, x_max, y_max**: Bounding box coordinates in pixels.
+- **confidence_score**: Set to 1.0 for ground truth annotations.
+
+###### Run Ground Truth Conversion
+Execute the script with:
+
+```bash
+python3 convert_gt_for_detr.py
+```
+
+This will generate ground truth annotation files in:
+
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/config/gt_annotations
+```
+
+##### 2. Evaluation Using COCO Metrics
+
+Once the ground truth annotations are converted, we evaluate the performance of the object detection models using COCO metrics (AP, mAP, precision, recall, etc.).
+
+We use the script `detr_eval.py`, which:
+1. Loads the ground truth annotations and detection results.
+2. Converts them into COCO format.
+3. Evaluates the detection performance using `pycocotools`.
+4. Outputs the evaluation results.
+
+###### Run Evaluation
+Execute the script with:
+
+```bash
+python3 detr_eval.py
+```
+
+The script reads ground truth annotations from:
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/config/gt_annotations
+```
+and detection results from:
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_txt
+```
+
+###### COCO Evaluation Output
+The script prints the following metrics:
+
+```batch
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.461
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.756
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.486
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.160
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.501
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.701
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.072
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.414
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.582
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.336
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.621
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.794
+```
+
+**Where:**  
+- **AP (Average Precision)** evaluates detection performance by measuring precision across different IoU (Intersection over Union) thresholds:  
+  - AP is computed at multiple IoU thresholds (0.50:0.95), including specific values like **0.50 (PASCAL VOC metric)** and **0.75 (stricter matching criteria)**.  
+  - It is also computed separately for objects of different sizes: **small, medium, and large**.  
+
+- **AR (Average Recall)** measures the ability to detect objects correctly at different recall levels:  
+  - AR is evaluated by limiting the maximum number of detections per image (**1, 10, or 100 detections**).  
+  - It is also analyzed based on object size (**small, medium, large**) to assess performance across different scales.  
 
 #### YOLOv11n
 
@@ -141,6 +286,33 @@ python evaluation.py --m <model_path>
 
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
+
+#### YOLO11n
+We fine-tune YOLOv11n on the KITT-MOTS dataset using two different fine-tuning strategies:
+1. Fully Unfrozen Model
+2. Backbone Frozen
+
+The goal is to optimize the model's performance by tuning hyperparameters using Optuna, maximizing the mAP at IoU=0.5 
+
+We conducted hyperparameter optimization considering the following parameters:
+- **Mixup:** [0.0, 0.5] (data augmentation technique for blending images)
+- **Dropout:** [0.0, 0.5] (regularization technique to prevent overfitting)
+- **Weight Decay:** [0.0, 0.01] (L2 regularization to improve generalization)
+- **Optimizer:** [SGD, Adam, AdamW] (different optimization algorithms)
+- **Rotation Degrees:** [0.0, 90.0] (image rotation augmentation)
+- **Scale:** [0.2, 1.0] (image scaling augmentation)
+
+Training Parameters
+- **Dataset:** KITTI-MOTS 
+- **Epochs:** 30
+- **Batch Size:** 8
+- **Image Size:** 640x640
+- **Device:** GPU (CUDA)
+- **Early Stopping Patience:** 20 epochs
+- **Classes Trained:** 0 (Car), 2 (Pedestrian)
+- **IoU Threshold:** 0.5
+
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 25.
 
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
 

@@ -1,17 +1,13 @@
+import numpy as np
+import os
+
 from detectron2 import model_zoo
 from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
 from detectron2.engine import DefaultPredictor, DefaultTrainer
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
-from detectron2.data import MetadataCatalog
-from detectron2.evaluation import COCOEvaluator
-from detectron2.evaluation import inference_on_dataset
-
-from detectron.dataset import CustomKittiMotsDataset
-
-import numpy as np
-import cv2
-import os
+from detectron2.evaluation import COCOEvaluator, inference_on_dataset
+from week1.src.detectron.dataset import CustomKittiMotsDataset
 
 
 class FasterRCNN:
@@ -60,10 +56,30 @@ class FasterRCNN:
         # Make it compatible with batches of images
         predictions = []
         if len(image.shape) == 3:
-            predictions = predictor(image)
+            pred = predictor(image)
+
+            # Filter instances for cars and pedestrians
+            instances = pred['instances']
+            if self.is_coco:
+                keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 2)
+            else:
+                keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 1)
+
+            pred['instances'] = instances[keep_mask]
+            predictions = pred
         elif len(image.shape) == 4:
             for img in image:
-                predictions.append(predictor(img))
+                pred = predictor(img)
+
+                # Filter instances for cars and pedestrians
+                instances = pred['instances']
+                if self.is_coco:
+                    keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 2)
+                else:
+                    keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 1)
+
+                pred['instances'] = instances[keep_mask]
+                predictions.append(pred)
         return predictions
     
     def visualize_predictions(self, image: np.ndarray, predictions: dict, class_names: list[str] = ["car", "pedestrian"]) -> np.ndarray:
@@ -130,7 +146,7 @@ class FasterRCNN:
         # Run inference and return results
         print("Running inference on the test dataset...")
         return inference_on_dataset(predictor.model, val_loader, evaluator)
-    
+
     def train_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, output_dir: str = "./output/train") -> dict:
         """Train a model to a given dataset.
 
@@ -172,45 +188,12 @@ class FasterRCNN:
 
         # Create trainer and start training
         print("Starting training...")
-        trainer = DefaultTrainer(self.cfg)
+        class CustomTrainer(DefaultTrainer):
+            @classmethod
+            def build_evaluator(cls, cfg, dataset_name, output_folder=None):
+                if output_folder is None:
+                    output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
+                return COCOEvaluator(dataset_name, cfg, False, output_dir=output_folder)
+        trainer = CustomTrainer(self.cfg)
         trainer.resume_or_load(resume=False)
         return trainer.train()
-    
-    
-# Example usage
-if __name__ == "__main__":
-    """
-    # Task c: Run inference on single image
-    image = cv2.imread("/ghome/c3mcv02/mcv-c5-team1/data/testing/0000/000000.png")
-    print(f"Image shape: {image.shape}")
-    predictions = model.run_inference(image)
-    visualized_image = model.visualize_predictions(image, predictions)
-    print(f"Visualized image shape: {visualized_image.shape}")
-    cv2.imwrite("visualized_image.png", visualized_image)
-    """
-    
-    """
-    # Task d: Evaluate on dataset
-    model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-    results = model.evaluate_model("/ghome/c3mcv02/mcv-c5-team1/data", output_dir="./output/eval_pretrained")
-    print(results)
-    """
-    
-    # Task e: Train on custom dataset
-    model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-    results = model.train_model("/ghome/c3mcv02/mcv-c5-team1/data", num_classes=2, output_dir="./output/train")
-    
-    # Task f_1: Evaluate fine-tuned
-    #model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "/ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/train/model_final.pth")
-    #results = model.evaluate_model("/ghome/c3mcv02/mcv-c5-team1/data", num_classes=2, output_dir="./output/eval_finetuned")
-    
-    """
-    # Task f_2: Run inference on single image with finetuned
-    model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "/ghome/c3mcv02/mcv-c5-team1/week1/src/detectron/output/train/model_final.pth")
-    image = cv2.imread("/ghome/c3mcv02/mcv-c5-team1/data/testing/0000/000000.png")
-    print(f"Image shape: {image.shape}")
-    predictions = model.run_inference(image)
-    visualized_image = model.visualize_predictions(image, predictions)
-    print(f"Visualized image shape: {visualized_image.shape}")
-    cv2.imwrite("visualized_image_finetuned.png", visualized_image)
-    """
