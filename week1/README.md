@@ -202,6 +202,33 @@ python evaluation.py --m <model_path>
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
 
+#### YOLO11n
+We fine-tune YOLOv11n on the KITT-MOTS dataset using two different fine-tuning strategies:
+1. Fully Unfrozen Model
+2. Backbone Frozen
+
+The goal is to optimize the model's performance by tuning hyperparameters using Optuna, maximizing the mAP at IoU=0.5 
+
+We conducted hyperparameter optimization considering the following parameters:
+- **Mixup:** [0.0, 0.5] (data augmentation technique for blending images)
+- **Dropout:** [0.0, 0.5] (regularization technique to prevent overfitting)
+- **Weight Decay:** [0.0, 0.01] (L2 regularization to improve generalization)
+- **Optimizer:** [SGD, Adam, AdamW] (different optimization algorithms)
+- **Rotation Degrees:** [0.0, 90.0] (image rotation augmentation)
+- **Scale:** [0.2, 1.0] (image scaling augmentation)
+
+Training Parameters
+- **Dataset:** KITTI-MOTS 
+- **Epochs:** 30
+- **Batch Size:** 8
+- **Image Size:** 640x640
+- **Device:** GPU (CUDA)
+- **Early Stopping Patience:** 20 epochs
+- **Classes Trained:** 0 (Car), 2 (Pedestrian)
+- **IoU Threshold:** 0.5
+
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 25.
+
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
 
 ### Task G: Analyse the difference among the different object detector methods models
