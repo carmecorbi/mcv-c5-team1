@@ -127,6 +127,86 @@ Here are some example images from the sequence 0014 that show the output after r
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
+#### DeTR
+
+##### 1. Ground Truth Conversion
+
+Before evaluating the object detection models, we need to convert the KITTI-MOTS ground truth annotations into the same format used for storing inference results. This allows for a direct comparison between predictions and ground truth data.
+
+To achieve this, we use the script `convert_gt_for_detr.py`, which processes the original KITTI-MOTS annotations and converts them into the following format:
+
+```bash
+frame_id, object_id, class_id, x_min, y_min, x_max, y_max, confidence_score
+```
+
+where:
+- **frame_id**: Image index in the sequence.
+- **object_id**: Unique object identifier.
+- **class_id**: Mapped class ID (1 = person, 3 = car following COCO format).
+- **x_min, y_min, x_max, y_max**: Bounding box coordinates in pixels.
+- **confidence_score**: Set to 1.0 for ground truth annotations.
+
+###### Run Ground Truth Conversion
+Execute the script with:
+
+```bash
+python3 convert_gt_for_detr.py
+```
+
+This will generate ground truth annotation files in:
+
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/config/gt_annotations
+```
+
+##### 2. Evaluation Using COCO Metrics
+
+Once the ground truth annotations are converted, we evaluate the performance of the object detection models using COCO metrics (AP, mAP, precision, recall, etc.).
+
+We use the script `detr_eval.py`, which:
+1. Loads the ground truth annotations and detection results.
+2. Converts them into COCO format.
+3. Evaluates the detection performance using `pycocotools`.
+4. Outputs the evaluation results.
+
+###### Run Evaluation
+Execute the script with:
+
+```bash
+python3 detr_eval.py
+```
+
+The script reads ground truth annotations from:
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/config/gt_annotations
+```
+and detection results from:
+```
+/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_txt
+```
+
+###### COCO Evaluation Output
+The script prints the following metrics:
+
+```batch
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.461
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.756
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.486
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.160
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.501
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.701
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.072
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.414
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.582
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.336
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.621
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.794
+```
+
+Where:
+- **AP** (Average Precision) is computed at different IoU thresholds (50%, 75%, etc.).
+- **AR** (Average Recall) is evaluated at different object scales (small, medium, large).
+
 #### YOLOv11n
 
 ##### Conversion Process
