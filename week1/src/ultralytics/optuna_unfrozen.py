@@ -7,7 +7,7 @@ def objective(trial):
     # Parameters to optimize
     mixup = trial.suggest_float('mixup', 0.0, 0.5)  # MixUp between 0.0 and 0.3
     dropout = trial.suggest_float('dropout', 0.0, 0.5)  # Dropout between 0 and 0.5
-    weight_decay = trial.suggest_float('weight_decay', 0.0, 0.001)  # Weight decay between 0 and 0.001
+    weight_decay = trial.suggest_float('weight_decay', 0.0, 0.01)  # Weight decay between 0 and 0.001
     optimizer = trial.suggest_categorical('optimizer', ['SGD', 'Adam', 'AdamW'])  # Optimizer choice
     degrees = trial.suggest_float('degrees', 0.0, 90.0)  # Rotation degrees
     scale = trial.suggest_float('scale', 0.2, 1.0)  # Scaling factor
@@ -24,13 +24,13 @@ def objective(trial):
         imgsz=640,
         device='cuda',
         patience=20,  # Early stopping patience
-        project='optuna_finetune',  # Project name
+        project='optuna_finetune_unfrozen',  # Project name
         freeze=0,
         classes=[0, 2],
         mixup=mixup,
         dropout=dropout,
         weight_decay=weight_decay,
-        optimizer=optimizer,
+        optimizer='auto',
         degrees=degrees,
         scale=scale,
         # Other augmentations like 'hsv', 'flip', etc., can be fixed or optimized as well
@@ -52,7 +52,7 @@ def objective(trial):
 study = optuna.create_study(direction='maximize')  # Maximize the mAP
 
 # Optimize the objective
-study.optimize(objective, n_trials=10)  # Run 10 trials to explore parameter combinations
+study.optimize(objective, n_trials=25)  # Run 10 trials to explore parameter combinations
 
 # Final results
 print("Best trial:", study.best_trial)

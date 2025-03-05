@@ -12,10 +12,15 @@ results = model.train(
         imgsz=640,
         device='cuda',
         patience=20,  # Early stopping patience,
-        project='finetune_unfrozen',
+        project='finetune_unfrozen_epoch70',
         freeze=0,
         classes=[0,2],
-        mixup=0.2
+        mixup=0.39,
+        optimizer='SGD',
+        dropout=0.32,
+        weight_decay=9.37e-5,
+        degrees=0.32,
+        scale=0.88
     )
 
 end_time = time.time()

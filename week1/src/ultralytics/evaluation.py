@@ -16,7 +16,7 @@ DATASET_PATH = "/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/data/data.yaml
 # Run validation
 results = model.val(data=DATASET_PATH)
 
-
+print(results.box)
 # Print specific metrics
 print("Class indices with average precision:", results.ap_class_index)
 print("Average precision for all classes:", results.box.all_ap)
