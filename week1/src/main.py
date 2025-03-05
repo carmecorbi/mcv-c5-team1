@@ -31,7 +31,8 @@ if __name__ == '__main__':
     
     if task == "train":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
-        model.train_model(data_dir=data_dir, output_dir=output_dir)
+        results = model.train_model(data_dir=data_dir, output_dir=output_dir)
+        print("Results: ", results)
     elif task == "eval":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
         print(model.evaluate_model(data_dir=data_dir, output_dir=output_dir))
