@@ -203,9 +203,14 @@ The script prints the following metrics:
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.794
 ```
 
-Where:
-- **AP** (Average Precision) is computed at different IoU thresholds (50%, 75%, etc.).
-- **AR** (Average Recall) is evaluated at different object scales (small, medium, large).
+**Where:**  
+- **AP (Average Precision)** evaluates detection performance by measuring precision across different IoU (Intersection over Union) thresholds:  
+  - AP is computed at multiple IoU thresholds (0.50:0.95), including specific values like **0.50 (PASCAL VOC metric)** and **0.75 (stricter matching criteria)**.  
+  - It is also computed separately for objects of different sizes: **small, medium, and large**.  
+
+- **AR (Average Recall)** measures the ability to detect objects correctly at different recall levels:  
+  - AR is evaluated by limiting the maximum number of detections per image (**1, 10, or 100 detections**).  
+  - It is also analyzed based on object size (**small, medium, large**) to assess performance across different scales.  
 
 #### YOLOv11n
 
