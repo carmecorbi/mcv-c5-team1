@@ -304,16 +304,25 @@ We conducted hyperparameter optimization considering the following parameters:
 
 Training Parameters
 - **Dataset:** KITTI-MOTS 
-- **Epochs:** 30
+- **Epochs:** 50
 - **Batch Size:** 8
 - **Image Size:** 640x640
 - **Device:** GPU (CUDA)
 - **Early Stopping Patience:** 20 epochs
 - **Classes Trained:** 0 (Car), 2 (Pedestrian)
-- **IoU Threshold:** 0.5
 
 Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 25.
 
+
+For the first strategy, run the following Python script:
+```bash
+python ultralytics/optuna_unfrozen.py
+```
+
+For the second strategy, run the following Python script:
+```bash
+python ultralytics/optuna_backbone.py
+```
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
 
 ### Task G: Analyse the difference among the different object detector methods models
