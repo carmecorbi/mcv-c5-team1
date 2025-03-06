@@ -1,17 +1,21 @@
 import optuna
 from ultralytics import YOLO
 import time
-
+from ultralytics.data.augment import Albumentations
+import albumentations as A
 # Optimization function to train the model
+
+
+
+    
+    
 def objective(trial):
     # Parameters to optimize
     mixup = trial.suggest_float('mixup', 0.0, 0.5)  # MixUp between 0.0 and 0.3
     dropout = trial.suggest_float('dropout', 0.0, 0.5)  # Dropout between 0 and 0.5
     weight_decay = trial.suggest_float('weight_decay', 0.0, 0.01)  # Weight decay between 0 and 0.001
     optimizer = trial.suggest_categorical('optimizer', ['SGD', 'Adam', 'AdamW'])  # Optimizer choice
-    degrees = trial.suggest_float('degrees', 0.0, 90.0)  # Rotation degrees
-    scale = trial.suggest_float('scale', 0.2, 1.0)  # Scaling factor
-
+    augmentations = Albumentations(p=0.5)
     # Initialize model
     model = YOLO('/ghome/c3mcv02/mcv-c5-team1/week1/checkpoints/yolo/yolo11n.pt')
 
@@ -31,10 +35,7 @@ def objective(trial):
         dropout=dropout,
         weight_decay=weight_decay,
         optimizer='auto',
-        degrees=degrees,
-        scale=scale,
-        # Other augmentations like 'hsv', 'flip', etc., can be fixed or optimized as well
-        iou=0.5,  # mAP IoU=0.5
+        augment=True,
         verbose=False  # Set to True for more training details
     )
 

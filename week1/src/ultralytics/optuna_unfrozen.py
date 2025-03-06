@@ -19,12 +19,12 @@ def objective(trial):
     start_time = time.time()
     results = model.train(
         data='/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/data/data.yaml',
-        epochs=30,
+        epochs=50,
         batch=8,
         imgsz=640,
         device='cuda',
         patience=20,  # Early stopping patience
-        project='optuna_finetune_unfrozen',  # Project name
+        project='optuna_finetune_unfrozen_last',  # Project name
         freeze=0,
         classes=[0, 2],
         mixup=mixup,
