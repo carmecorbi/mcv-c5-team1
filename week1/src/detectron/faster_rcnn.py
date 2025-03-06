@@ -7,6 +7,8 @@ from detectron2.engine import DefaultPredictor, DefaultTrainer
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
+
+from week1.src.detectron.trainer import CustomTrainer
 from week1.src.detectron.dataset import CustomKittiMotsDataset
 
 
@@ -147,7 +149,7 @@ class FasterRCNN:
         print("Running inference on the test dataset...")
         return inference_on_dataset(predictor.model, val_loader, evaluator)
 
-    def train_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, output_dir: str = "./output/train") -> dict:
+    def train_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, output_dir: str = "./output/train", **kwargs) -> dict:
         """Train a model to a given dataset.
 
         Args:
@@ -155,32 +157,55 @@ class FasterRCNN:
             dataset_name (str, optional): Dataset name. Defaults to "kitti-mots".
             num_classes (int, optional): Number of classes in the dataset. Defaults to 2.
             output_dir (str, optional): Output directory for the training process. Defaults to "./output/train".
+            **kwargs: Additional arguments for the training process.
 
         Returns:
             dict: Results of the training process.
         """
-        # Register dataset
-        DatasetCatalog.register(dataset_name + "_train", lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split="train"))
-        DatasetCatalog.register(dataset_name + "_val", lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split="val"))
-        MetadataCatalog.get(dataset_name + "_train").set(thing_classes=["0", "1"]) 
-        MetadataCatalog.get(dataset_name + "_val").set(thing_classes=["0", "1"]) 
+        # Register dataset and metadata for training and validation
+        for split in ["train", "val"]:
+            DatasetCatalog.register(dataset_name + "_" + split, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split=split))
+            MetadataCatalog.get(dataset_name + "_" + split).set(thing_classes=["0", "1"])
         
-        # Set the number of classes
+        # Model parameters
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
+        self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = kwargs.get("batch_size_per_image", 128) # 128 is faster and enough for this dataset
         
-        # TRAINING SPECIFIC CONFIGURATION
+        # Datasets parameters (train and test)
         self.cfg.DATASETS.TRAIN = (dataset_name + "_train",)
         self.cfg.DATASETS.TEST = (dataset_name + "_val",)
 
-        # Solver parameters
-        self.cfg.SOLVER.IMS_PER_BATCH = 4  # Batch size (adjust based on GPU memory)
-        self.cfg.SOLVER.BASE_LR = 0.00025  # Learning rate
-        self.cfg.SOLVER.MAX_ITER = 5000    # Maximum iterations
-        self.cfg.SOLVER.STEPS = (3000, 4500)  # Learning rate decay steps
-        self.cfg.SOLVER.GAMMA = 0.1        # Learning rate decay factor
-        self.cfg.SOLVER.CHECKPOINT_PERIOD = 1000  # Save checkpoint every 1000 iterations
-        self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128  # Faster, and good enough for COCO pre-trained models
-        self.cfg.TEST.EVAL_PERIOD = 500
+        # Input parameters (data augmentation)
+        self.cfg.INPUT.MIN_SIZE_TRAIN = kwargs.get("min_size_train", (800,))
+        self.cfg.INPUT.MAX_SIZE_TRAIN = kwargs.get("max_size_train", 1333)
+        self.cfg.INPUT.MIN_SIZE_TEST = kwargs.get("min_size_test", 800)
+        self.cfg.INPUT.MAX_SIZE_TEST = kwargs.get("max_size_test", 1333)
+        assert kwargs.get("random_flip", "horizontal") in ["horizontal", "vertical", "none"], "Random flip must be horizontal, vertical or none"
+        self.cfg.INPUT.RANDOM_FLIP = kwargs.get("random_flip", "horizontal")
+        self.cfg.INPUT.CROP.ENABLED = kwargs.get("crop_enabled", False)
+        assert kwargs.get("crop_type", "relative_range") in ["relative_range", "relative", "absolute", "absolute_range"], "Crop type must be relative_range, relative or absolute"
+        self.cfg.INPUT.CROP.TYPE = kwargs.get("crop_type", "relative_range")
+        self.cfg.INPUT.CROP.SIZE = kwargs.get("crop_size", [0.9, 0.9])
+
+        # Solver parameters (optimizer)
+        lr_scheduler = kwargs.get("lr_scheduler", "WarmupMultiStepLR")
+        assert lr_scheduler in ["WarmupMultiStepLR", "WarmupCosineLR"], "LR scheduler must be WarmupMultiStepLR or WarmupCosineLR"
+        self.cfg.SOLVER.LR_SCHEDULER_NAME = lr_scheduler # Learning rate scheduler
+        self.cfg.SOLVER.IMS_PER_BATCH = kwargs.get("batch_size", 8) # Batch size
+        self.cfg.SOLVER.BASE_LR = kwargs.get("base_lr", 0.001)  # Learning rate
+        self.cfg.SOLVER.MOMENTUM = kwargs.get("momentum", 0.9)  # Momentum
+        self.cfg.SOLVER.NESTEROV = kwargs.get("nesterov", False)  # Nesterov momentum
+        self.cfg.SOLVER.WEIGHT_DECAY = kwargs.get("weight_decay", 0.0001) # Weight decay
+        self.cfg.SOLVER.GAMMA = kwargs.get("gamma", 0.1) # Learning rate decay factor
+        self.cfg.SOLVER.CLIP_GRADIENTS.ENABLED = kwargs.get("clip_gradients", False) # Clip gradients
+        self.cfg.SOLVER.STEPS = kwargs.get("steps", (1000, 2000)) # Steps for learning rate decay
+
+        # Fixed parameters (do not change)
+        self.cfg.SOLVER.MAX_ITER = kwargs.get("max_iter", 3000)
+        self.cfg.SOLVER.CHECKPOINT_PERIOD = kwargs.get("checkpoint_period", 1000)
+
+        # Test parameters (evaluation)
+        self.cfg.TEST.EVAL_PERIOD = kwargs.get("eval_period", 1000)
 
         # Output directory for training logs and checkpoints
         self.cfg.OUTPUT_DIR = output_dir
@@ -188,12 +213,6 @@ class FasterRCNN:
 
         # Create trainer and start training
         print("Starting training...")
-        class CustomTrainer(DefaultTrainer):
-            @classmethod
-            def build_evaluator(cls, cfg, dataset_name, output_folder=None):
-                if output_folder is None:
-                    output_folder = os.path.join(cfg.OUTPUT_DIR, "inference")
-                return COCOEvaluator(dataset_name, cfg, False, output_dir=output_folder)
         trainer = CustomTrainer(self.cfg)
         trainer.resume_or_load(resume=False)
         return trainer.train()
