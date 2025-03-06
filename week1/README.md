@@ -323,6 +323,17 @@ For the second strategy, run the following Python script:
 ```bash
 python ultralytics/optuna_backbone.py
 ```
+
+**Fine-tuning Results**:
+
+| Finetune Strategy    | Optimizer | Regularization                    | Augmentation                                  | mAP@0.5 | mAP@0.75 | AP (class)                           |
+|----------------------|-----------|------------------------------------|-----------------------------------------------|---------|----------|--------------------------------------|
+| **Backbone Frozen**   | AdamW     | D(0.49), L2(7e-4)                 | MP(0.19), Degrees(2.49), Scale(0.96)          | 0.76    | 0.55     | 0.40 (pedestrian), 0.6 (car)         |
+| **Fully Unfrozen**    | AdamW     | D(0.27), L2(3e-3)                 | MP(0.42), Degrees(1.18), Scale(0.65)          | 0.75    | 0.59     | 0.41 (pedestrian), 0.65 (car)        |
+
+
+
+
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
 
 ### Task G: Analyse the difference among the different object detector methods models
