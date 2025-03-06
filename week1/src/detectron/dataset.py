@@ -1,8 +1,13 @@
+import numpy as np
+import os
+import cv2
+import torch
+
 from typing import Literal
 from PIL import Image
 from detectron2.structures import BoxMode
+from detectron2.data import DatasetMapper, detection_utils
 from pycocotools import mask as mask_utils
-import os
 
 
 class CustomKittiMotsDataset:
@@ -94,7 +99,7 @@ class CustomKittiMotsDataset:
             for line in frame_annotations:
                 parts = line.strip().split()
                 if len(parts) >= 5:
-                    frame_id_ann = int(parts[0])
+                    # frame_id_ann = int(parts[0])
                     instance_full_id = int(parts[1])
                     
                     # Extract class ID and instance ID
@@ -132,3 +137,47 @@ class CustomKittiMotsDataset:
         
         return record
     
+
+class AlbumentationsMapper(DatasetMapper):
+    def __init__(self, cfg, is_train=True, augmentations=None):
+        super().__init__(cfg, is_train)
+        self.augmentations = augmentations
+
+    def __call__(self, dataset_dict):
+        dataset_dict = dataset_dict.copy()
+        image = cv2.imread(dataset_dict["file_name"]) 
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        if self.is_train and "annotations" in dataset_dict:
+            annotations = dataset_dict.pop("annotations")
+            bboxes = [obj["bbox"] for obj in annotations]
+            category_ids = [obj["category_id"] for obj in annotations]
+            
+            transformed = self.augmentations(image=image, bboxes=bboxes, category_ids=category_ids)
+            image = transformed["image"]
+            
+            # Update the bounding boxes with transformed coordinates
+            for i, annotation in enumerate(annotations):
+                if i < len(transformed["bboxes"]):
+                    annotation["bbox"] = transformed["bboxes"][i]
+            
+            # Convert to Instances format for Detectron2
+            annos = []
+            for annotation in annotations:
+                obj = {
+                    "bbox": annotation["bbox"],
+                    "bbox_mode": annotation.get("bbox_mode", BoxMode.XYWH_ABS),
+                    "category_id": annotation["category_id"],
+                    "iscrowd": annotation.get("iscrowd", 0),
+                }
+                annos.append(obj)
+            
+            # Create Instances object with the correct image size
+            instances = detection_utils.annotations_to_instances(annos, image.shape[:2])
+            dataset_dict["instances"] = instances
+        
+        # Convert to CHW format
+        image = image.transpose(2, 0, 1)
+        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image))
+        
+        return dataset_dict

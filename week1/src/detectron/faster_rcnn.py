@@ -3,7 +3,7 @@ import os
 
 from detectron2 import model_zoo
 from detectron2.data import DatasetCatalog, MetadataCatalog, build_detection_test_loader
-from detectron2.engine import DefaultPredictor, DefaultTrainer
+from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
 from detectron2.utils.visualizer import Visualizer
 from detectron2.evaluation import COCOEvaluator, inference_on_dataset
