@@ -7,11 +7,21 @@ from detectron2.data import build_detection_train_loader
 from week1.src.detectron.dataset import AlbumentationsMapper
 
 
-def get_augmentations():
-    return A.Compose([
-        # A.RandomCrop(width=450, height=450),
+def get_augmentations() -> A.Compose:
+	"""Get the augmentations to apply.
+
+	Returns:
+		A.Compose: Compose of augmentations from albumentations.
+	"""
+	return A.Compose([
+        #A.RandomCrop(width=950, height=300),
+        A.OneOf([
+			A.RandomCrop(width=800, height=290),
+			A.RandomCrop(width=960, height=290),
+			A.RandomCrop(width=640, height=240)
+		]),
         A.HorizontalFlip(p=0.5),
-        # A.ShiftScaleRotate(p=0.25),
+        A.ShiftScaleRotate(p=0.25),
         A.RandomBrightnessContrast(p=0.3),
     ], bbox_params=A.BboxParams(format='pascal_voc', min_area=100, min_visibility=0.1, label_fields=['category_ids']))
 

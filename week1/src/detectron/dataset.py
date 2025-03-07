@@ -140,6 +140,13 @@ class CustomKittiMotsDataset:
 
 class AlbumentationsMapper(DatasetMapper):
     def __init__(self, cfg, is_train=True, augmentations=None):
+        """Initializes albumentations mapper.
+
+        Args:
+            cfg (Any): Configuration for the model.
+            is_train (bool, optional): Whether is train dataset. Defaults to True.
+            augmentations (Any, optional): Augmentations from albumentations to apply. Defaults to None.
+        """
         super().__init__(cfg, is_train)
         self.augmentations = augmentations
 

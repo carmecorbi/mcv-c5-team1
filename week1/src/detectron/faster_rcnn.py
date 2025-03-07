@@ -176,16 +176,16 @@ class FasterRCNN:
         self.cfg.DATASETS.TEST = (dataset_name + "_val",)
 
         # Input parameters (data augmentation)
-        self.cfg.INPUT.MIN_SIZE_TRAIN = kwargs.get("min_size_train", (800,))
-        self.cfg.INPUT.MAX_SIZE_TRAIN = kwargs.get("max_size_train", 1333)
-        self.cfg.INPUT.MIN_SIZE_TEST = kwargs.get("min_size_test", 800)
-        self.cfg.INPUT.MAX_SIZE_TEST = kwargs.get("max_size_test", 1333)
-        assert kwargs.get("random_flip", "horizontal") in ["horizontal", "vertical", "none"], "Random flip must be horizontal, vertical or none"
-        self.cfg.INPUT.RANDOM_FLIP = kwargs.get("random_flip", "horizontal")
-        self.cfg.INPUT.CROP.ENABLED = kwargs.get("crop_enabled", False)
-        assert kwargs.get("crop_type", "relative_range") in ["relative_range", "relative", "absolute", "absolute_range"], "Crop type must be relative_range, relative or absolute"
-        self.cfg.INPUT.CROP.TYPE = kwargs.get("crop_type", "relative_range")
-        self.cfg.INPUT.CROP.SIZE = kwargs.get("crop_size", [0.9, 0.9])
+        #self.cfg.INPUT.MIN_SIZE_TRAIN = kwargs.get("min_size_train", (800,))
+        #self.cfg.INPUT.MAX_SIZE_TRAIN = kwargs.get("max_size_train", 1333)
+        #self.cfg.INPUT.MIN_SIZE_TEST = kwargs.get("min_size_test", 800)
+        #self.cfg.INPUT.MAX_SIZE_TEST = kwargs.get("max_size_test", 1333)
+        #assert kwargs.get("random_flip", "horizontal") in ["horizontal", "vertical", "none"], "Random flip must be horizontal, vertical or none"
+        #self.cfg.INPUT.RANDOM_FLIP = kwargs.get("random_flip", "horizontal")
+        #self.cfg.INPUT.CROP.ENABLED = kwargs.get("crop_enabled", False)
+        #assert kwargs.get("crop_type", "relative_range") in ["relative_range", "relative", "absolute", "absolute_range"], "Crop type must be relative_range, relative or absolute"
+        #self.cfg.INPUT.CROP.TYPE = kwargs.get("crop_type", "relative_range")
+        #self.cfg.INPUT.CROP.SIZE = kwargs.get("crop_size", [0.9, 0.9])
 
         # Solver parameters (optimizer)
         lr_scheduler = kwargs.get("lr_scheduler", "WarmupMultiStepLR")
@@ -215,4 +215,22 @@ class FasterRCNN:
         print("Starting training...")
         trainer = CustomTrainer(self.cfg)
         trainer.resume_or_load(resume=False)
-        return trainer.train()
+        trainer.train()
+        
+        print("-" * 50)
+        print("Starting final evaluation on validation")
+        print("Creating predictor...")
+        eval_cfg = self.cfg.clone()
+        eval_cfg.MODEL.WEIGHTS = os.path.join(self.cfg.OUTPUT_DIR, "model_final.pth")
+        predictor = DefaultPredictor(eval_cfg)
+        
+        # Evaluate on the test dataset using COCO evaluator
+        print("Performing evaluation...")
+        validation_output_dir = os.path.join(output_dir, "final_validation")
+        os.makedirs(validation_output_dir, exist_ok=True)
+        evaluator = COCOEvaluator(dataset_name + "_val", eval_cfg, False, output_dir=validation_output_dir)
+        val_loader = build_detection_test_loader(eval_cfg, dataset_name + "_val")
+        
+        # Run inference and return results
+        print("Running inference on the test dataset...")
+        return inference_on_dataset(predictor.model, val_loader, evaluator)
