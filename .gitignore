@@ -7,6 +7,9 @@ config/
 results/
 week1/src/detectron/output
 week1/src/huggingface/results_inference
+week1/src/domain_shift/DEArt
+week1/src/domain_shift/DEArt_split
+week1/src/domain_shift/IconArt
 
 # Log files
 *.out

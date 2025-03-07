@@ -217,6 +217,8 @@ class FasterRCNN:
         # Create trainer and start training
         print("Starting training...")
         trainer = CustomTrainer(self.cfg)
+        if kwargs.get("freeze_backbone", False):
+            self.__freeze_params(trainer, ["backbone"])
         trainer.resume_or_load(resume=False)
         trainer.train()
         
@@ -237,3 +239,16 @@ class FasterRCNN:
         # Run inference and return results
         print("Running inference on the test dataset...")
         return inference_on_dataset(predictor.model, val_loader, evaluator)
+    
+    def __freeze_params(self, trainer: CustomTrainer, layers_to_freeze: list[str] = ["backbone"]):
+        """Freeze parameters of the model to train.
+
+        Args:
+            trainer (CustomTrainer): Trainer in which the model layers must be frozen.
+            layers_to_freeze (list[str], optional): List of layers to frozen. Defaults to ["backbone"].
+        """
+        for k, v in trainer.model.named_parameters():
+            v.requires_grad = True
+            if any(x in k for x in layers_to_freeze):
+                print(f"Freezing layer: {k}")
+                v.requires_grad = False
