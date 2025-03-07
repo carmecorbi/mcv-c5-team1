@@ -163,9 +163,12 @@ class FasterRCNN:
             dict: Results of the training process.
         """
         # Register dataset and metadata for training and validation
-        for split in ["train", "val"]:
-            DatasetCatalog.register(dataset_name + "_" + split, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split=split))
-            MetadataCatalog.get(dataset_name + "_" + split).set(thing_classes=["0", "1"])
+        try:
+            for split in ["train", "val"]:
+                DatasetCatalog.register(dataset_name + "_" + split, lambda: CustomKittiMotsDataset(data_dir, use_coco_ids=False, split=split))
+                MetadataCatalog.get(dataset_name + "_" + split).set(thing_classes=["0", "1"])
+        except AssertionError:
+            print("Dataset already registered, continuing...")
         
         # Model parameters
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
