@@ -330,6 +330,28 @@ python ultralytics/optuna_backbone.py
 | **Backbone Frozen**   | SGD     | D(0.14), L2(5.7e-3)                 | MP(0.35), Degrees(7.6), Scale(0.54)          | 0.84    | 0.69     | 0.5 (pedestrian), 0.71 (car)         |
 | **Fully Unfrozen**    | AdamW     | D(0.17), L2(4e-4)                 | MP(5e-2), Degrees(18.53), Scale(0.82)          | 0.8    | 0.67     | 0.45 (pedestrian), 0.72 (car)        |
 
+#### DeTR
+
+##### Strategy A: Fully unfrozen
+
+```bash
+python3 detr_train.py
+```
+
+```bash
+python3 inference_detr_txt_files_fine_tuning.py
+```
+
+```bash
+python3 detr_eval_fine_tuning.py --> FALTA
+```
+
+##### Strategy B: Backbone frozen
+
+```bash
+python3 detr_train_backbone_frozen.py
+```
+
 
 
 
