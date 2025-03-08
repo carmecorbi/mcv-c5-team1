@@ -9,7 +9,7 @@ args = parser.parse_args()
 
 # Load the model
 model = YOLO(args.m) 
-DATASET_PATH = "/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/data/data.yaml"
+DATASET_PATH = "/ghome/c5mcv01/mcv-c5-team1/week1/src/ultralytics/data/data.yaml"
 
 
 # Run validation

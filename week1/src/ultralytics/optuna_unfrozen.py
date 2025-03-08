@@ -11,20 +11,21 @@ def objective(trial):
     optimizer = trial.suggest_categorical('optimizer', ['SGD', 'Adam', 'AdamW'])  # Optimizer choice
     degrees = trial.suggest_float('degrees', 0.0, 90.0)  # Rotation degrees
     scale = trial.suggest_float('scale', 0.2, 1.0)  # Scaling factor
+    batch = trial.suggest_categorical('batch', [4, 8, 16, 32]) 
 
     # Initialize model
-    model = YOLO('/ghome/c3mcv02/mcv-c5-team1/week1/checkpoints/yolo/yolo11n.pt')
+    model = YOLO('yolo11n.pt')
 
     # Training parameters
     start_time = time.time()
     results = model.train(
-        data='/ghome/c3mcv02/mcv-c5-team1/week1/src/ultralytics/data/data.yaml',
+        data='/ghome/c5mcv01/mcv-c5-team1/week1/src/ultralytics/data/data.yaml',
         epochs=50,
-        batch=8,
-        imgsz=640,
+        batch=batch,
+        imgsz=(1242,375),
         device='cuda',
         patience=20,  # Early stopping patience
-        project='optuna_finetune_unfrozen_last',  # Project name
+        project='optuna_finetune_unfrozen',  # Project name
         freeze=0,
         classes=[0, 2],
         mixup=mixup,
@@ -50,7 +51,7 @@ def objective(trial):
 study = optuna.create_study(direction='maximize')  # Maximize the mAP
 
 # Optimize the objective
-study.optimize(objective, n_trials=25)  # Run 10 trials to explore parameter combinations
+study.optimize(objective, n_trials=20)  
 
 # Final results
 print("Best trial:", study.best_trial)
