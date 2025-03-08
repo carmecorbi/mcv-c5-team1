@@ -297,21 +297,20 @@ The goal is to optimize the model's performance by tuning hyperparameters using 
 We conducted hyperparameter optimization considering the following parameters:
 - **Mixup:** [0.0, 0.5] (data augmentation technique for blending images)
 - **Dropout:** [0.0, 0.5] (regularization technique to prevent overfitting)
-- **Weight Decay:** [0.0, 0.01] (L2 regularization to improve generalization)
+- **Weight Decay:** [0.0, 0.001] (L2 regularization to improve generalization)
 - **Optimizer:** [SGD, Adam, AdamW] (different optimization algorithms)
 - **Rotation Degrees:** [0.0, 90.0] (image rotation augmentation)
 - **Scale:** [0.2, 1.0] (image scaling augmentation)
+- **Batch Size:** [4,8,16,32]
 
 Training Parameters
 - **Dataset:** KITTI-MOTS 
 - **Epochs:** 50
-- **Batch Size:** 8
-- **Image Size:** 640x640
 - **Device:** GPU (CUDA)
-- **Early Stopping Patience:** 20 epochs
+- **Early Stopping Patience:** 50 epochs
 - **Classes Trained:** 0 (Car), 2 (Pedestrian)
 
-Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 25.
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 20.
 
 
 For the first strategy, run the following Python script:
@@ -328,8 +327,8 @@ python ultralytics/optuna_backbone.py
 
 | Finetune Strategy    | Optimizer | Regularization                    | Augmentation                                  | mAP@0.5 | mAP@0.75 | AP (class)                           |
 |----------------------|-----------|------------------------------------|-----------------------------------------------|---------|----------|--------------------------------------|
-| **Backbone Frozen**   | AdamW     | D(0.49), L2(7e-4)                 | MP(0.19), Degrees(2.49), Scale(0.96)          | 0.76    | 0.55     | 0.40 (pedestrian), 0.6 (car)         |
-| **Fully Unfrozen**    | AdamW     | D(0.27), L2(3e-3)                 | MP(0.42), Degrees(1.18), Scale(0.65)          | 0.75    | 0.59     | 0.41 (pedestrian), 0.65 (car)        |
+| **Backbone Frozen**   | SGD     | D(0.14), L2(5.7e-3)                 | MP(0.35), Degrees(7.6), Scale(0.54)          | 0.84    | 0.69     | 0.5 (pedestrian), 0.71 (car)         |
+| **Fully Unfrozen**    | AdamW     | D(0.17), L2(4e-4)                 | MP(5e-2), Degrees(18.53), Scale(0.82)          | 0.8    | 0.67     | 0.45 (pedestrian), 0.72 (car)        |
 
 
 
