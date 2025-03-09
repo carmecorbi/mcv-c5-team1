@@ -34,5 +34,6 @@ class CustomTrainer(DefaultTrainer):
 	
 	@classmethod
 	def build_train_loader(cls, cfg):
-		mapper = AlbumentationsMapper(cfg, is_train=True, augmentations=get_augmentations())
-		return build_detection_train_loader(cfg, mapper=mapper)
+		#mapper = AlbumentationsMapper(cfg, is_train=True, augmentations=get_augmentations())
+		#return build_detection_train_loader(cfg, mapper=mapper)
+		return build_detection_train_loader(cfg)

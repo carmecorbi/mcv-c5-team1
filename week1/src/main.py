@@ -31,7 +31,24 @@ if __name__ == '__main__':
     
     if task == "train":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
-        results = model.train_model(data_dir=data_dir, output_dir=output_dir)
+        hyperparams = {
+            # Model hyperparameters
+            "batch_size_per_image": 256,
+            "batch_size": 8,
+            
+            # Learning rate and scheduler
+            "base_lr": 7.7e-3,
+            "lr_scheduler": "WarmupCosineLR",
+            "weight_decay": 1.2e-5,
+            
+            # Whether to clip gradients or not
+            "clip_gradients": False,
+            
+            # Wether to freeze or not the backbone
+            "freeze_backbone": False
+        }
+        
+        results = model.train_model(data_dir=data_dir, output_dir=output_dir, **hyperparams)
         print("Results: ", results)
     elif task == "eval":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
