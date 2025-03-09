@@ -14,7 +14,6 @@ from trainer import CustomTrainer
 import numpy as np
 import cv2
 import os
-import argparse
 
 
 class FasterRCNN:
@@ -100,15 +99,52 @@ class FasterRCNN:
         out = v.draw_instance_predictions(predictions["instances"].to("cpu"))
         return out.get_image()[:, :, ::-1]
     
+    def evaluate_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, output_dir: str = "./output/eval") -> dict:
+        """Evaluates the model into a custom dataset.
+
+        Args:
+            data_dir (str): Dataset directory.
+            dataset_name (str, optional): Dataset name. Defaults to "kitti-mots".
+            num_classes (int, optional): Number of classes in the dataset. Defaults to 2.
+            output_dir (str, optional): Output directory for the evaluation. Defaults to "./output/eval".
+
+        Returns:
+            dict: Inference results
+        """
+        # Register dataset
+        DatasetCatalog.register(dataset_name, lambda: get_YOLOData_dicts(dataset_name+"/valid"))
+        
+        if not self.is_coco:
+            print("Evaluating with custom class IDs...")
+            MetadataCatalog.get(dataset_name).set(thing_classes=['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray'])
+            self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
+        else:
+            print("!!!Evaluating with COCO class IDs...")
+            #coco_classes = [""] * 81
+            #coco_classes[0] = "person"
+            #coco_classes[2] = "car"
+            #MetadataCatalog.get(dataset_name).set(thing_classes=coco_classes)
+        
+        # Create a predictor for inference
+        print("Creating predictor...")
+        predictor = DefaultPredictor(self.cfg)
+        
+        # Evaluate on the test dataset using COCO evaluator
+        print("Performing evaluation...")
+        evaluator = COCOEvaluator(dataset_name, self.cfg, False, output_dir=output_dir)
+        val_loader = build_detection_test_loader(self.cfg, dataset_name)
+        
+        # Run inference and return results
+        print("Running inference on the test dataset...")
+        return inference_on_dataset(predictor.model, val_loader, evaluator)
     
-    def train_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, class_labels: str = "wheat_head", output_dir: str = "./output/train", **kwargs) -> dict:
+    def train_model(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, output_dir: str = "./output/train", **kwargs) -> dict:
         """Train a model to a given dataset.
 
         Args:
             data_dir (str): Dataset directory.
             dataset_name (str, optional): Dataset name. Defaults to "kitti-mots".
             num_classes (int, optional): Number of classes in the dataset. Defaults to 2.
-            class_labels (list of str): Labels of the possible classes. Deafults to "wheat_head"
             output_dir (str, optional): Output directory for the training process. Defaults to "./output/train".
 
         Returns:
@@ -118,10 +154,14 @@ class FasterRCNN:
        
         try:
             for split in ["train", "val"]:
-                DatasetCatalog.register(dataset_name + "_train", lambda: get_YOLOData_dicts(data_dir+"/train"))
-                DatasetCatalog.register(dataset_name + "_val", lambda: get_YOLOData_dicts(data_dir+"/valid"))
-                MetadataCatalog.get(dataset_name + "_train").set(thing_classes=class_labels) 
-                MetadataCatalog.get(dataset_name + "_val").set(thing_classes=class_labels) 
+                DatasetCatalog.register(dataset_name + "_train", lambda: get_YOLOData_dicts("aquarium-data-cots/train"))
+                DatasetCatalog.register(dataset_name + "_val", lambda: get_YOLOData_dicts("aquarium-data-cots/valid"))
+                #DatasetCatalog.register(dataset_name + "_test", lambda: get_YOLOData_dicts(dataset_name+"/test"))
+                #MetadataCatalog.get(dataset_name + "_train").set(thing_classes=['wheat_head']) 
+                #MetadataCatalog.get(dataset_name + "_val").set(thing_classes=['wheat_head']) 
+                #MetadataCatalog.get(dataset_name + "_test").set(thing_classes=['wheat_head']) 
+                MetadataCatalog.get(dataset_name + "_train").set(thing_classes=['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray']) 
+                MetadataCatalog.get(dataset_name + "_val").set(thing_classes=['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray']) 
         except AssertionError:
             print("Dataset already registered, continuing...")
         
@@ -145,66 +185,8 @@ class FasterRCNN:
         self.cfg.TEST.EVAL_PERIOD = 500
         self.cfg.SOLVER.CLIP_GRADIENTS.ENABLED = False
         
-        # Output directory for training logs and checkpoints
-        self.cfg.OUTPUT_DIR = output_dir
-        os.makedirs(self.cfg.OUTPUT_DIR, exist_ok=True)
-
-        # Create trainer and start training
-        
-        print("Starting training...")
-        trainer = CustomTrainer(self.cfg)
-        trainer.resume_or_load(resume=False)
-        trainer.train()
-        
-        print("-" * 50)
-        print("Starting final evaluation on validation")
-        print("Creating predictor...")
-        eval_cfg = self.cfg.clone()
-        eval_cfg.MODEL.WEIGHTS = os.path.join(self.cfg.OUTPUT_DIR, "model_final.pth")
-        predictor = DefaultPredictor(eval_cfg)
-        
-        # Evaluate on the test dataset using COCO evaluator
-        print("Performing evaluation...")
-        validation_output_dir = os.path.join(output_dir, "final_validation")
-        os.makedirs(validation_output_dir, exist_ok=True)
-        evaluator = COCOEvaluator(dataset_name + "_val", eval_cfg, False, output_dir=validation_output_dir)
-        val_loader = build_detection_test_loader(eval_cfg, dataset_name + "_val")
-        
-        # Run inference and return results
-        print("Running inference on the test dataset...")
-        return inference_on_dataset(predictor.model, val_loader, evaluator)
-    
-    def train_model_optuna(self, data_dir: str, dataset_name: str = "kitti-mots", num_classes: int = 2, class_labels: str = "wheat_head", output_dir: str = "./output/train", **kwargs) -> dict:
-        """Train a model to a given dataset.
-
-        Args:
-            data_dir (str): Dataset directory.
-            dataset_name (str, optional): Dataset name. Defaults to "kitti-mots".
-            num_classes (int, optional): Number of classes in the dataset. Defaults to 2.
-            class_labels (list of str): Labels of the possible classes. Deafults to "wheat_head".
-            output_dir (str, optional): Output directory for the training process. Defaults to "./output/train".
-
-        Returns:
-            dict: Results of the training process.
-        """
-        # Register dataset and metadata for training and validation
-        try:
-            for split in ["train", "val"]:
-                DatasetCatalog.register(dataset_name + "_train", lambda: get_YOLOData_dicts(data_dir+"/train"))
-                DatasetCatalog.register(dataset_name + "_val", lambda: get_YOLOData_dicts(data_dir+"/valid"))
-                MetadataCatalog.get(dataset_name + "_train").set(thing_classes=class_labels) 
-                MetadataCatalog.get(dataset_name + "_val").set(thing_classes=class_labels) 
-        except AssertionError:
-            print("Dataset already registered, continuing...")
-        
-
-        # Set the number of classes
-        self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
-        
-        # TRAINING SPECIFIC CONFIGURATION
-        self.cfg.DATASETS.TRAIN = (dataset_name + "_train",)
-        self.cfg.DATASETS.TEST = (dataset_name + "_val",)
-
+        ''' 
+        # Uncoment for optuna
         # Solver parameters (optimizer)
         lr_scheduler = kwargs.get("lr_scheduler", "WarmupMultiStepLR")
         assert lr_scheduler in ["WarmupMultiStepLR", "WarmupCosineLR"], "LR scheduler must be WarmupMultiStepLR or WarmupCosineLR"
@@ -224,12 +206,13 @@ class FasterRCNN:
 
         # Test parameters (evaluation)
         self.cfg.TEST.EVAL_PERIOD = kwargs.get("eval_period", 500)
-        
+        '''
         # Output directory for training logs and checkpoints
         self.cfg.OUTPUT_DIR = output_dir
         os.makedirs(self.cfg.OUTPUT_DIR, exist_ok=True)
 
         # Create trainer and start training
+        
         print("Starting training...")
         trainer = CustomTrainer(self.cfg)
         trainer.resume_or_load(resume=False)
@@ -248,7 +231,9 @@ class FasterRCNN:
         os.makedirs(validation_output_dir, exist_ok=True)
         evaluator = COCOEvaluator(dataset_name + "_val", eval_cfg, False, output_dir=validation_output_dir)
         val_loader = build_detection_test_loader(eval_cfg, dataset_name + "_val")
-
+        #evaluator = COCOEvaluator(dataset_name + "_test", eval_cfg, False, output_dir=validation_output_dir)
+        #val_loader = build_detection_test_loader(eval_cfg, dataset_name + "_train")
+        
         # Run inference and return results
         print("Running inference on the test dataset...")
         return inference_on_dataset(predictor.model, val_loader, evaluator)
@@ -256,64 +241,84 @@ class FasterRCNN:
         
     
     
-if __name__ == '__main__':
-    # Parse arguments
-    parser = argparse.ArgumentParser(description='Domain Shift')
-    parser.add_argument('-d', '--data_dir', help="Path to dataset", required=False)
-    parser.add_argument('-t', '--task', help="Task to do (infer, train)", required=True)
-    parser.add_argument('-dt', '--dataset', help="Dataset (Aquarium, GlobalWheatHead)", required=True)
-    parser.add_argument('-i', '--input_image', help="Input image to infer on (only for infer task)", type=str, required=False)
-    parser.add_argument('-c', '--config_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", help="Path to the model config yaml from model zoo.")
-    parser.add_argument('-w', '--weights_file', default="COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", help="Path to the weights file or model zoo config yaml.")
-    parser.add_argument('-s', '--score_threshold', type=float, default=0.5, help="Score threshold for predictions.")
-    parser.add_argument('-o', '--output_dir', help="Output directory for the model", default=None)
-    parser.add_argument('--num_workers', required=False, default=4, type=int, help="Number of workers to load dataset.")
-    parser.add_argument('--num_frozen_blocks', required=False, default=0, type=int, help="Number of backbone frozen blocks.")
-    args = parser.parse_args()
-    
-    # Get the arguments from CLI
-    data_dir = args.data_dir
-    dataset = args.dataset
-    config_file = args.config_file
-    weights_file = args.weights_file
-    score_threshold = args.score_threshold
-    num_workers = args.num_workers
-    num_frozen_layers = args.num_frozen_blocks
-    task = args.task
-    output_dir = args.output_dir
-    
-    # Get the model
-    model = FasterRCNN(config_file, weights_file, score_threshold, num_workers, num_frozen_layers)
+# Example usage
 
-    # Set the number of classes
-    if dataset == "Aquarium":
-        num_classes = 7
-        class_labels = ['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray']
-    elif dataset == "GlobalWheatHead":
-        num_classes = 1
-        class_labels = ["wheat_head"]
-    else:
-        raise ValueError("Unsupported dataset")
-
+# Main for Aquarium dataset
+if __name__ == "__main__":
     
+    task = "infer"
+
     if task == "train":
-        assert data_dir, "Data directory must be specified for train task (use -d <DATA_DIRECTORY>)"
-        results = model.train_model(data_dir=data_dir, dataset_name=dataset, num_classes=num_classes, class_labels=class_labels, output_dir=output_dir)
+        model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", num_frozen_layers=5)
+        print("Start Training")
+        results = model.train_model("/ghome/c5mcv01/mcv-c5-team1/data", dataset_name= "AquariumDataCots", num_classes=7, output_dir="./output/Aquarium/training/trainF5_opt5_2000iter")
         print("Results: ", results)
 
     elif task == 'infer':
-        assert args.input_image, "You should include an input image for infer task (use --input_image <PATH_TO_IMAGE>)"
-        input_image = args.input_image
+        model_weights = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/output/Aquarium/training/trainF5_opt5_2000iter/model_final.pth"
+        model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", model_weights, num_frozen_layers=5)
         
+        input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/aquarium-data-cots/test/images/IMG_2354_jpeg_jpg.rf.396e872c7fb0a95e911806986995ee7a.jpg"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/aquarium-data-cots/test/images/IMG_2544_jpeg_jpg.rf.03f51bb9e1c57fb9cd62f8cbdca14e90.jpg"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/aquarium-data-cots/test/images/IMG_2395_jpeg_jpg.rf.9f1503ad3b7a7c7938daed057cc4e9bc.jpg"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/aquarium-data-cots/test/images/IMG_2465_jpeg_jpg.rf.7e699ec1d2e373d93dac32cd02db9438.jpg"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/aquarium-data-cots/test/images/IMG_2496_jpeg_jpg.rf.3f91e7f18502074c89fa720a11926fab.jpg"
+        
+        output_dir = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/output_visualizations/Aquarium"
+
         # Get the image
         image = cv2.imread(input_image)
         print(f"Image shape: {image.shape}")
         
         # Get the predictions
-        predictions = model.run_inference(image, num_classes=num_classes)
-        visualized_image = model.visualize_predictions(image, predictions, class_names=class_labels)
+        predictions = model.run_inference(image, num_classes=7)
+        print(f"predictions: {predictions}")
+        visualized_image = model.visualize_predictions(image, predictions, class_names=['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray'])
         
         # Save image for processing
         print(f"Visualized image shape: {visualized_image.shape}")
-        cv2.imwrite(f"{output_dir}/visualized_image_finetuned.png", visualized_image)
+        cv2.imwrite(f"{output_dir}/INFER_F5_visualized_image_finetuned5.png", visualized_image)
 
+'''
+# Main for GlobalWheatHead2020 Dataset
+if __name__ == "__main__":
+    
+    task = "train"
+
+    if task == "train":
+        model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", "COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", num_frozen_layers=5)
+        print("Start Training")
+        results = model.train_model("/ghome/c5mcv01/mcv-c5-team1/data", dataset_name= "GlobalWheat", num_classes=1, output_dir="./output/GlobalWheat/training/ppt/trainF5_opt5_3000iter_v2")
+        print("Results: ", results)
+
+    elif task == "test":
+        model_weights = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/output/GlobalWheat/training/ppt/trainF0_opt0_3000iter/model_final.pth"
+        model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", model_weights, num_frozen_layers=0)
+        print("Start Testing F=0, optuna0")
+        results = model.train_model("/ghome/c5mcv01/mcv-c5-team1/data", dataset_name= "GlobalWheat", num_classes=1, output_dir="./output/GlobalWheat/training/ppt/trainF0_opt0_3000iter")
+        print("Results: ", results)
+
+    elif task == 'infer':
+        model_weights = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/output/GlobalWheat/training/ppt/trainF0_opt0_3000iter/model_final.pth"
+        model = FasterRCNN("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml", model_weights, num_frozen_layers=0)
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/GlobalWheat/test/images/063b1190-8045-4b6b-ae85-731475d82ca0.png"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/GlobalWheat/test/images/0bd71b05-0f8c-43f7-84c5-6033b0885141.png"
+        input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/GlobalWheat/test/images/32aa6056-9afd-4ef7-bc02-1defb76c20a6.png"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/GlobalWheat/test/images/143ad1ee-1728-4154-aeae-14d10bc04c2c.png"
+        #input_image = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/GlobalWheat/test/images/0a8b589a-a972-43cc-87e0-91d4afe7fe71.png"
+        
+        output_dir = "/ghome/c5mcv01/mcv-c5-team1/week1/src/domain_shift/output_visualizations"
+
+        # Get the image
+        image = cv2.imread(input_image)
+        print(f"Image shape: {image.shape}")
+        
+        # Get the predictions
+        predictions = model.run_inference(image, num_classes=1)
+        print(f"predictions: {predictions}")
+        visualized_image = model.visualize_predictions(image, predictions, class_names=["wheat_head"])
+        
+        # Save image for processing
+        print(f"Visualized image shape: {visualized_image.shape}")
+        cv2.imwrite(f"{output_dir}/INFER_F2_visualized_image_finetuned5__1.png", visualized_image)
+'''

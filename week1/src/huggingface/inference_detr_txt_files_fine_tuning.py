@@ -14,7 +14,7 @@ os.makedirs(OUTPUT_BASE_DIR, exist_ok=True)
 os.makedirs(TXT_OUTPUT_DIR, exist_ok=True)
 
 # Initialize the DeTR model
-model_path = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/detr_finetuned_kitti/checkpoint-13560"
+model_path = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/results/detr_finetuned_kitti/checkpoint-13560"
 model = DeTR(model_path=model_path)
 
 # Mapping of class names to numerical IDs

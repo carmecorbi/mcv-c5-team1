@@ -26,74 +26,6 @@ import os
 import xml.etree.ElementTree as ET
 
 
-def get_AfricanWildlife_dicts(data_dir):
-    """
-    Loads a dataset with YOLO-format annotations.
-
-    Args:
-        data_dir (str): Path to the dataset.
-    
-    Returns:
-        list[dict]: List of annotations in Detectron2's dataset format.
-    """
-    dataset_dicts = []
-    image_dir = os.path.join(data_dir, "images")
-    label_dir = os.path.join(data_dir, "labels")
-    
-    for idx, file_name in enumerate(sorted(os.listdir(image_dir))):
-        if not file_name.lower().endswith((".jpg", ".png")):
-            continue
-        
-        record = {}
-        image_path = os.path.join(image_dir, file_name)
-        record["file_name"] = image_path
-        
-        im = cv2.imread(image_path)
-        if im is None:
-            continue
-        height, width = im.shape[:2]
-        record["height"] = height
-        record["width"] = width
-        record["image_id"] = idx
-        
-        # Corresponding labels. Each annotation file should have one line per object:
-        # class_id x_center y_center width height
-        label_file = os.path.join(label_dir, os.path.splitext(file_name)[0] + ".txt")
-        objs = []
-        if os.path.exists(label_file):
-            with open(label_file, "r") as f:
-                for line in f.readlines():
-                    parts = line.strip().split()
-                    if len(parts) != 5:
-                        continue
-                    # YOLO format: class_id, x_center, y_center, w, h (all normalized)
-                    class_id, x_center, y_center, w, h = parts
-                    class_id = int(class_id)
-                    x_center, y_center, w, h = float(x_center), float(y_center), float(w), float(h)
-                    
-                    # Convert normalized coordinates to absolute pixel values
-                    x_center_abs = x_center * width
-                    y_center_abs = y_center * height
-                    w_abs = w * width
-                    h_abs = h * height
-                    
-                    # Convert center coordinates to [x_min, y_min, x_max, y_max]
-                    x_min = max(int(x_center_abs - w_abs / 2), 0)
-                    y_min = max(int(y_center_abs - h_abs / 2), 0)
-                    x_max = min(int(x_center_abs + w_abs / 2), width)
-                    y_max = min(int(y_center_abs + h_abs / 2), height)
-                    
-                    obj = {
-                        "bbox": [x_min, y_min, x_max, y_max],
-                        "bbox_mode": BoxMode.XYXY_ABS,
-                        "category_id": class_id,
-                    }
-                    objs.append(obj)
-        record["annotations"] = objs
-        dataset_dicts.append(record)
-    
-    return dataset_dicts
-
 def get_YOLOData_dicts(data_dir):
     """
     Loads a dataset with YOLO-format annotations.
@@ -214,7 +146,7 @@ class AlbumentationsMapper(DatasetMapper):
         
         return dataset_dict
 
-# Example usage
+# Example usage to verify the correct format conversion (Aquarium)
 '''
 if __name__ == "__main__":
     for d in ["train", "val", "test"]:
@@ -234,6 +166,7 @@ if __name__ == "__main__":
         cv2.imwrite(output_path, out.get_image()[:, :, ::-1])
         print(f"Saved visualization to {output_path}")
 '''
+# Example usage to verify the correct format conversion (GlobalWheatHead2020)
 '''
 if __name__ == "__main__":
     for d in ["train", "val", "test"]:
