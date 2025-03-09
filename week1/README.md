@@ -474,7 +474,7 @@ The dataset is divided into three subsets (labels for train and validation sets 
 | **Validation** | 747 | ethz_1 |
 | **Test**   | 1276                 | utokio_1, utokio_2, nau_1, uq_1|
 
-The details of the dataset are documented in its official paper, which can be found here: [GlobalWheatHeadDetector2020 Paper]((https://spj.science.org/doi/full/10.34133/2020/3521852?adobe_mc=MCMID%3D13000678418609464879081490540568399952%7CMCORGID%3D242B6472541199F70A4C98A6%2540AdobeOrg%7CTS%3D1670889600)).
+The details of the dataset are documented in its official paper, which can be found here: [GlobalWheatHeadDetector2020 Paper](https://spj.science.org/doi/full/10.34133/2020/3521852?adobe_mc=MCMID%3D13000678418609464879081490540568399952%7CMCORGID%3D242B6472541199F70A4C98A6%2540AdobeOrg%7CTS%3D1670889600).
 
 #### Aquarium: Dataset description
 The Aquarium dataset is designed for underwater creatures detection tasks for underwater life monitoring. The small set of images provided were collected from 2 aquariums in the US and provide a significant domain shift w.r.t. COCO and ImageNet. It enables the detection of the following 7 classes of underwater species: ['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray'].  
