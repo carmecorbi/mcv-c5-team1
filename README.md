@@ -25,6 +25,9 @@
 - [License](#license)
 
 ## Introduction
+This is the repository for Group 1 of the `C5. Visual Recognition` module from the Master in Computer Vision (MCV) at Universitat Autonoma de Barcelona (UAB) during the 2025 edition. In here, you can find all the code and experiments performed in order to fulfill the requirements of this project.
+
+For further details, refer to each week's readme files or proceed with the installation of the code material.
 
 ## Installation
 
@@ -89,6 +92,24 @@
 Make sure you have either conda or pip package manager installed on your system before proceeding with the installation. 
 
 ## Project Structure
+This repository is organized based on the following structure, which separates each week into a different subfolder:
+
+```bash
+mcv-c5-team1/
+│── week1/
+│   ├── src/  # Source code for week1
+│   │   ├── detectron/
+│   │   ├── domain_sift/
+│   │   ├── hugging_face/
+│   │   ├── ultralytics/
+│   │   ├── main.py
+│   │   └── ...
+│   └── README.md # Explanation of week1
+│── README.md
+│── LICENSE
+│── ...
+```
+
 <h2>WEEK 1</h2>
 
 The contents of the first week are in the folder `week1`. The `README` file can be found in [here](week1/README.md)
