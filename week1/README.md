@@ -29,6 +29,33 @@ The dataset is divided into three subsets:
 The **Validation** set was created by taking 9 sequences from the original training set, which had 21 sequences in total. This approach is documented in the official paper of the dataset, which can be found here: [KITTI-MOTS Paper](https://arxiv.org/pdf/1902.03604).
 
 #### Faster R-CNN
+##### Running Inference
+To perform inference on a single image using the Faster R-CNN model, use the following command:
+
+```bash
+python main.py -t infer -i /path/to/your/image.jpg -o /path/to/output/directory
+```
+
+###### Required Arguments
+- `-t <infer, train, eval>`: Specifies task (for inference use `infer`)
+- `-i`: Path to input image
+
+###### Optional Arguments
+- `-o`: Output directory for saving visualization (default: None)
+- `-c`: Path to model config file (default: COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml)
+- `-w`: Path to weights file (default: COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml)
+- `-s`: Detection confidence threshold (default: 0.5)
+- `--num_workers`: Number of workers for data loading (default: 4)
+
+The script will process the image and save the visualization with detected objects in the specified output directory as `visualized_image_finetuned.png`.
+
+##### Sample results
+
+| 0016/000109.png | 0008/000168.png |
+|---------------------------------------|---------------------------------------|
+| ![image](https://github.com/user-attachments/assets/ac17b5f4-7193-4047-9d52-70592624d603) | ![image](https://github.com/user-attachments/assets/a70e6f52-748b-4dff-b710-bb351d5d6191) |
+
+
 
 #### DeTR
 DeTR (DEtection TRansformer) is an object detection model based on Transformers, developed by Facebook AI. Unlike traditional methods such as Faster R-CNN and YOLO, DeTR replaces conventional detection components with an attention-based architecture, allowing it to capture long-range relationships within an image without the need for predefined anchors.
