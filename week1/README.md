@@ -443,7 +443,7 @@ python3 inference_detr_txt_files_fine_tuning.py
 ```
 
 ```bash
-python3 detr_eval_fine_tuning.py --> FALTA
+python3 detr_eval_fine_tuning.py
 ```
 
 ##### Strategy B: Backbone frozen
@@ -452,7 +452,13 @@ python3 detr_eval_fine_tuning.py --> FALTA
 python3 detr_train_backbone_frozen.py
 ```
 
+```bash
+python3 inference_detr_txt_files_fine_tuning_backbone_frozen.py
+```
 
+```bash
+python3 detr_eval_fine_tuning_bf.py
+```
 
 
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
