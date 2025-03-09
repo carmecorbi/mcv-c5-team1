@@ -154,6 +154,50 @@ Here are some example images from the sequence 0014 that show the output after r
 
 ### Task D: Evaluate pre-trained Faster R-CNN, DeTR, and YOLOv11n on KITTI-MOTS dataset
 
+#### Faster R-CNN
+To evaluate the model performance on a dataset, run the script in evaluation mode with the dataset directory provided:
+
+```bash
+python main.py -t eval -d /path/to/your/dataset -o /path/to/output/directory
+```
+
+This command uses the evaluation task (`-t eval`) to load the specified dataset directory (`-d`) and generate evaluation results, which will be printed to the console and optionally saved in the provided output directory (`-o`). The evaluation leverages the COCO evaluation tool integrated with detectron2 to assess performance on the KITTI-MOTS dataset.
+
+##### Evaluation Process
+
+The evaluation process follows these steps:
+
+1. **Dataset Registration:**  
+   The custom dataset is registered under a configurable name (default "kitti-mots"). Depending on the model configuration (`self.is_coco`), the dataset is set up either with custom or COCO class IDs.
+
+2. **Configuration Update:**  
+   The number of classes is set in the model configuration to match the dataset. For COCO evaluations, the appropriate class names are provided.
+
+3. **Predictor Initialization:**  
+   A predictor instance is created using the updated configuration, which prepares the model for inference.
+
+4. **Evaluation Setup and Execution:**  
+   With a COCO evaluator and a detection test loader built for the registered dataset, the model runs inference on the test dataset. The results are then aggregated and returned in a dictionary, containing evaluation metrics computed by the COCO evaluation tool.
+
+##### Evaluation Results
+
+The table below summarizes the evaluation results for the Faster R-CNN model (Detectron2) on the validation set:
+
+| Metric                                                                 | Value  |
+|------------------------------------------------------------------------|--------|
+| Average Precision (AP) @[ IoU=0.50:0.95, area=all, maxDets=100 ]         | 0.570  |
+| Average Precision (AP) @[ IoU=0.50, area=all, maxDets=100 ]              | 0.799  |
+| Average Precision (AP) @[ IoU=0.75, area=all, maxDets=100 ]              | 0.651  |
+| Average Precision (AP) @[ IoU=0.50:0.95, area=small, maxDets=100 ]       | 0.300  |
+| Average Precision (AP) @[ IoU=0.50:0.95, area=medium, maxDets=100 ]      | 0.620  |
+| Average Precision (AP) @[ IoU=0.50:0.95, area=large, maxDets=100 ]       | 0.715  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=all, maxDets=1 ]              | 0.200  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=all, maxDets=10 ]             | 0.660  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=all, maxDets=100 ]            | 0.672  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=small, maxDets=100 ]          | 0.493  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=medium, maxDets=100 ]         | 0.706  |
+| Average Recall (AR) @[ IoU=0.50:0.95, area=large, maxDets=100 ]          | 0.797  |
+
 #### DeTR
 
 ##### 1. Ground Truth Conversion
