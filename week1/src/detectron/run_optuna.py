@@ -18,7 +18,8 @@ def objective(trial, model_trainer: FasterRCNN, data_dir: str, dataset_name: str
         "weight_decay": trial.suggest_float("weight_decay", 1e-5, 1e-3, log=True),
         
         # Whether to clip gradients or not
-        "clip_gradients": trial.suggest_categorical("clip_gradients", [True, False]),
+        #"clip_gradients": trial.suggest_categorical("clip_gradients", [True, False]),
+        "clip_gradients": False,
         
         # Wether to freeze or not the backbone
         "freeze_backbone": freeze_backbone

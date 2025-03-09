@@ -6,8 +6,8 @@ from pycocotools.cocoeval import COCOeval
 
 
 # Directories containing ground truth and detection results
-GT_FOLDER = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/config/gt_annotations"
-DT_FOLDER = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_txt"
+GT_FOLDER = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/config/gt_annotations"
+DT_FOLDER = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/results_fine_tuning/results_txt"
 
 # Categories of interest
 CATEGORIES = {1: "person", 3: "car"}
@@ -22,11 +22,14 @@ def load_annotations(file_path):
             annotations.append(tuple(values))
     return annotations
 
+# Mapping classes from inference to match the ground truth (GT)
+INFERENCE_TO_GT_CLASS_MAP = {0: 3, 1: 1}  # "car" → 3, "pedestrian" → 1
+
 def convert_to_coco_format(detections, annotations):
     """Convert ground truth and detections into COCO format."""
     image_ids = sorted(set(ann[0] for ann in annotations))
     
-    # Initialize COCO format structures
+    # Initialize COCO-format structures
     coco_gt = {
         "images": [{"id": img_id} for img_id in image_ids],
         "annotations": [],
@@ -43,24 +46,28 @@ def convert_to_coco_format(detections, annotations):
                 "id": annotation_id,
                 "image_id": frame_id,
                 "category_id": class_id,
-                "bbox": [x1, y1, x2 - x1, y2 - y1],
-                "area": (x2 - x1) * (y2 - y1),
-                "iscrowd": 0
+                "bbox": [x1, y1, x2 - x1, y2 - y1],  # Convert to COCO bbox format (x, y, width, height)
+                "area": (x2 - x1) * (y2 - y1),  # Compute bounding box area
+                "iscrowd": 0  # Assume all instances are not crowd annotations
             })
             annotation_id += 1
 
     # Process detection results
     for det in detections:
         frame_id, _, class_id, x1, y1, x2, y2, score = det
+        # Convert inference class ID to the corresponding ground truth class ID
+        class_id = INFERENCE_TO_GT_CLASS_MAP.get(class_id, None)
+        
         if class_id in CATEGORIES and frame_id in image_ids:
             coco_dt.append({
                 "image_id": frame_id,
                 "category_id": class_id,
-                "bbox": [x1, y1, x2 - x1, y2 - y1],
-                "score": score
+                "bbox": [x1, y1, x2 - x1, y2 - y1],  # Convert to COCO bbox format
+                "score": score  # Detection confidence score
             })
 
     return coco_gt, coco_dt
+
 
 def evaluate_coco(coco_gt_data, coco_dt_data):
     """Evaluate object detection performance using COCO evaluation metrics."""

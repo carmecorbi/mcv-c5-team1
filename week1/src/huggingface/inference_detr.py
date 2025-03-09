@@ -1,10 +1,8 @@
 import os
-import sys
 import time
-import torch
 import cv2
-import numpy as np
 from detr import DeTR
+
 
 # Define dataset path
 VAL_IMAGES_PATH = "/ghome/c3mcv02/mcv-c5-team1/data/training/val/"

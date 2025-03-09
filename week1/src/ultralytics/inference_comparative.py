@@ -10,7 +10,7 @@ parser.add_argument("--out", type=str, required=True, help="Output directory for
 args = parser.parse_args()
 
 # Define the input image path
-IMAGE_PATH = '/ghome/c3mcv02/mcv-c5-team1/data/testing/0020/000150.png'  # Modify this to the desired image file
+IMAGE_PATH = '/ghome/c5mcv01/mcv-c5-team1/data/testing/0008/000083.png' # Modify this to the desired image file
 
 # Load the YOLO model
 model = YOLO(args.model)

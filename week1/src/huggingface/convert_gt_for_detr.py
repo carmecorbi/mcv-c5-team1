@@ -1,6 +1,8 @@
 import os
 import re
+
 from pycocotools import mask as maskUtils
+
 
 # Directories
 data_dir = "/ghome/c3mcv02/mcv-c5-team1/data/instances_txt"

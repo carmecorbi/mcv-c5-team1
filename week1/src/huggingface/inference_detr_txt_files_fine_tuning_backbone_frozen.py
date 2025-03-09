@@ -1,23 +1,24 @@
 import os
 import time
 import cv2
+import numpy as np
 from detr import DeTR
 
-
 # Define dataset path
-VAL_IMAGES_PATH = "/ghome/c3mcv02/mcv-c5-team1/data/training/val/"
-OUTPUT_BASE_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_inference/"
-TXT_OUTPUT_DIR = "/ghome/c3mcv02/mcv-c5-team1/week1/src/huggingface/results/results_txt/"
+VAL_IMAGES_PATH = "/ghome/c5mcv01/mcv-c5-team1/data/training/val/"
+OUTPUT_BASE_DIR = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/results_fine_tuning_backbone_frozen/results_inference/"
+TXT_OUTPUT_DIR = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/results_fine_tuning_backbone_frozen/results_txt/"
 
 # Ensure the output directories exist
 os.makedirs(OUTPUT_BASE_DIR, exist_ok=True)
 os.makedirs(TXT_OUTPUT_DIR, exist_ok=True)
 
 # Initialize the DeTR model
-model = DeTR()
+model_path = "/ghome/c5mcv01/mcv-c5-team1/week1/src/huggingface/detr_finetuned_kitti_backbone_frozen/checkpoint-13560"
+model = DeTR(model_path=model_path)
 
 # Mapping of class names to numerical IDs
-CLASS_MAP = {"person": 1, "car": 3}
+CLASS_MAP = {"car": 0, "pedestrian": 1}
 
 # Start timing inference
 start_time = time.time()
@@ -49,7 +50,7 @@ for sequence_number in os.listdir(VAL_IMAGES_PATH):
             
             # Run inference using the DeTR model
             predictions = model.run_inference(image)
-            visualized_image, bboxes = model.visualize_predictions(image, predictions)  # bboxes tiene coords en píxeles
+            visualized_image, bboxes = model.visualize_predictions(image, predictions, finetuning = True)  # bboxes tiene coords en píxeles
             
             # Save the visualized image
             output_path = os.path.join(output_dir, filename)

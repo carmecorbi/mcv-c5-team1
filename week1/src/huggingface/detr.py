@@ -3,12 +3,24 @@ import torch
 import numpy as np
 import cv2
 
-class DeTR:
-    def __init__(self, model_name: str = "facebook/detr-resnet-50", score_threshold: float = 0.5):
-        """Initializes the DeTR model"""
-        self.processor = DetrImageProcessor.from_pretrained(model_name)
-        self.model = DetrForObjectDetection.from_pretrained(model_name)
+class DeTR: 
+    def __init__(self, model_name: str = "facebook/detr-resnet-50", model_path: str = None, score_threshold: float = 0.5):
+        """
+        Initializes the DeTR model. 
+        If model_path is provided, loads fine-tuned weights; otherwise, it uses the pretrained model.
+        """
+        if model_path:  # Load fine-tuned model if a path is provided
+            print(f"Loading fine-tuned model from {model_path}")
+            self.processor = DetrImageProcessor.from_pretrained(model_path)
+            self.model = DetrForObjectDetection.from_pretrained(model_path)
+        else:  # Use Facebook's pretrained model
+            print(f"Loading pretrained model: {model_name}")
+            self.processor = DetrImageProcessor.from_pretrained(model_name)
+            self.model = DetrForObjectDetection.from_pretrained(model_name)
+
         self.score_threshold = score_threshold
+        self.model.eval()  # Set model to evaluation mode for inference
+
 
     def run_inference(self, image: np.ndarray) -> list:
         """Run inference on the input image"""
@@ -36,7 +48,7 @@ class DeTR:
         return results
 
 
-    def visualize_predictions(self, image: np.ndarray, outputs: list) -> tuple:
+    def visualize_predictions(self, image: np.ndarray, outputs: list, finetuning = False) -> tuple:
         """Visualize predictions for 'person' and 'car' only, with custom colors.
         
         Returns:
@@ -52,7 +64,10 @@ class DeTR:
         bboxes = []
 
         # Define colors
-        color_map = {"person": (255, 0, 0), "car": (255, 0, 255)}  # Blue for person, pink for car
+        if finetuning == False:
+            color_map = {"person": (255, 0, 0), "car": (255, 0, 255)}  # Blue for person, pink for car
+        else:
+            color_map = {"pedestrian": (255, 0, 0), "car": (255, 0, 255)}  # Blue for person, pink for car
 
         for obj in outputs:
             class_id = obj["class_id"]
