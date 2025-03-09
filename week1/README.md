@@ -463,4 +463,60 @@ python3 detr_eval_fine_tuning_bf.py
 
 ### Task F: Fine-tune Faster R-CNN on Different Dataset (Domain shift)
 
+#### GlobalWheatHeadDetection2020: Dataset description
+The GlobalWheatHeadDetection2020 dataset is designed for wheat phenotyping and crop management tasks. Accurate wheat head detection is required to assess crop health based on wheat head density and size. This dataset includes a large amount of images (according to the research field) that capture the natural variability of wheat head appearance of cultivars from different continents to enable single-class object detection research on wheat heads.  
+
+The dataset is divided into three subsets (labels for train and validation sets are provided in YOLO format):
+
+| Subset      | Number of Images | Sets of images |
+|------------|--------------------|-----------------|
+| **Train**  | 2675                | arvalis_1, arvalis_2, arvalis_3, rres_1, inrae_1, usask_1 |
+| **Validation** | 747 | ethz_1 |
+| **Test**   | 1276                 | utokio_1, utokio_2, nau_1, uq_1|
+
+The details of the dataset are documented in its official paper, which can be found here: [GlobalWheatHeadDetector2020 Paper]((https://spj.science.org/doi/full/10.34133/2020/3521852?adobe_mc=MCMID%3D13000678418609464879081490540568399952%7CMCORGID%3D242B6472541199F70A4C98A6%2540AdobeOrg%7CTS%3D1670889600)).
+
+#### Aquarium: Dataset description
+The Aquarium dataset is designed for underwater creatures detection tasks for underwater life monitoring. The small set of images provided were collected from 2 aquariums in the US and provide a significant domain shift w.r.t. COCO and ImageNet. It enables the detection of the following 7 classes of underwater species: ['fish', 'jellyfish', 'penguin', 'puffin', 'shark', 'starfish', 'stingray'].  
+
+The dataset is divided into three subsets (labels for train and validation sets are provided in YOLO format):
+
+| Subset      | Number of Images |
+|------------|--------------------|
+| **Train**  | 448                | 
+| **Validation** | 127 | ethz_1 |
+| **Test**   | 63                 | 
+
+The dataset can be found here: [Aquarium Dataset](https://www.kaggle.com/datasets/slavkoprytula/aquarium-data-cots).
+
+#### Fine-tuning Strategies
+
+We fine-tuned the `Faster R-CNN` model on our (domain shift) selected datasets. The three fine-tuning strategies explored include:
+1. Fully Unfrozen Model (`--num_frozen_blocks=0`)
+2. The 2 first blocks of the backbone (ResNet-50 pretrained on ImageNet) frozen (`--num_frozen_blocks=2`)
+3. Backbone frozen (`--num_frozen_blocks=5`)
+
+##### Usage
+We started using Optuna to find the optimum set of hyperparameters. To perform hyperparameter optimization for Faster R-CNN training on any of the previous dataset, use the following command:
+
+```bash
+python3 run_optuna.py -d /path/to/dataset -dt DatasetName -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml -w /path/to/initial/weights/file -s score_threshold -o /path/to/output_directory --n_trials number_of_trials --num_frozen_blocks num_frozen_backbone_blocks
+```
+
+According to the two datasets we use, the `DatasetName` can be `GlobalWheatHead` for the GlobalWheatHeadDetector2020 dataset or `Aquarium` for the Aquarium dataset. 
+
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. The optimization was performed over ~3 trials due to the saturation of the cluster. The optimal hyperparameter values for each strategy (and for each dataset) can be found in the slides linked at the beggining of this README.md file.
+
+Once the hyperparameters are set (values must be set on the faster_rcnn.py script at train() function). To fine-tune the Faster R-CNN model (`task=train`) on your custom dataset (`DatasetName`), use the following command:
+
+```bash
+python3 faster_rcnn.py -d /path/to/dataset -t train -dt DatasetName -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml -w /path/to/initial/weights/file -s score_threshold -o /path/to/output_directory --n_trials number_of_trials --num_workers 4 --num_frozen_blocks num_frozen_backbone_blocks
+```
+
+In order to perform inference on the trained model given an image, use the following command:
+
+```bash
+python3 faster_rcnn.py -t infer -dt DatasetName -i /path/to/chosen/image -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml -w /path/to/weights/file -s score_threshold -o /path/to/output_directory --n_trials number_of_trials --num_workers 4 --num_frozen_blocks num_frozen_backbone_blocks
+```
+
 ### Task G: Analyse the difference among the different object detector methods models
