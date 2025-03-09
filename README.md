@@ -11,7 +11,7 @@
 </p>
 
 > [!IMPORTANT]
-> The presentation of this group is available in [here](https://docs.google.com/presentation/d/1onJR_VTOPrIKAmnns2oJ8fN6PDFmgm4PDqSOmdVWWFY/edit?usp=sharing). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
+> The presentation of this group is available [here](https://docs.google.com/presentation/d/1onJR_VTOPrIKAmnns2oJ8fN6PDFmgm4PDqSOmdVWWFY/edit?usp=sharing). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
 
 ## Table of Contents
 
@@ -112,7 +112,7 @@ mcv-c5-team1/
 
 <h2>WEEK 1</h2>
 
-The contents of the first week are in the folder `week1`. The `README` file can be found in [here](week1/README.md)
+The contents of the first week are in the folder `week1`. The `README` file can be found [here](week1/README.md).
 
 ## Team Members
 
