@@ -358,6 +358,35 @@ python evaluation.py --m <model_path>
 
 ### Task E: Fine-tune Faster R-CNN, DeTR, and YOLO on KITTI-MOTS (Similar Domain)
 
+#### Faster R-CNN
+##### Usage
+To fine-tune the Faster R-CNN model on your custom dataset, use the following command:
+
+```bash
+python main.py -t train -d /path/to/dataset -o /path/to/output_directory -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml --num_workers 4
+```
+
+##### Process Overview
+The training process begins by registering the KITTI-MOTS dataset splits (train and validation) in the Detectron2 catalog. The model configuration is then automatically set up with optimized hyperparameters for fine-tuning, including:
+
+- Learning rate scheduler with warm-up period
+- Batch size of 8 images per iteration
+- Base learning rate of 0.001
+- SGD optimizer with momentum 0.9
+- Weight decay of 0.0001
+- Training checkpoints saved every 1000 iterations
+- Validation performed every 1000 iterations
+
+The training runs for 3000 iterations by default, after which a final evaluation is performed on the validation set using the COCO evaluation metrics. All training logs, checkpoints, and the final model weights are saved in the specified output directory.
+
+##### Optional Parameters
+- `--num_workers`: Number of data loading workers (default: 4)
+- `-c`: Path to custom model configuration
+- `-w`: Path to initial weights file
+- `-s`: Detection confidence threshold (default: 0.5)
+
+The trained model can then be used for inference or evaluation tasks using the same script with different task arguments (`-t infer` or `-t eval`). 
+
 #### YOLO11n
 We fine-tune YOLOv11n on the KITT-MOTS dataset using two different fine-tuning strategies:
 1. Fully Unfrozen Model
