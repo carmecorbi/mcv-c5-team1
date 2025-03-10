@@ -407,7 +407,7 @@ Training Parameters
 - **Dataset:** KITTI-MOTS 
 - **Epochs:** 50
 - **Device:** GPU (CUDA)
-- **Early Stopping Patience:** 50 epochs
+- **Early Stopping Patience:** 20
 - **Classes Trained:** 0 (Car), 2 (Pedestrian)
 
 Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 20.
