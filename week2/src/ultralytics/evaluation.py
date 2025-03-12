@@ -15,18 +15,13 @@ DATASET_PATH = "/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/data/data.yaml
 # Run validation
 results = model.val(data=DATASET_PATH)
 
+# Print specific segmentation metrics
+print("Average precision:", results.seg.ap)
+print("Precision", results.seg.p)
+print("Recall",results.seg.r)
+print("Mean average precision (mAP@50-95):", results.seg.map)
+print("Mean average precision at IoU=0.50 (mAP@50):", results.seg.map50)
+print("Mean average precision at IoU=0.75 (mAP@75):", results.seg.map75)
 
-# Print specific metrics
-print("Average precision for all classes:", results.box.all_ap)
-print("Average precision:", results.box.ap)
-print("Average precision at IoU=0.50:", results.box.ap50)
-print("F1 score:", results.box.f1)
-print("Mean average precision:", results.box.map)
-print("Mean average precision at IoU=0.50:", results.box.map50)
-print("Mean average precision at IoU=0.75:", results.box.map75)
-print("Mean precision:", results.box.mp)
-print("Mean recall:", results.box.mr)
-print("Precision:", results.box.p)
-print("Recall:", results.box.r)
 
 

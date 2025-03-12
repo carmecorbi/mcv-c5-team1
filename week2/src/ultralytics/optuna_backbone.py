@@ -5,23 +5,25 @@ import time
 # Optimization function to train the model
 def objective(trial):
     # Parameters to optimize
-    mixup = trial.suggest_float('mixup', 0.0, 0.5)  # MixUp between 0.0 and 0.5
+    mixup = trial.suggest_float('mixup', 0.0, 0.3)  # MixUp between 0.0 and 0.5
     dropout = trial.suggest_float('dropout', 0.0, 0.5)  # Dropout between 0 and 0.5
-    weight_decay = trial.suggest_float('weight_decay', 0.0, 0.01)  # Weight decay between 0 and 0.01
-    optimizer = trial.suggest_categorical('optimizer', ['SGD', 'Adam', 'AdamW'])  # Optimizer choice
-    degrees = trial.suggest_float('degrees', 0.0, 90.0)  # Rotation degrees
+    weight_decay = trial.suggest_float('weight_decay', 0.0, 0.01)  # Weight decay between 0 and 0.001
+    degrees = trial.suggest_float('degrees', -15, 15)  # Rotation degrees
+    fliplr = trial.suggest_float('fliplr',0.0, 0.5)
     scale = trial.suggest_float('scale', 0.2, 1.0)  # Scaling factor
-    batch = trial.suggest_categorical('batch', [4, 8, 16, 32])  # Batch size 
+    batch = trial.suggest_categorical('batch', [4, 8, 16, 32]) 
+    mosaic = trial.suggest_float('mosaic',0.5, 1.0)
+
     # Initialize model
-    model = YOLO('yolo11n.pt')
+    model = YOLO('/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/yolo11n-seg.pt')
 
     # Training parameters
     start_time = time.time()
     results = model.train(
-        data='/ghome/c5mcv01/mcv-c5-team1/week1/src/ultralytics/data/data.yaml',
+        data='/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/data/data.yaml',
         epochs=50,
         batch=batch,
-        imgsz=(1242,375),
+        imgsz=1024,
         device='cuda',
         patience=20,  # Early stopping patience
         project='optuna_finetune_backbone',  # Project name
@@ -30,14 +32,20 @@ def objective(trial):
         mixup=mixup,
         dropout=dropout,
         weight_decay=weight_decay,
-        optimizer=optimizer,
+        optimizer='auto',
         degrees=degrees,
+        mosaic=mosaic,
         scale=scale,
+        fliplr=fliplr,
+        erasing=0.0,
+        bgr=0.0,
+        translate=0.0,
+        crop_fraction=0.1,
         verbose=False  # Set to True for more training details
     )
 
     # Retrieve the mAP at IoU=0.5
-    mAP_50 = results.box.map50 
+    mAP_50 = results.seg.map50 
 
     # Training time to monitor duration in the optimization
     end_time = time.time()

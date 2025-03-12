@@ -45,7 +45,7 @@ def objective(trial):
     )
 
     # Retrieve the mAP at IoU=0.5
-    mAP_50 = results.box.map50 
+    mAP_50 = results.seg.map50 
 
     # Training time to monitor duration in the optimization
     end_time = time.time()
