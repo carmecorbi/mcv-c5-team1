@@ -114,6 +114,9 @@ mcv-c5-team1/
 
 The contents of the first week are in the folder `week1`. The `README` file can be found [here](week1/README.md).
 
+<h2>WEEK 2</h2>
+
+The contents of the first week are in the folder `week2`. The `README` file can be found [here](week2/README.md).
 ## Team Members
 
 This project was developed by the following team members:
