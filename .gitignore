@@ -9,10 +9,13 @@ aquarium-data-cots/
 DEArt_split/
 ethz_1/
 output/
-output_visualizations/
+output_*/
 GlobalWheat/
 config/
 results/
+results_*/
+optuna_*/
+runs/
 week1/src/domain_shift/DEArt_split
 week1/src/huggingface/*.json
 
@@ -37,6 +40,7 @@ week1/src/ultralytics/data/
 # Checkpoint files
 *.pt 
 *.ptx
+*.weights
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
