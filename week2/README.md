@@ -37,6 +37,18 @@ To run the conversion, execute the following command:
 ```bash
 python bbtoseg.py
 ```
+#### Evaluation
+To evaluate the pre-train model, simply run the following command:
+```bash
+python evaluation.py --m <model_path>
+```
+| Metric                                             | Value                                      |
+|----------------------------------------------------|--------------------------------------------|
+| **Average precision**                              | 0.30 (person), 0.47 (car)           |
+| **Mean average precision at IoU=0.50**            | 0.69                              |
+| **Mean average precision at IoU=0.75**            | 0.38                                   |
+| **Precision**                                      | 0.61 (person), 0.87 (car)           |
+| **Recall**                                         | 0.65 (person), 0.63 (car)           |
 
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
