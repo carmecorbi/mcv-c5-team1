@@ -13,6 +13,29 @@
 
 ## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
+### YOLO11n-seg 
+YOLO11n-seg is a lightweight object detection and segmentation model based on the YOLO family. In this project, we use the Ultralytics implementation to evaluate performance on the KITTI-MOTS dataset.
+
+#### Inference
+To execute the inference on a specific sequence, run the following command:
+
+```bash
+python inference.py --seq <sequence_number> --out <output_directory>
+```
+The inference will only segment objects of interest: person and car. This is specified by the classes parameter in the code, which is set to segment only class IDs corresponding to **person** (ID 0) and **car** (ID 2).
+
+Here are some examples from the sequeence 0018 that show the output after running the inference:
+
+| 0016/000109.png | 0008/000168.png |
+|---------------------------------------|---------------------------------------|
+|  ![000014](https://github.com/user-attachments/assets/06ed630a-3d56-4e2a-ab9c-d70cda9d32de) |
+|  ![000201](https://github.com/user-attachments/assets/c73dce54-157f-40bb-b574-a2b7f791c367) |
+
+
+
+
+
+
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
 
 ## Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
