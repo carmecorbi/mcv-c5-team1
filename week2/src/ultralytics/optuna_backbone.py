@@ -5,14 +5,12 @@ import time
 # Optimization function to train the model
 def objective(trial):
     # Parameters to optimize
-    mixup = trial.suggest_float('mixup', 0.0, 0.3)  # MixUp between 0.0 and 0.5
     dropout = trial.suggest_float('dropout', 0.0, 0.5)  # Dropout between 0 and 0.5
     weight_decay = trial.suggest_float('weight_decay', 0.0, 0.01)  # Weight decay between 0 and 0.001
-    degrees = trial.suggest_float('degrees', -15, 15)  # Rotation degrees
-    fliplr = trial.suggest_float('fliplr',0.0, 0.5)
-    scale = trial.suggest_float('scale', 0.2, 1.0)  # Scaling factor
+    degrees = trial.suggest_float('degrees', -5, 5)  # Rotation degrees
     batch = trial.suggest_categorical('batch', [4, 8, 16, 32]) 
-    mosaic = trial.suggest_float('mosaic',0.5, 1.0)
+    hsv_h = trial.suggest_float('mixup', 0.0, 0.3)
+    hsv_v = trial.suggest_float('dropout', 0.0, 0.5) 
 
     # Initialize model
     model = YOLO('/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/yolo11n-seg.pt')
@@ -26,17 +24,19 @@ def objective(trial):
         imgsz=1024,
         device='cuda',
         patience=20,  # Early stopping patience
-        project='optuna_finetune_backbone',  # Project name
+        project='optuna_backbone',  # Project name
         freeze=10,
         classes=[0, 2],
-        mixup=mixup,
+        mixup=0.0,
+        hsv_h = hsv_h,
+        hsv_v = hsv_v,
         dropout=dropout,
         weight_decay=weight_decay,
         optimizer='auto',
         degrees=degrees,
-        mosaic=mosaic,
-        scale=scale,
-        fliplr=fliplr,
+        mosaic=0.0,
+        scale=0.0,
+        fliplr=0.0,
         erasing=0.0,
         bgr=0.0,
         translate=0.0,
