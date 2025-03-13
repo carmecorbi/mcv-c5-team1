@@ -26,10 +26,9 @@ The inference will only segment objects of interest: person and car. This is spe
 
 Here are some examples from the sequeence 0018 that show the output after running the inference:
 
-| 0016/000109.png | 0008/000168.png |
+| 000014.png | 000201.png |
 |---------------------------------------|---------------------------------------|
-|  ![000014](https://github.com/user-attachments/assets/06ed630a-3d56-4e2a-ab9c-d70cda9d32de) |
-|  ![000201](https://github.com/user-attachments/assets/c73dce54-157f-40bb-b574-a2b7f791c367) |
+|  ![000014](https://github.com/user-attachments/assets/06ed630a-3d56-4e2a-ab9c-d70cda9d32de) |![000201](https://github.com/user-attachments/assets/c73dce54-157f-40bb-b574-a2b7f791c367) |
 
 
 
