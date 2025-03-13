@@ -30,7 +30,8 @@ Here are some examples from the sequeence 0018 that show the output after runnin
 |---------------------------------------|---------------------------------------|
 |  ![000014](https://github.com/user-attachments/assets/06ed630a-3d56-4e2a-ab9c-d70cda9d32de) |![000201](https://github.com/user-attachments/assets/c73dce54-157f-40bb-b574-a2b7f791c367) |
 
-
+#### Conversion Process
+To convert object detection annotations (last week) into instance segmentation format, we leveraged the **Segment Anything Model (SAM)** from Ultralytics. The original dataset contained bounding box annotations in YOLO format. Using the provided Ultralytics conversion script, we applied SAM to generate segmentation masks, and saved them in a new directory. This approach efficiently transformed detection labels into polygonal-based segmentation annotations, enabling instance segmentation evaluation while preserving the YOLO format. The implemenntation was inspired by this [article](https://medium.com/@dhanyasethumadhavan/yolo-v8-how-to-convert-custom-object-detection-datasets-to-segmentation-datasets-using-sam-models-d80eb9abea61). 
 
 
 
