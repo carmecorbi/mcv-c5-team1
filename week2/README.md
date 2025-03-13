@@ -9,16 +9,16 @@
 - [Task D: Analyse the difference among the different object detector models](#task-d-analyse-the-difference-among-the-different-object-detector-models)
 - [Optional Task: Get Familiar with Segment Anything Model (SAM)](#optional-task-get-familiar-with-segment-anything-model-sam)
 
-## Project Structure W1
+## Project Structure W2
 
-### Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
+## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
-### Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
+## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
 
-### Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
+## Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
 
-### Task D: Analyse the difference among the different object detector models
+## Task D: Analyse the difference among the different object detector models
 
-### Optional Task: Get Familiar with Segment Anything Model (SAM)
+## Optional Task: Get Familiar with Segment Anything Model (SAM)
 
 
