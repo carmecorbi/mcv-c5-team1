@@ -44,8 +44,16 @@ def visualize_segmentation(image, segmentation, segments_info, id2label, alpha=0
             y_mean, x_mean = np.mean(y_indices).astype(int), np.mean(x_indices).astype(int)
             plt.text(x_mean, y_mean, f"{label} ({score:.2f})", color="white", fontsize=8, bbox=dict(facecolor='black', alpha=0.5))
 
-    # Blend original image with the mask overlay
-    blended = (image * (1 - alpha) + mask_overlay * alpha).astype(np.uint8)
+    ## Blend original image with the mask overlay
+    
+    # Create a boolean mask for pixels that should be modified
+    mask_boolean = np.any(mask_overlay > 0, axis=-1)  # True where there is a mask
+
+    # Copy the original image to keep unmasked areas unchanged
+    blended = image.copy()
+
+    # Blend only the masked pixels, leaving the rest of the image unchanged
+    blended[mask_boolean] = (image[mask_boolean] * (1 - alpha) + mask_overlay[mask_boolean] * alpha).astype(np.uint8)
 
     return blended
 
@@ -63,13 +71,23 @@ if __name__ == "__main__":
         outputs = model(**inputs)
 
     # Post-process segmentation
-    results = processor.post_process_instance_segmentation(outputs, target_sizes=[image.size[::-1]], threshold=0.3)[0]
+    results = processor.post_process_instance_segmentation(outputs, target_sizes=[image.size[::-1]], threshold=0.9)[0]
     
     segment_to_label = {segment['id']: segment['label_id'] for segment in results["segments_info"]}
     print(segment_to_label)
+    
+    print("Clases disponibles en el modelo:")
+    for class_id, class_name in model.config.id2label.items():
+        print(f"ID: {class_id}, Clase: {class_name}")
+        
+    for segment in results["segments_info"]:
+        print(f"ID: {segment['id']}, Label: {model.config.id2label[segment['label_id']]}, Score: {segment['score']:.2f}")
+
+
+    filtered_segments = [segment for segment in results["segments_info"] if segment["label_id"] in {0, 2}]
 
     # Visualize results
-    image_with_masks = visualize_segmentation(image, results['segmentation'].numpy(), results['segments_info'], model.config.id2label, alpha=0.5)
+    image_with_masks = visualize_segmentation(image, results['segmentation'].numpy(), filtered_segments, model.config.id2label, alpha=0.5)
     
     save_path = "/ghome/c5mcv01/mcv-c5-team1/week2/src/huggingface/results/mask_segment_1.png"
     Image.fromarray(image_with_masks).save(save_path)
