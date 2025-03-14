@@ -92,7 +92,7 @@ python ultralytics/optuna_backbone.py
 | Finetune Strategy    | Optimizer | Regularization                    | Augmentation                                  | mAP@0.5 | mAP@0.75 | AP (class)                           |
 |----------------------|-----------|------------------------------------|-----------------------------------------------|---------|----------|--------------------------------------|
 | **Backbone Frozen**   | AdamW     | D(0.08), L2(7e-3)                 | Degrees(4.93), HSV_h(0.27), HSV_s(0.08)          | 0.76    | 0.53     | 0.39 (pedestrian), 0.58 (car)         |
-| **Fully Unfrozen**    | SGD     | D(6e-3), L2(4.5e-3)                 | Degrees(3.55), HSV_h(0.16), HSV_s(0.005)          | **0.77 **   | **0.54 **    | **0.41 (pedestrian), 0.56 (car)  **      |
+| **Fully Unfrozen**    | SGD     | D(6e-3), L2(4.5e-3)                 | Degrees(3.55), HSV_h(0.16), HSV_s(0.005)          | **0.77**   | **0.54**    | **0.41 (pedestrian), 0.56 (car)**      |
 
 ## Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
 
