@@ -21,11 +21,11 @@ def objective(trial):
     results = model.train(
         data='/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/data/data.yaml',
         epochs=50,
-        batch=-1,
-        imgsz=1000,
+        batch=0.85,
+        imgsz=1024,
         device='cuda',
         patience=5,  # Early stopping patience
-        project='optuna_all_unfrozen_final',  # Project name
+        project='optuna_all_unfrozen_batch',  # Project name
         freeze=0,
         classes=[0, 2],
         mixup=0.0,

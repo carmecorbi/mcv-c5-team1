@@ -10,7 +10,7 @@ def objective(trial):
     degrees = trial.suggest_float('degrees', -5, 5)  # Rotation degrees
     hsv_h = trial.suggest_float('mixup', 0.0, 0.3)
     hsv_v = trial.suggest_float('dropout', 0.0, 0.5) 
-    optimizer = trial.suggest_categorical('optimizer', ['SGD', 'Adam', 'AdamW'])
+    optimizer = trial.suggest_categorical('optimizer', ['SGD','Adam', 'AdamW'])
     iou = trial.suggest_categorical('iou', [0.5, 0.6, 0.7])  
 
     # Initialize model
@@ -21,11 +21,11 @@ def objective(trial):
     results = model.train(
         data='/ghome/c5mcv01/mcv-c5-team1/week2/src/ultralytics/data/data.yaml',
         epochs=50,
-        batch=-1,
-        imgsz=1000,
+        batch=0.85,
+        imgsz=1024,
         device='cuda',
         patience=5,  # Early stopping patience
-        project='optuna_backbone_final',  # Project name
+        project='optuna_backbone_batch',  # Project name
         freeze=10,
         classes=[0, 2],
         mixup=0.0,
