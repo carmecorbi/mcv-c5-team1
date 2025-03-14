@@ -32,11 +32,10 @@ if __name__ == '__main__':
     
     if task == "train":
         assert data_dir, "Data directory must be specified for eval task (use -d <DATA_DIRECTORY>)"
-        raise NotImplementedError
         hyperparams = {
             # Model hyperparameters
             "batch_size_per_image": 256,
-            "batch_size": 8,
+            "batch_size": 16,
             
             # Learning rate and scheduler
             "base_lr": 7.7e-3,

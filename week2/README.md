@@ -33,7 +33,22 @@ Here are some examples from the sequeence 0018 that show the output after runnin
 #### Conversion Process
 To convert object detection annotations (last week) into instance segmentation format, we leveraged the **Segment Anything Model (SAM)** from Ultralytics. The original dataset contained bounding box annotations in YOLO format. Using the provided Ultralytics conversion script, we applied SAM to generate segmentation masks, and saved them in a new directory. This approach efficiently transformed detection labels into polygonal-based segmentation annotations, enabling instance segmentation evaluation while preserving the YOLO format. The implemenntation was inspired by this [article](https://medium.com/@dhanyasethumadhavan/yolo-v8-how-to-convert-custom-object-detection-datasets-to-segmentation-datasets-using-sam-models-d80eb9abea61). 
 
-
+To run the conversion, execute the following command:
+```bash
+python bbtoseg.py
+```
+#### Evaluation
+To evaluate the pre-train model, simply run the following command:
+```bash
+python evaluation.py --m <model_path>
+```
+| Metric                                             | Value                                      |
+|----------------------------------------------------|--------------------------------------------|
+| **Average precision**                              | 0.30 (person), 0.47 (car)           |
+| **Mean average precision at IoU=0.50**            | 0.69                              |
+| **Mean average precision at IoU=0.75**            | 0.38                                   |
+| **Precision**                                      | 0.61 (person), 0.87 (car)           |
+| **Recall**                                         | 0.65 (person), 0.63 (car)           |
 
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)

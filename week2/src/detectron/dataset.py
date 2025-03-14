@@ -160,8 +160,9 @@ class AlbumentationsMapper(DatasetMapper):
             is_train (bool, optional): Whether is train dataset. Defaults to True.
             augmentations (Any, optional): Augmentations from albumentations to apply. Defaults to None.
         """
-        super().__init__(cfg, is_train)
+        super().__init__(cfg, is_train, instance_mask_format="bitmask")
         self.augmentations = augmentations
+        self.mask_format = cfg.INPUT.MASK_FORMAT
 
     def __call__(self, dataset_dict):
         dataset_dict = dataset_dict.copy()
@@ -194,7 +195,7 @@ class AlbumentationsMapper(DatasetMapper):
                 annos.append(obj)
             
             # Create Instances object with the correct image size
-            instances = detection_utils.annotations_to_instances(annos, image.shape[:2])
+            instances = detection_utils.annotations_to_instances(annos, image.shape[:2], mask_format=self.mask_format)
             dataset_dict["instances"] = instances
         
         # Convert to CHW format
