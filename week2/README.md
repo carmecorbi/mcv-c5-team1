@@ -17,7 +17,7 @@
 Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-tiny-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
 
 #### Inference
-The inference pipeline utilizes the Hugging Face `AutoImageProcessor` to preprocess images before passing them to the `Mask2FormerForUniversalSegmentation` model. The model generates segmentation masks, which are post-processed to retain only two classes: person (ID 0) and car (ID 2). The masks are visualized with fixed colors (blue for persons and pink for cars) and overlaid on the original KITTI-MOTS images.
+The inference pipeline utilizes the Hugging Face `AutoImageProcessor` to preprocess images before passing them to the `Mask2FormerForUniversalSegmentation` model. The model generates segmentation masks, which are post-processed to retain only two classes: person (ID 0) and car (ID 2). Additionally, a **threshold of 0.5** is applied to filter detections based on their confidence scores. The masks are visualized with fixed colors (blue for persons and pink for cars) and overlaid on the original KITTI-MOTS images.
 
 To run inference on a specific sequence, use the following command:
 
