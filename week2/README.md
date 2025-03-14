@@ -20,7 +20,7 @@ YOLO11n-seg is a lightweight object detection and segmentation model based on th
 To execute the inference on a specific sequence, run the following command:
 
 ```bash
-python inference.py --seq <sequence_number> --out <output_directory>
+python ultralytics/inference.py --seq <sequence_number> --out <output_directory>
 ```
 The inference will only segment objects of interest: person and car. This is specified by the classes parameter in the code, which is set to segment only class IDs corresponding to **person** (ID 0) and **car** (ID 2).
 
@@ -35,12 +35,12 @@ To convert object detection annotations (last week) into instance segmentation f
 
 To run the conversion, execute the following command:
 ```bash
-python bbtoseg.py
+python ultralytics/bbtoseg.py
 ```
 #### Evaluation
 To evaluate the pre-train model, simply run the following command:
 ```bash
-python evaluation.py --m <model_path>
+python ultralytics/evaluation.py --m <model_path>
 ```
 | Metric                                             | Value                                      |
 |----------------------------------------------------|--------------------------------------------|
@@ -52,6 +52,47 @@ python evaluation.py --m <model_path>
 
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
+
+### YOLO11n-seg 
+We fine-tune YOLO11n-seg on the KITT-MOTS dataset using two different fine-tuning strategies:
+1. Fully Unfrozen Model
+2. Backbone Frozen
+
+The goal is to optimize the model's performance by tuning hyperparameters using Optuna, maximizing the mAP at IoU=0.5.
+
+We conducted hyperparameter optimization considering the following parameters:
+- **Dropout:** [0.0, 0.5] (regularization technique to prevent overfitting)
+- **Weight Decay:** [0.0, 0.01] (L2 regularization to improve generalization)
+- **Optimizer:** [SGD, Adam, AdamW] (different optimization algorithms)
+- **Rotation Degrees:** [-5, 5] (image rotation augmentation)
+- **Hsv Hue and Saturation**: [0,0.3] , [0,0.5] (adjusting the Hue and Saturation of images for color space augmentation)
+- **IoU Threshold (NMS)**: [0.5,0.6,0.7] (Intersection over Union threshold used in Non-Maximum Suppression to filter overalpping bounding boxes)
+
+Training Parameters
+- **Dataset:** KITTI-MOTS 
+- **Epochs:** 50
+- **Device:** GPU (CUDA)
+- **Early Stopping Patience:** 5
+- **Classes Trained:** 0 (Car), 2 (Pedestrian)
+
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. Total trials: 20.
+
+For the first strategy, run the following Python script:
+```bash
+python ultralytics/optuna_unfrozen.py
+```
+
+For the second strategy, run the following Python script:
+```bash
+python ultralytics/optuna_backbone.py
+```
+
+#### Fine-tuning Results
+
+| Finetune Strategy    | Optimizer | Regularization                    | Augmentation                                  | mAP@0.5 | mAP@0.75 | AP (class)                           |
+|----------------------|-----------|------------------------------------|-----------------------------------------------|---------|----------|--------------------------------------|
+| **Backbone Frozen**   | AdamW     | D(0.08), L2(7e-3)                 | Degrees(4.93), HSV_h(0.27), HSV_s(0.08)          | 0.76    | 0.53     | 0.39 (pedestrian), 0.58 (car)         |
+| **Fully Unfrozen**    | SGD     | D(6e-3), L2(4.5e-3)                 | Degrees(3.55), HSV_h(0.16), HSV_s(0.005)          | **0.77 **   | **0.54 **    | **0.41 (pedestrian), 0.56 (car)  **      |
 
 ## Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
 
