@@ -31,6 +31,27 @@ Below are examples from sequence **0016**, showing the output after inference:
 |---------------------------------------|---------------------------------------|
 | ![000014](https://github.com/user-attachments/assets/7b602490-f220-487c-bd9a-9ddfea511cbd) | ![000201](https://github.com/user-attachments/assets/f3c52b95-4d54-4946-9e1e-d1282914924f) |
 
+#### Evaluation
+To evaluate the pre-train model, simply run the following command:
+```bash
+python3 Mask2Former_eval.py
+```
+
+The results are:
+```bash
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.047
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.078
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.048
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.008
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.061
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.095
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.011
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.047
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.060
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = 0.028
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.075
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.108
+```
 
 ### YOLO11n-seg 
 YOLO11n-seg is a lightweight object detection and segmentation model based on the YOLO family. In this project, we use the Ultralytics implementation to evaluate performance on the KITTI-MOTS dataset.
