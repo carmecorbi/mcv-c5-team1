@@ -14,7 +14,7 @@
 ## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
 ### Mask2Former
-Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-large-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
+Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-tiny-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
 
 #### Inference
 The inference pipeline utilizes the Hugging Face `AutoImageProcessor` to preprocess images before passing them to the `Mask2FormerForUniversalSegmentation` model. The model generates segmentation masks, which are post-processed to retain only two classes: person (ID 0) and car (ID 2). The masks are visualized with fixed colors (blue for persons and pink for cars) and overlaid on the original KITTI-MOTS images.
@@ -29,7 +29,7 @@ Below are examples from sequence **0016**, showing the output after inference:
 
 | 000014.png | 000201.png |
 |---------------------------------------|---------------------------------------|
-| ![000014](https://github.com/user-attachments/assets/f0ff3c81-b148-4cdc-9697-93d885cb2df2) | ![000201](https://github.com/user-attachments/assets/72942cc7-c880-454d-8982-d3ebf9681a12) |
+| ![000014](https://github.com/user-attachments/assets/7b602490-f220-487c-bd9a-9ddfea511cbd) | ![000201](https://github.com/user-attachments/assets/f3c52b95-4d54-4946-9e1e-d1282914924f) |
 
 
 ### YOLO11n-seg 
