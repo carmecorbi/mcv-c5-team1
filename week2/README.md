@@ -13,6 +13,25 @@
 
 ## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
+### Mask2Former
+Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-large-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
+
+#### Inference
+The inference pipeline utilizes the Hugging Face `AutoImageProcessor` to preprocess images before passing them to the `Mask2FormerForUniversalSegmentation` model. The model generates segmentation masks, which are post-processed to retain only two classes: person (ID 0) and car (ID 2). The masks are visualized with fixed colors (blue for persons and pink for cars) and overlaid on the original KITTI-MOTS images.
+
+To run inference on a specific sequence, use the following command:
+
+```bash
+python3 Mask2Former_inference_seq.py <sequence_id>
+```
+
+Below are examples from sequence **0016**, showing the output after inference:
+
+| 000014.png | 000201.png |
+|---------------------------------------|---------------------------------------|
+| ![000014](https://github.com/user-attachments/assets/f0ff3c81-b148-4cdc-9697-93d885cb2df2) | ![000201](https://github.com/user-attachments/assets/72942cc7-c880-454d-8982-d3ebf9681a12) |
+
+
 ### YOLO11n-seg 
 YOLO11n-seg is a lightweight object detection and segmentation model based on the YOLO family. In this project, we use the Ultralytics implementation to evaluate performance on the KITTI-MOTS dataset.
 
@@ -24,7 +43,7 @@ python ultralytics/inference.py --seq <sequence_number> --out <output_directory>
 ```
 The inference will only segment objects of interest: person and car. This is specified by the classes parameter in the code, which is set to segment only class IDs corresponding to **person** (ID 0) and **car** (ID 2).
 
-Here are some examples from the sequeence 0018 that show the output after running the inference:
+Here are some examples from the sequence 0016 that show the output after running the inference:
 
 | 000014.png | 000201.png |
 |---------------------------------------|---------------------------------------|
