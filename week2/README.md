@@ -200,6 +200,31 @@ python ultralytics/optuna_backbone.py
 
 ## Task C: Fine-tune Mask2Former on Different Dataset (Domain shift)
 
+### Strawberry Disease: Description
+
+The Strawberry Disease Detection dataset is designed to support DL models addressing instance segmentation tasks to accurately perform strawberries disease diagnosis under complex environmental conditions. This dataset includes a large amount of images collected from multiple greenhouses in South Korea that capture the natural variability of agricultural environments (e.g., background variability, natural illumination conditions). It enables the detection and instance segmentation of the following 7 classes of strawberry diseases: [Angular Leafspot, Anthracnose Fruit Rot, Blossom Blight, Gray Mold, Leaf Spot, Powdery Mildew Fruit, Powdery Mildew Leaf]. 
+
+The dataset is divided intro three subsets (annotations fro train and validation sets are provided in 'Labelme' format):
+
+| Subset    | Number of Images | 
+|----------------------|-----------|
+| **Train**   | 1450    | 
+| **Validation**    | 307     | 
+| **Test**    | 743     |
+
+The details of the dataset are documented in its official paper, which can be found here: [An Instance Segmentation Model for Strawberry Diseases Based on Mask R-CNN](https://www.mdpi.com/1424-8220/21/19/6565). The dataset can be downloaded from Kaggle [Strawberry Disease Detection Dataset](https://www.kaggle.com/datasets/usmanafzaal/strawberry-disease-detection-dataset).
+
+### Fine-tuning Strategies
+
+We fine-tuned 2 models: `Mask R-CNN` and `Mask2Former`. Initially, we had to fine-tune `Mask2Former` on the new dataset (domain shift). However, we had some problems with this model during inference and fine-tuning (similar domain) tasks. For this reason, we decided to also fine-tune `Mask R-CNN` to make sure we could report results on the domain shift task. In both cases, the two fine-tuning strategies explored include:
+1. Backbone Frozen
+2. Fully Unfrozen
+
+
+
+### Usage
+TODO
+
 ## Task D: Analyse the difference among the different object detector models
 
 ## Optional Task: Get Familiar with Segment Anything Model (SAM)
