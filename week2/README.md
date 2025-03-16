@@ -93,6 +93,70 @@ python ultralytics/evaluation.py --m <model_path>
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
 
+### Mask2Former
+
+For fine-tuning Mask2Former, we follow the script provided by [Hugging Face Transformers](https://github.com/huggingface/transformers/tree/main/examples/pytorch/instance-segmentation).  
+
+We experiment with two training strategies:  
+
+### 1️. Fully Unfrozen Model  
+In this setup, we fine-tune all layers of the model.  
+
+```bash
+python run_instance_segmentation.py \
+    --model_name_or_path facebook/mask2former-swin-tiny-coco-instance \
+    --output_dir finetune-instance-segmentation-ade20k-mini-mask2former_augmentation \
+    --dataset_name yeray142/kitti-mots-instance \
+    --do_reduce_labels \
+    --image_height 621 \
+    --image_width 187 \
+    --do_train \
+    --fp16 \
+    --num_train_epochs 10 \
+    --learning_rate 1e-5 \
+    --lr_scheduler_type constant \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 2 \
+    --dataloader_num_workers 8 \
+    --dataloader_persistent_workers \
+    --dataloader_prefetch_factor 4 \
+    --do_eval \
+    --evaluation_strategy epoch \
+    --logging_strategy epoch \
+    --save_strategy epoch \
+    --save_total_limit 2 \
+    --push_to_hub
+```
+
+### 2. Backbone Frozen  
+In this setup, we freeze the backbone (Swin Transformer) and fine-tune only the higher-level layers.  
+
+```bash
+python run_instance_segmentation_bf.py \
+    --model_name_or_path facebook/mask2former-swin-tiny-coco-instance \
+    --output_dir finetune-instance-segmentation-ade20k-mini-mask2former_backbone_frozen_1 \
+    --dataset_name yeray142/kitti-mots-instance \
+    --do_reduce_labels \
+    --image_height 621 \
+    --image_width 187 \
+    --do_train \
+    --fp16 \
+    --num_train_epochs 10 \
+    --learning_rate 1e-5 \
+    --lr_scheduler_type constant \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 2 \
+    --dataloader_num_workers 8 \
+    --dataloader_persistent_workers \
+    --dataloader_prefetch_factor 4 \
+    --do_eval \
+    --evaluation_strategy epoch \
+    --logging_strategy epoch \
+    --save_strategy epoch \
+    --save_total_limit 2 \
+    --push_to_hub
+```
+
 ### YOLO11n-seg 
 We fine-tune YOLO11n-seg on the KITT-MOTS dataset using two different fine-tuning strategies:
 1. Fully Unfrozen Model
