@@ -13,6 +13,27 @@
 
 ## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
+### Mask R-CNN
+#### Running Inference
+To perform inference on a single image using the Mask R-CNN model, use the following command:
+
+```bash
+python -m week2.src.main.py -t infer -i /path/to/your/image.jpg -o /path/to/output/directory
+```
+
+##### Required Arguments
+- `-t <infer, train, eval>`: Specifies task (for inference use `infer`)
+- `-i`: Path to input image
+
+##### Optional Arguments
+- `-o`: Output directory for saving visualization (default: None)
+- `-c`: Path to model config file (default: "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+- `-w`: Path to weights file (default: "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+- `-s`: Detection confidence threshold (default: 0.5)
+- `--num_workers`: Number of workers for data loading (default: 4)
+
+The script will process the image and save the visualization with detected objects in the specified output directory as `visualized_image_finetuned.png`.
+
 ### Mask2Former
 Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-tiny-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
 
@@ -92,6 +113,25 @@ python ultralytics/evaluation.py --m <model_path>
 
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
+
+### Faster R-CNN
+#### Usage
+To fine-tune the Faster R-CNN model on your custom dataset, use the following command:
+
+```bash
+python main.py -t train -d /path/to/dataset -o /path/to/output_directory -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml --num_workers 4
+```
+
+#### Process Overview
+The training process begins by registering the KITTI-MOTS dataset splits (train and validation) in the Detectron2 catalog. The model configuration is then automatically set up with optimized hyperparameters for fine-tuning. The training runs for 3000 iterations by default, after which a final evaluation is performed on the validation set using the COCO evaluation metrics. All training logs, checkpoints, and the final model weights are saved in the specified output directory.
+
+#### Optional Parameters
+- `--num_workers`: Number of data loading workers (default: 4)
+- `-c`: Path to custom model configuration
+- `-w`: Path to initial weights file
+- `-s`: Detection confidence threshold (default: 0.5)
+
+The trained model can then be used for inference or evaluation tasks using the same script with different task arguments (`-t infer` or `-t eval`). 
 
 ### Mask2Former
 
