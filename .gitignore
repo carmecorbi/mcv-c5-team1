@@ -20,9 +20,12 @@ week1/src/domain_shift/DEArt_split
 week1/src/huggingface/*.json
 week2/src/domain_shift/rle_images/
 week2/src/domain_shift/Package_seg
-week2/src/domain_shift/strawberry-disease-detection-dataset
+week2/src/domain_shift/strawberry-disease-detection-dataset/train
+week2/src/domain_shift/strawberry-disease-detection-dataset/test
+week2/src/domain_shift/strawberry-disease-detection-dataset/val
 week2/src/domain_shift/labelme2COCOcopy.py
 week2/src/domain_shift/exp_Mask2Former_finetuning.py
+week2/src/domain_shift/other_files
 week2/src/domain_shift/exp_Mask2Former_inference.py
 
 

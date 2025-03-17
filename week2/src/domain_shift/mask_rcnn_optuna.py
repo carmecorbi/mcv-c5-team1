@@ -282,7 +282,6 @@ class MaskRCNN:
 
 
         self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = kwargs.get("batch_size_per_image", 128) # 128 is faster and enough for this dataset
-        self.cfg.MODEL.BACKBONE.FREEZE_AT = 5 if kwargs.get("freeze_backbone", False) else 0
         
         # Datasets parameters (train and test)
         self.cfg.DATASETS.TRAIN = (dataset_name + "_train",)
@@ -311,7 +310,6 @@ class MaskRCNN:
 
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (ballon)
         self.cfg.MODEL.BACKBONE.FREEZE_AT = 0
-        print(f"backbone_frozen: freeze_at=0")
 
         # Fixed parameters (do not change)
         self.cfg.SOLVER.CHECKPOINT_PERIOD = kwargs.get("checkpoint_period", 1000)

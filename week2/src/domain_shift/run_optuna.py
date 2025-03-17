@@ -39,14 +39,25 @@ def objective(trial, model_trainer: MaskRCNN, data_dir: str, dataset_name: str, 
 
 
 if __name__ == '__main__':
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='Strawberry Disease Dataset')
+    parser.add_argument('-d', '--data_dir', help="Path to validation dataset", required=False)
+    parser.add_argument('-c', '--config_file', default="COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", help="Path to the model config yaml from model zoo.")
+    parser.add_argument('-w', '--weights_file', default="COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", help="Path to the weights file or model zoo config yaml.")
+    parser.add_argument('-s', '--score_threshold', type=float, default=0.5, help="Score threshold for predictions.")
+    parser.add_argument('-o', '--output_dir', help="Output directory for the model", default=None)
+    parser.add_argument('--num_workers', required=False, default=4, type=int, help="Number of workers to load dataset.")
+    parser.add_argument('--n_trials', required=False, default=15, type=int, help="Number of trials for optuna optimization.")
+    args = parser.parse_args()
 
     # Get the arguments from CLI
-    data_dir = '/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
-    config_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
-    weights_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
-    score_threshold = 0.5
-    num_workers = 2
-    output_dir = "./output/optuna/mask_rcnn_allunfrozen/"
+    data_dir = args.data_dir
+    config_file = args.config_file
+    weights_file = args.weights_file
+    score_threshold = args.score_threshold
+    num_workers = args.num_workers
+    output_dir = args.output_dir
+    n_trials = args.n_trials
     freeze_backbone = 5
     
     # Get the model
@@ -56,5 +67,5 @@ if __name__ == '__main__':
     study = optuna.create_study(direction="maximize")
     study.optimize(
         partial(objective, model_trainer=model, data_dir=data_dir, dataset_name="strawberry", output_dir=output_dir, freeze_backbone=freeze_backbone),
-        n_trials=15
+        n_trials=n_trials
     )

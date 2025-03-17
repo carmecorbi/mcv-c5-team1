@@ -370,6 +370,7 @@ class MaskRCNN:
 
 
 if __name__ == '__main__':
+    # Uncomment for training:
     '''
     config_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     weights_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
@@ -384,29 +385,20 @@ if __name__ == '__main__':
     model.train_model(dataset_path, "strawberry-disease-dataset", num_classes=7, output_dir=output_dir)
     '''
 
+    # Uncomment for inference:
+    '''
     model_weights = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/output/mask_rcnn_allunfrozen_real/withAugmentations/model_final.pth"
     model = MaskRCNN("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", model_weights, 0.5, 2)
         
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/train/images/angular_leafspot1.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/angular_leafspot411.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/anthracnose_fruit_rot104.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/blossom_blight190.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/gray_mold490.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/leaf_spot557.jpg"
-    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/powdery_mildew_fruit165.jpg"
-    input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/powdery_mildew_leaf468.jpg"        
+    input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/train/images/angular_leafspot1.jpg"     
     output_dir = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/maskrcnn/output_visulaizations/powdery_mildew_leaf468.jpg"
 
     # Get the image
     image = cv2.imread(input_image)
-    print(f"Image shape: {image.shape}")
 
     # Get the predictions
     predictions = model.run_inference(image, num_classes=7)
-    print(f"predictions: {predictions}")
     visualized_image = model.visualize_predictions(image, predictions, class_names=CLASS_LABELS)
         
-    # Save image for processing
-    print(f"Visualized image shape: {visualized_image.shape}")
-        
     cv2.imwrite(f"{output_dir}", visualized_image)
+    '''
