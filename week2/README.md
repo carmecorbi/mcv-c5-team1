@@ -270,7 +270,23 @@ Since the downloaded dataset provides annotations as .json files in Labelme form
 
 
 ### Usage
-TODO
+
+#### Mask R-CNN
+
+We started using Optuna to find the optimum set of hyperparameters. To perform hyperparameter optimization for Mask R-CNN training on the Strawberry Disease dataset, use the following command:
+```bash
+python3 run_optuna.py -d /path/to/data -c COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml -w COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml -s score_threshold -o /path/to/output_directory --num_workers num_workers --n_trials number_of_trials
+```
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. The optimization was performed over 15 trials. The optimal hyperparameter values for each strategy can be found in the slides linked at the beginning of this README.md file.
+To set whether the backbone is frozen or trainable, you can modify the value assigned to `self.cfg.MODEL.BACKBONE.FREEZE_AT = value` in `mask_rcnn_optuna.py` (Strategy A: backbone frozen with value=5, Strategy B: backbone unfrozen with value=0).
+
+Once the hyperparameters are set (values must be set on the `mask_rcnn_finetune.py` script at `train_model()` function), the Mask R-CNN model can be fine-tuned on your custom dataset using the following command (Uncomment tha code lines in main() that are marked for training):
+```bash
+python3 mask_rcnn_finetune.py 
+```
+The same command can be used to perform inference on the trained model given an image (Uncomment the code lines in main() that are marked for inference).
+
+#### Mask2Former
 
 ## Task D: Analyse the difference among the different object detector models
 
