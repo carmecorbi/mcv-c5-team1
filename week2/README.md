@@ -114,12 +114,12 @@ python ultralytics/evaluation.py --m <model_path>
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
 
-### Faster R-CNN
+### Mask R-CNN
 #### Usage
-To fine-tune the Faster R-CNN model on your custom dataset, use the following command:
+To fine-tune the Mask R-CNN model on your custom dataset, use the following command:
 
 ```bash
-python main.py -t train -d /path/to/dataset -o /path/to/output_directory -c COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml --num_workers 4
+python -m src.week2.main.py -t train -d /path/to/dataset -o /path/to/output_directory -c /path/to/model_config --num_workers 4
 ```
 
 #### Process Overview
