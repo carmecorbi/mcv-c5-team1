@@ -34,6 +34,11 @@ python -m week2.src.main.py -t infer -i /path/to/your/image.jpg -o /path/to/outp
 
 The script will process the image and save the visualization with detected objects in the specified output directory as `visualized_image_finetuned.png`.
 
+Below you can find some examples of applying Mask R-CNN to some images:
+| Example 1 | Example 2 |
+|---------------------------------------|---------------------------------------|
+| ![image](https://github.com/user-attachments/assets/618aa76e-e642-4c14-9d89-516f66d67805) | ![image](https://github.com/user-attachments/assets/bf45bd15-e45c-4a7a-86c9-f464f5694902) |
+
 ### Mask2Former
 Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-tiny-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
 
@@ -47,7 +52,6 @@ python3 Mask2Former_inference_seq.py <sequence_id>
 ```
 
 Below are examples from sequence **0016**, showing the output after inference:
-
 | 000014.png | 000201.png |
 |---------------------------------------|---------------------------------------|
 | ![000014](https://github.com/user-attachments/assets/7b602490-f220-487c-bd9a-9ddfea511cbd) | ![000201](https://github.com/user-attachments/assets/f3c52b95-4d54-4946-9e1e-d1282914924f) |
