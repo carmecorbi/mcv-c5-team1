@@ -10,10 +10,10 @@ def objective(trial, model_trainer: MaskRCNN, data_dir: str, dataset_name: str, 
     hyperparams = {
         # Model hyperparameters
         "batch_size_per_image": trial.suggest_categorical("batch_size_per_image", [64, 128, 256]),
-        "batch_size": trial.suggest_categorical("batch_size", [2, 4, 8, 16]),
+        "batch_size": trial.suggest_categorical("batch_size", [2, 4, 8]),
         
         # Learning rate and scheduler
-        "base_lr": trial.suggest_float("base_lr", 1e-4, 1e-2, log=True),
+        "base_lr": trial.suggest_float("base_lr", 3e-4, 1e-3, log=True),
         "lr_scheduler": trial.suggest_categorical("lr_scheduler", ["WarmupMultiStepLR", "WarmupCosineLR"]),
         "weight_decay": trial.suggest_float("weight_decay", 1e-5, 1e-3, log=True),
         
@@ -41,13 +41,13 @@ def objective(trial, model_trainer: MaskRCNN, data_dir: str, dataset_name: str, 
 if __name__ == '__main__':
 
     # Get the arguments from CLI
-    data_dir = '/home/usuaris/imatge/judit.salavedra/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
+    data_dir = '/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
     config_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     weights_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     score_threshold = 0.5
     num_workers = 2
     output_dir = "./output/optuna/mask_rcnn_allunfrozen/"
-    freeze_backbone = 0
+    freeze_backbone = 5
     
     # Get the model
     model = MaskRCNN(config_file, weights_file, score_threshold, num_workers)

@@ -1,10 +1,14 @@
+import os
+import sys
 import torch
 import numpy as np
-import cv2
-
+import matplotlib.pyplot as plt
 from transformers import AutoImageProcessor, Mask2FormerForUniversalSegmentation
 from PIL import Image
+import cv2
 
+# Determine whether to use GPU (CUDA) or fallback to CPU
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def visualize_segmentation(image, segmentation, segments_info, id2label, alpha=0.5):
     """
@@ -26,14 +30,20 @@ def visualize_segmentation(image, segmentation, segments_info, id2label, alpha=0
     
     # Define fixed colors for specific classes
     fixed_colors = {
-        0: np.array([0, 0, 255], dtype=np.uint8),   # Blue for label_id = 0
-        2: np.array([225, 0, 255], dtype=np.uint8)  # Magenta for label_id = 2
+        0: np.array([255, 0, 0], dtype=np.uint8),   # Blue for label_id = 0 --> car
+        1: np.array([0, 255, 0], dtype=np.uint8),  # Magenta for label_id = 1 --> person
+        2: np.array([0, 0, 255], dtype=np.uint8),
+        3: np.array([255, 255, 0], dtype=np.uint8),
+        4: np.array([0, 255, 255], dtype=np.uint8),
+        5: np.array([255, 255, 255], dtype=np.uint8),
+        6: np.array([0, 0, 0], dtype=np.uint8),
+        7:  np.array([120, 120, 120], dtype=np.uint8)
     }
     
     # Generate colors for segments
     np.random.seed(42)
     colors = {segment["id"]: fixed_colors.get(segment["label_id"], np.random.randint(0, 255, size=(3,), dtype=np.uint8)) 
-              for segment in segments_info}
+                for segment in segments_info}
     
     # Overlay masks and prepare for label positioning
     for segment in segments_info:
@@ -104,45 +114,54 @@ def visualize_segmentation(image, segmentation, segments_info, id2label, alpha=0
     return blended
 
 
+def run_inference(sequence_id):
+    """
+    Runs instance segmentation inference on a sequence of images.
 
-if __name__ == "__main__":
-    # Load model and processor
-    processor = AutoImageProcessor.from_pretrained("facebook/mask2former-swin-tiny-coco-instance")
-    model = Mask2FormerForUniversalSegmentation.from_pretrained("facebook/mask2former-swin-tiny-coco-instance")
+    Args:
+        sequence_id (str): The sequence ID corresponding to a folder of images.
 
-    # Load image and prepare input
-    image = Image.open("/ghome/c5mcv01/mcv-c5-team1/data/training/val/0002/000206.png")
-    inputs = processor(images=image, return_tensors="pt")
-    for k,v in inputs.items():
-        print(k,v.shape)
+    Saves the segmented images to an output directory.
+    """
+    input_dir = sequence_id
+    output_dir = f"/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/mask2formerOutputs"
+    os.makedirs(output_dir, exist_ok=True)  # Create output directory if it doesn't exist
+
+    # Load the Mask2Former model and image processor
+    processor = AutoImageProcessor.from_pretrained("/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/finetune-instance-segmentation-mini-mask2former_augmentation_default")
+    model = Mask2FormerForUniversalSegmentation.from_pretrained("/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/finetune-instance-segmentation-mini-mask2former_augmentation_default")
+    model.to(device)  # Move model to the selected device (CPU or GPU)
     
-    # Run forward pass
+    print("Clases disponibles en el modelo:")
+    for class_id, class_name in model.config.id2label.items():
+        print(f"ID: {class_id}, Clase: {class_name}")
+        
+    # Get a sorted list of all PNG images in the input directory
+    image = Image.open(input_dir)  # Load the image
+    inputs = processor(images=image, return_tensors="pt")  # Preprocess the image
+    inputs.to(device)  # Move input tensors to the selected device
+        
+    # Perform inference without tracking gradients
     with torch.no_grad():
         outputs = model(**inputs)
-    print(outputs.keys())
-
-    # Post-process segmentation
-    results = processor.post_process_instance_segmentation(outputs, target_sizes=[image.size[::-1]], threshold=0.5)[0]
-    print(results.keys())
-    for segment in results['segments_info']:
-        print(segment)
-    
-    # Get the segment label
-    segment_to_label = {segment['id']: segment['label_id'] for segment in results["segments_info"]}
-    print(segment_to_label)
-    
-    #print("Clases disponibles en el modelo:")
-    #for class_id, class_name in model.config.id2label.items():
-    #    print(f"ID: {class_id}, Clase: {class_name}")
         
-    #for segment in results["segments_info"]:
-    #    print(f"ID: {segment['id']}, Label: {model.config.id2label[segment['label_id']]}, Score: {segment['score']:.2f}")
+    # Process the segmentation results, keeping only detections with score ≥ 0.9
+    results = processor.post_process_instance_segmentation(outputs, target_sizes=[image.size[::-1]], threshold=0.5)[0]
+        
+    for segment in results["segments_info"]:
+        print(f"ID: {segment['id']}, Label: {model.config.id2label.get(segment['label_id'], 'Unknown')}, Label_id: {segment['label_id']}, Score: {segment['score']:.2f}")
 
-    filtered_segments = [segment for segment in results["segments_info"] if segment["label_id"] in {0, 2}]
-    print(filtered_segments)
-
-    # Visualize results
-    image_with_masks = visualize_segmentation(image, results['segmentation'].numpy(), filtered_segments, model.config.id2label, alpha=0.5)
-    save_path = "/ghome/c5mcv01/mcv-c5-team1/week2/src/huggingface/results/mask_segment_2.png"
+    # Visualize and save the segmentation result
+    image_with_masks = visualize_segmentation(image, results['segmentation'].numpy(), results["segments_info"], model.config.id2label, alpha=0.5)
+    save_path = os.path.join(output_dir, "image8.png")
     Image.fromarray(image_with_masks).save(save_path)
+    print(f"Saved: {save_path}")
+
+
+if __name__ == "__main__":
+    """
+    Entry point of the script. Takes a sequence ID as a command-line argument.
+    """
     
+    image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/angular_leafspot496.jpg"
+    run_inference(image)  # Run inference on the given sequence

@@ -27,7 +27,7 @@ from detectron2.data import build_detection_train_loader
 
 
 CLASS_LABELS = ["Angular Leafspot", "Anthracnose Fruit Rot", "Blossom Blight", "Gray Mold", "Leaf Spot", "Powdery Mildew Fruit", "Powdery Mildew Leaf"]
-dataset_path = '/home/usuaris/imatge/judit.salavedra/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
+dataset_path = '/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
 
 def get_augmentations() -> A.Compose:
 	"""Get the augmentations to apply.
@@ -309,9 +309,9 @@ class MaskRCNN:
         # Test parameters (evaluation)
         self.cfg.TEST.EVAL_PERIOD = kwargs.get("eval_period", 1000)
 
-        self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128 # faster, and good enough for this toy dataset
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (ballon)
-        self.cfg.MODEL.BACKBONE.FREEZE_AT = 0 
+        self.cfg.MODEL.BACKBONE.FREEZE_AT = 0
+        print(f"backbone_frozen: freeze_at=0")
 
         # Fixed parameters (do not change)
         self.cfg.SOLVER.CHECKPOINT_PERIOD = kwargs.get("checkpoint_period", 1000)

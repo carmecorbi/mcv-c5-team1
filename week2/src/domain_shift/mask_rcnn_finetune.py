@@ -27,7 +27,7 @@ from detectron2.data import build_detection_train_loader
 
 
 CLASS_LABELS = ["Angular Leafspot", "Anthracnose Fruit Rot", "Blossom Blight", "Gray Mold", "Leaf Spot", "Powdery Mildew Fruit", "Powdery Mildew Leaf"]
-dataset_path = '/home/usuaris/imatge/judit.salavedra/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
+dataset_path = '/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/'
 
 def get_augmentations() -> A.Compose:
 	"""Get the augmentations to apply.
@@ -206,10 +206,48 @@ class MaskRCNN:
         else:
             metadata = MetadataCatalog.get(self.cfg.DATASETS.TRAIN[0])
         
-        v = Visualizer(image[:, :, ::-1], metadata, scale=1.2)
+        v = Visualizer(image[:, :, ::-1], metadata, scale=1.8)
         out = v.draw_instance_predictions(predictions["instances"].to("cpu"))
         return out.get_image()[:, :, ::-1]
     
+    def run_inference(self, image: np.ndarray, num_classes: int = 7) -> dict:
+        """Run inference on the input image or batch of images
+
+        Args:
+            image (np.ndarray): OpenCV image or batch of images. In [B, C, H, W] format.
+            num_classes (int, optional): Number of classes in the model.
+
+        Returns:
+            dict: Dictionary containing the predictions. See https://detectron2.readthedocs.io/tutorials/models.html#model-output-format for specification
+        """
+        if not self.is_coco:
+            self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes
+        predictor = DefaultPredictor(self.cfg)
+        
+        # Make it compatible with batches of images
+        predictions = []
+        if len(image.shape) == 3:
+            pred = predictor(image)
+
+            # Filter instances for cars and pedestrians
+            instances = pred['instances']
+            pred['instances'] = instances
+            predictions = pred
+
+        elif len(image.shape) == 4:
+            for img in image:
+                pred = predictor(img)
+
+                # Filter instances for cars and pedestrians
+                instances = pred['instances']
+                if self.is_coco:
+                    keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 2)
+                else:
+                    keep_mask = (instances.pred_classes == 0) | (instances.pred_classes == 1)
+
+                pred['instances'] = instances[keep_mask]
+                predictions.append(pred)
+        return predictions
 
     def evaluate_model(self, data_dir: str, dataset_name: str = "strawberry", num_classes: int = 7, output_dir: str = "./output/eval") -> dict:
         """Evaluates the model into a custom dataset.
@@ -275,17 +313,24 @@ class MaskRCNN:
         
         except AssertionError:
             print("Dataset already registered, continuing...")
-        
-        # Model parameters
+
+        # Model parameters 
         self.cfg.DATASETS.TRAIN = ("strawberry_train",)
         self.cfg.DATASETS.TEST = ("strawberry_val",)
-        self.cfg.SOLVER.IMS_PER_BATCH = 2
-        self.cfg.SOLVER.BASE_LR = 0.00025
-        self.cfg.SOLVER.MAX_ITER = 2000
-        self.cfg.SOLVER.STEPS = []  # do not decay learning rate
-        self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 128 # faster, and good enough for this toy dataset
+        self.cfg.SOLVER.IMS_PER_BATCH = 8
+        self.cfg.SOLVER.BASE_LR = 0.0009943827408717774
+        self.cfg.SOLVER.LR_SCHEDULER_NAME = 'WarmupCosineLR'
+        self.cfg.SOLVER.WEIGHT_DECAY = 4.369992210931218e-05
+        self.cfg.SOLVER.CLIP_GRADIENTS.ENABLED = False
+        self.cfg.SOLVER.MAX_ITER = 4000
+        self.cfg.MODEL.ROI_HEADS.BATCH_SIZE_PER_IMAGE = 64 # faster, and good enough for this toy dataset
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (ballon)
         self.cfg.MODEL.BACKBONE.FREEZE_AT = 0 
+
+        self.cfg.SOLVER.MOMENTUM = kwargs.get("momentum", 0.9)  # Momentum
+        self.cfg.SOLVER.NESTEROV = kwargs.get("nesterov", False)  # Nesterov momentum
+        self.cfg.SOLVER.GAMMA = kwargs.get("gamma", 0.1) # Learning rate decay factor
+        self.cfg.SOLVER.STEPS = kwargs.get("steps", (100, 2000)) # Steps for learning rate decay
 
         # Fixed parameters (do not change)
         self.cfg.SOLVER.CHECKPOINT_PERIOD = kwargs.get("checkpoint_period", 1000)
@@ -325,15 +370,43 @@ class MaskRCNN:
 
 
 if __name__ == '__main__':
-    
+    '''
     config_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     weights_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
-    score_threshold = 0.7
+    score_threshold = 0.5
     num_workers = 2
-    output_dir = "./output/mask_rcnn_allunfrozen/"
+    output_dir = "./output/mask_rcnn_allunfrozen_real/withAugmentations"
     freeze_backbone = 0
     
     # Get the model
     model = MaskRCNN(config_file, weights_file, score_threshold, num_workers)
     
     model.train_model(dataset_path, "strawberry-disease-dataset", num_classes=7, output_dir=output_dir)
+    '''
+
+    model_weights = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/output/mask_rcnn_allunfrozen_real/withAugmentations/model_final.pth"
+    model = MaskRCNN("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", model_weights, 0.5, 2)
+        
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/train/images/angular_leafspot1.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/angular_leafspot411.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/anthracnose_fruit_rot104.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/blossom_blight190.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/gray_mold490.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/leaf_spot557.jpg"
+    #input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/powdery_mildew_fruit165.jpg"
+    input_image = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/strawberry-disease-detection-dataset/test/images/powdery_mildew_leaf468.jpg"        
+    output_dir = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/maskrcnn/output_visulaizations/powdery_mildew_leaf468.jpg"
+
+    # Get the image
+    image = cv2.imread(input_image)
+    print(f"Image shape: {image.shape}")
+
+    # Get the predictions
+    predictions = model.run_inference(image, num_classes=7)
+    print(f"predictions: {predictions}")
+    visualized_image = model.visualize_predictions(image, predictions, class_names=CLASS_LABELS)
+        
+    # Save image for processing
+    print(f"Visualized image shape: {visualized_image.shape}")
+        
+    cv2.imwrite(f"{output_dir}", visualized_image)
