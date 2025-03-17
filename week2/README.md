@@ -288,6 +288,43 @@ The same command can be used to perform inference on the trained model given an 
 
 #### Mask2Former
 
+Due to time limitations, we were unable to optimize hyperparameters using Optuna. We trained the Mask2Former model on the Strawberry Disease Dataset with the two fine-tuning strategies defined above. To train, use the following command:
+```bash
+python run_instance_segmentation.py \
+    --model_name_or_path facebook/mask2former-swin-tiny-coco-instance \
+    --output_dir finetune-instance-segmentation-mini-mask2former_augmentation_default_backboneFrozen \
+    --dataset_name jsalavedra/strawberry_disease \
+    --do_reduce_labels \
+    --image_height 419 \
+    --image_width 419 \
+    --do_train \
+    --fp16 \
+    --num_train_epochs 10 \
+    --learning_rate 1e-5 \
+    --lr_scheduler_type constant \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 2 \
+    --dataloader_num_workers 8 \
+    --dataloader_persistent_workers \
+    --dataloader_prefetch_factor 4 \
+    --do_eval \
+    --evaluation_strategy epoch \
+    --logging_strategy epoch \
+    --save_strategy epoch \
+    --save_total_limit 2 \
+    --push_to_hub
+```
+In order to set whether the backbone (Swin Transformer) is freezed or unfreezed, uncomment or comment, repsectively the following lines in the `run_instance_segmentation.py` script:
+```
+for param in model.model.pixel_level_module.encoder.parameters():
+        param.requires_grad = False
+```
+
+To perform inference on the trained model given an image, use the following command (set the `image_path` in `main()` and the `output_image_name` in `run_inference()` function):
+```bash
+python3 Mask2Former_inference_seq_ft.py
+```
+
 ## Task D: Analyse the difference among the different object detector models
 
 ## Optional Task: Get Familiar with Segment Anything Model (SAM)
