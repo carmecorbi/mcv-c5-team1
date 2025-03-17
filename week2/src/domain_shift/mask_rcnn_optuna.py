@@ -309,6 +309,7 @@ class MaskRCNN:
         self.cfg.TEST.EVAL_PERIOD = kwargs.get("eval_period", 1000)
 
         self.cfg.MODEL.ROI_HEADS.NUM_CLASSES = num_classes  # only has one class (ballon)
+        
         self.cfg.MODEL.BACKBONE.FREEZE_AT = 0
 
         # Fixed parameters (do not change)

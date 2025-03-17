@@ -370,7 +370,7 @@ class MaskRCNN:
 
 
 if __name__ == '__main__':
-    # Uncomment for training:
+    #Uncomment for training:
     '''
     config_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
     weights_file = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"
@@ -385,7 +385,7 @@ if __name__ == '__main__':
     model.train_model(dataset_path, "strawberry-disease-dataset", num_classes=7, output_dir=output_dir)
     '''
 
-    # Uncomment for inference:
+    #Uncomment for inference:
     '''
     model_weights = "/ghome/c5mcv01/mcv-c5-team1/week2/src/domain_shift/output/mask_rcnn_allunfrozen_real/withAugmentations/model_final.pth"
     model = MaskRCNN("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml", model_weights, 0.5, 2)

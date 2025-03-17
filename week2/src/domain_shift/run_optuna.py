@@ -39,6 +39,7 @@ def objective(trial, model_trainer: MaskRCNN, data_dir: str, dataset_name: str, 
 
 
 if __name__ == '__main__':
+    
     # Parse arguments
     parser = argparse.ArgumentParser(description='Strawberry Disease Dataset')
     parser.add_argument('-d', '--data_dir', help="Path to validation dataset", required=False)
