@@ -21,6 +21,7 @@
   - [Setup](#setup)
 - [Project Structure](#project-structure)
 - [WEEK 1](#week-1)
+- [WEEK 2](#week-2)
 - [Team Members](#team-members)
 - [License](#license)
 
