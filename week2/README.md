@@ -220,6 +220,9 @@ We fine-tuned 2 models: `Mask R-CNN` and `Mask2Former`. Initially, we had to fin
 1. Backbone Frozen
 2. Fully Unfrozen
 
+Since the downloaded dataset provides annotations as .json files in Labelme format, we have had to convert them to the correct format for each case:
+- **Mask R-CNN:**  Labels are expected to be .json files providing image metadata and segmentation information in COCO format (`get_ds_dicts(dataset_path)` in `mask_rcnn_finetune.py`).
+- **Mask2Former:** Annotations are expected to be 3-channel masks images (1st channel: class_id mask, 2nd channel: instance_id mask, 3rd channel: all 0s). We used the `utils.shapes_to_label(img_shape, shapes, label_name_to_value)` function from [labelme GitHub Repository](https://github.com/wkentaro/labelme/blob/main/labelme/utils/shape.py) to get the class and instances GT masks from the .json annotations. We get 1 `.png` mask for each image in the dataset (uploaded train/val sets at HuggingFace (jsalavedra/strawberry_disease) following the HuggingFace scripts provided in this [GitHub](https://github.com/huggingface/transformers/tree/main/examples/pytorch/instance-segmentation). 
 
 
 ### Usage
