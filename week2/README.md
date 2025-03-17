@@ -13,6 +13,32 @@
 
 ## Task A: Run inference and evaluate with pre-trained Faster Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS dataset
 
+### Mask R-CNN
+#### Running Inference
+To perform inference on a single image using the Mask R-CNN model, use the following command:
+
+```bash
+python -m week2.src.main.py -t infer -i /path/to/your/image.jpg -o /path/to/output/directory
+```
+
+##### Required Arguments
+- `-t <infer, train, eval>`: Specifies task (for inference use `infer`)
+- `-i`: Path to input image
+
+##### Optional Arguments
+- `-o`: Output directory for saving visualization (default: None)
+- `-c`: Path to model config file (default: "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+- `-w`: Path to weights file (default: "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml")
+- `-s`: Detection confidence threshold (default: 0.5)
+- `--num_workers`: Number of workers for data loading (default: 4)
+
+The script will process the image and save the visualization with detected objects in the specified output directory as `visualized_image_finetuned.png`.
+
+Below you can find some examples of applying Mask R-CNN to some images:
+| Example 1 | Example 2 |
+|---------------------------------------|---------------------------------------|
+| ![image](https://github.com/user-attachments/assets/618aa76e-e642-4c14-9d89-516f66d67805) | ![image](https://github.com/user-attachments/assets/bf45bd15-e45c-4a7a-86c9-f464f5694902) |
+
 ### Mask2Former
 Mask2Former is a state-of-the-art universal segmentation model capable of instance, panoptic, and semantic segmentation. It is based on a transformer-based architecture, enabling robust and accurate object segmentation. In this project, we use the pre-trained `facebook/mask2former-swin-tiny-coco-instance` model from Hugging Face's transformers library to perform instance segmentation on the KITTI-MOTS dataset.
 
@@ -26,7 +52,6 @@ python3 Mask2Former_inference_seq.py <sequence_id>
 ```
 
 Below are examples from sequence **0016**, showing the output after inference:
-
 | 000014.png | 000201.png |
 |---------------------------------------|---------------------------------------|
 | ![000014](https://github.com/user-attachments/assets/7b602490-f220-487c-bd9a-9ddfea511cbd) | ![000201](https://github.com/user-attachments/assets/f3c52b95-4d54-4946-9e1e-d1282914924f) |
@@ -92,6 +117,25 @@ python ultralytics/evaluation.py --m <model_path>
 
 
 ## Task B: Fine-tune Mask R-CNN, Mask2Former, and YOLO11n-seg on KITTI-MOTS (Similar Domain)
+
+### Mask R-CNN
+#### Usage
+To fine-tune the Mask R-CNN model on your custom dataset, use the following command:
+
+```bash
+python -m src.week2.main.py -t train -d /path/to/dataset -o /path/to/output_directory -c /path/to/model_config --num_workers 4
+```
+
+#### Process Overview
+The training process begins by registering the KITTI-MOTS dataset splits (train and validation) in the Detectron2 catalog. The model configuration is then automatically set up with optimized hyperparameters for fine-tuning. The training runs for 3000 iterations by default, after which a final evaluation is performed on the validation set using the COCO evaluation metrics. All training logs, checkpoints, and the final model weights are saved in the specified output directory.
+
+#### Optional Parameters
+- `--num_workers`: Number of data loading workers (default: 4)
+- `-c`: Path to custom model configuration
+- `-w`: Path to initial weights file
+- `-s`: Detection confidence threshold (default: 0.5)
+
+The trained model can then be used for inference or evaluation tasks using the same script with different task arguments (`-t infer` or `-t eval`). 
 
 ### Mask2Former
 
@@ -226,7 +270,60 @@ Since the downloaded dataset provides annotations as .json files in Labelme form
 
 
 ### Usage
-TODO
+
+#### Mask R-CNN
+
+We started using Optuna to find the optimum set of hyperparameters. To perform hyperparameter optimization for Mask R-CNN training on the Strawberry Disease dataset, use the following command:
+```bash
+python3 run_optuna.py -d /path/to/data -c COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml -w COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml -s score_threshold -o /path/to/output_directory --num_workers num_workers --n_trials number_of_trials
+```
+Each trial was evaluated based on the mAP at IoU=0.5, aiming to maximize performance. The optimization was performed over 15 trials. The optimal hyperparameter values for each strategy can be found in the slides linked at the beginning of this README.md file.
+To set whether the backbone is frozen or trainable, you can modify the value assigned to `self.cfg.MODEL.BACKBONE.FREEZE_AT = value` in `mask_rcnn_optuna.py` (Strategy A: backbone frozen with value=5, Strategy B: backbone unfrozen with value=0).
+
+Once the hyperparameters are set (values must be set on the `mask_rcnn_finetune.py` script at `train_model()` function), the Mask R-CNN model can be fine-tuned on your custom dataset using the following command (Uncomment tha code lines in main() that are marked for training):
+```bash
+python3 mask_rcnn_finetune.py 
+```
+The same command can be used to perform inference on the trained model given an image (Uncomment the code lines in main() that are marked for inference).
+
+#### Mask2Former
+
+Due to time limitations, we were unable to optimize hyperparameters using Optuna. We trained the Mask2Former model on the Strawberry Disease Dataset with the two fine-tuning strategies defined above. To train, use the following command:
+```bash
+python run_instance_segmentation.py \
+    --model_name_or_path facebook/mask2former-swin-tiny-coco-instance \
+    --output_dir finetune-instance-segmentation-mini-mask2former_augmentation_default_backboneFrozen \
+    --dataset_name jsalavedra/strawberry_disease \
+    --do_reduce_labels \
+    --image_height 419 \
+    --image_width 419 \
+    --do_train \
+    --fp16 \
+    --num_train_epochs 10 \
+    --learning_rate 1e-5 \
+    --lr_scheduler_type constant \
+    --per_device_train_batch_size 8 \
+    --gradient_accumulation_steps 2 \
+    --dataloader_num_workers 8 \
+    --dataloader_persistent_workers \
+    --dataloader_prefetch_factor 4 \
+    --do_eval \
+    --evaluation_strategy epoch \
+    --logging_strategy epoch \
+    --save_strategy epoch \
+    --save_total_limit 2 \
+    --push_to_hub
+```
+In order to set whether the backbone (Swin Transformer) is freezed or unfreezed, uncomment or comment, repsectively the following lines in the `run_instance_segmentation.py` script:
+```
+for param in model.model.pixel_level_module.encoder.parameters():
+        param.requires_grad = False
+```
+
+To perform inference on the trained model given an image, use the following command (set the `image_path` in `main()` and the `output_image_name` in `run_inference()` function):
+```bash
+python3 Mask2Former_inference_seq_ft.py
+```
 
 ## Task D: Analyse the difference among the different object detector models
 
