@@ -46,6 +46,7 @@ week1/src/ultralytics/data/
 # Checkpoint files
 *.pt 
 *.ptx
+*.pth
 *.weights
 
 # Byte-compiled / optimized / DLL files

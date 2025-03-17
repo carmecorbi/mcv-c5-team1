@@ -38,12 +38,12 @@ if __name__ == '__main__':
             "batch_size": 16,
             
             # Learning rate and scheduler
-            "base_lr": 7.7e-3,
+            "base_lr": 9.9e-3,
             "lr_scheduler": "WarmupCosineLR",
-            "weight_decay": 1.2e-5,
+            "weight_decay": 1.7e-5,
             
             # Whether to clip gradients or not
-            "clip_gradients": False,
+            "clip_gradients": True,
             
             # Wether to freeze or not the backbone
             "freeze_backbone": False
