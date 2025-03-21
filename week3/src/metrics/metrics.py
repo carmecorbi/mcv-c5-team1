@@ -17,7 +17,7 @@ class Metric:
             raise ValueError("max_order should be 1 or 2 for BLEU-1 and BLEU-2.")
         
         # BLEU scores using Hugging Face evaluate library
-        bleu_score = self.bleu.compute(predictions=predictions, references=references)
+        bleu_score = self.bleu.compute(predictions=predictions, references=references, max_order=max_order)
         return bleu_score['bleu']
     
     def compute_rouge(self, predictions, references):

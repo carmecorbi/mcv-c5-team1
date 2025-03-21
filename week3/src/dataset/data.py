@@ -7,13 +7,10 @@ import torch
 
 
 class Data(Dataset):
-    def __init__(self, data, partition, img_path: str, chars: list, char2idx: dict, tokenizer, text_max_len: int = 201):
+    def __init__(self, data, partition, img_path: str, tokenizer, text_max_len: int = 201):
         self.data = data
         self.img_path = img_path
         self.partition = partition
-        
-        self.chars = chars
-        self.char2idx = char2idx
         
         self.tokenizer = tokenizer
         

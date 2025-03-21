@@ -81,6 +81,8 @@ class Trainer:
             # Decode the token indices to text
             pred_decoded = self.tokenizer.decode(pred_text)
             caption_decoded = self.tokenizer.decode(caption_text)
+            
+            print(pred_decoded, caption_decoded)
 
             # Compute the metrics
             caption_decoded = np.array([[text] for text in caption_decoded], dtype=object)

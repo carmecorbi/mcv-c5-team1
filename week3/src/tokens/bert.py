@@ -2,6 +2,8 @@ from transformers import AutoTokenizer
 from collections import defaultdict
 from typing import Union, List
 
+import numpy as np
+
 
 class BertTokenizer:
     def __init__(self, max_length: int = 201):
@@ -46,8 +48,11 @@ class BertTokenizer:
             str or List[str]: Decoded text(s). Returns a string for a single sequence
                             or a list of strings for a batch.
         """
+        if isinstance(tokens, np.ndarray):
+            tokens = tokens.tolist()
+            
         # Check if tokens is a batch (list of lists) or a single sequence
-        if tokens and isinstance(tokens[0], list):
+        if len(tokens) > 0 and isinstance(tokens[0], list):
             # It's a batch - use batch_decode
             return self.tokenizer.batch_decode(tokens, skip_special_tokens=skip_special_tokens)
         else:

@@ -10,7 +10,8 @@ class Model(nn.Module):
         
         self.device = device if device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.resnet = ResNetModel.from_pretrained('microsoft/resnet-18').to(self.device)
-        self.gru = nn.GRU(512, 512, num_layers=1)
+        #self.gru = nn.GRU(512, 512, num_layers=1)
+        self.LSTM = nn.LSTM(512, 512, num_layers=1)
         self.proj = nn.Linear(512, num_char)
         self.embed = nn.Embedding(num_char, 512)
         self.text_max_len = text_max_len
@@ -25,8 +26,10 @@ class Model(nn.Module):
         start_embeds = start_embed.repeat(batch_size, 1).unsqueeze(0) # 1, batch, 512
         inp = start_embeds
         hidden = feat
+        cell_state = torch.zeros_like(feat)
         for t in range(self.text_max_len - 1): # rm <SOS>
-            out, hidden = self.gru(inp, hidden)
+            #out, hidden = self.gru(inp, hidden)
+            out, (hidden, cell_state) = self.LSTM(inp, (hidden, cell_state))
             inp = torch.cat((inp, out[-1:]), dim=0) # N, batch, 512
     
         res = inp.permute(1, 0, 2) # batch, seq, 512
