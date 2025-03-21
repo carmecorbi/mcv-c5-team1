@@ -1,11 +1,12 @@
 import torch
+import numpy as np
 
 from src.metrics.metrics import Metric
 from tqdm import tqdm
 
 
 class Trainer:
-    def __init__(self, model: torch.nn.Module, optimizer: torch.nn.Module, criterion: torch.nn.Module, device: torch.device = None, **kwargs):
+    def __init__(self, model: torch.nn.Module, optimizer: torch.nn.Module, criterion: torch.nn.Module, tokenizer, device: torch.device = None, **kwargs):
         """Initializes the Trainer object.
 
         Args:
@@ -19,6 +20,7 @@ class Trainer:
         self.optimizer = optimizer
         self.criterion = criterion
         self.metric = Metric()
+        self.tokenizer = tokenizer
         
         # Store additional keyword arguments
         self.kwargs = kwargs
@@ -72,12 +74,17 @@ class Trainer:
             self.optimizer.step()
 
             # Compute the metrics (e.g., BLEU, ROUGE, METEOR)
-            pred_text = torch.argmax(pred, dim=-1)
+            pred_text = torch.argmax(pred, dim=1)
             pred_text = pred_text.cpu().numpy()
             caption_text = caption.cpu().numpy()
+            
+            # Decode the token indices to text
+            pred_decoded = self.tokenizer.decode(pred_text)
+            caption_decoded = self.tokenizer.decode(caption_text)
 
-            # Here, we assume that the metric class returns a dict with values for 'bleu1', 'bleu2', etc.
-            metrics = self.metric(pred_text, caption_text)
+            # Compute the metrics
+            caption_decoded = np.array([[text] for text in caption_decoded], dtype=object)
+            metrics = self.metric(pred_decoded, caption_decoded)
 
             # Accumulate loss and metrics
             total_loss += loss.item()
@@ -108,12 +115,16 @@ class Trainer:
                 loss = self.criterion(pred, caption)
 
                 # Compute the metrics
-                pred_text = torch.argmax(pred, dim=-1)  # Assuming the model generates token indices
+                pred_text = torch.argmax(pred, dim=1)  # Assuming the model generates token indices
                 pred_text = pred_text.cpu().numpy()
                 caption_text = caption.cpu().numpy()
+                
+                pred_decoded = self.tokenizer.decode(pred_text)
+                caption_decoded = self.tokenizer.decode(caption_text)
 
                 # Compute the metrics
-                metrics = self.metric(pred_text, caption_text)
+                caption_decoded = np.array([[text] for text in caption_decoded], dtype=object)
+                metrics = self.metric(pred_decoded, caption_decoded)
 
                 # Accumulate loss and metrics
                 total_loss += loss.item()

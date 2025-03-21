@@ -7,13 +7,15 @@ import torch
 
 
 class Data(Dataset):
-    def __init__(self, data, partition, img_path: str, chars: list, char2idx: dict, text_max_len: int = 201):
+    def __init__(self, data, partition, img_path: str, chars: list, char2idx: dict, tokenizer, text_max_len: int = 201):
         self.data = data
         self.img_path = img_path
         self.partition = partition
         
         self.chars = chars
         self.char2idx = char2idx
+        
+        self.tokenizer = tokenizer
         
         self.num_captions = 1
         self.max_len = text_max_len
@@ -27,21 +29,18 @@ class Data(Dataset):
         return len(self.partition)
     
     def __getitem__(self, idx):
-        real_idx = self.num_captions*self.partition[idx]
+        real_idx = self.num_captions * self.partition[idx]
         item = self.data.iloc[real_idx: real_idx+self.num_captions]
         
         # Image processing
-        img_name = item["Image_Name"].reset_index(drop=True)[0]
-        img = Image.open(f'{self.img_path}/{img_name}.jpg').convert('RGB')
+        try:
+            img_name = item["Image_Name"].reset_index(drop=True)[0]
+            img = Image.open(f'{self.img_path}/{img_name}.jpg').convert('RGB')
+        except FileNotFoundError:
+            print(f"Error loading image {img_name}")
         img = self.img_proc(img)
     
         # Caption processing
         caption = item["Title"].reset_index(drop=True)[random.choice(list(range(self.num_captions)))]
-        cap_list = list(caption)
-        final_list = [self.chars[0]]
-        final_list.extend(cap_list)
-        final_list.extend([self.chars[1]])
-        gap = self.max_len - len(final_list)
-        final_list.extend([self.chars[2]]*gap)
-        cap_idx = [self.char2idx[i] for i in final_list]
+        cap_idx = self.tokenizer.encode(caption)
         return img, torch.tensor(cap_idx)

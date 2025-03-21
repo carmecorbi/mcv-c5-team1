@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+
 from transformers import ResNetModel
 
 
@@ -32,3 +33,4 @@ class Model(nn.Module):
         res = self.proj(res) # batch, seq, 80
         res = res.permute(0, 2, 1) # batch, 80, seq
         return res
+    
