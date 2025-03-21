@@ -329,4 +329,16 @@ python3 Mask2Former_inference_seq_ft.py
 
 ## Optional Task: Get Familiar with Segment Anything Model (SAM)
 
+### Finetuning the Decoder of SAM
+
+The Segment Anything Model (SAM) decoder can be fine-tuned for domain-specific segmentation tasks while keeping the image encoder frozen. This process involves adapting the lightweight mask decoder to new domains without retraining the computationally expensive encoder, significantly reducing computational requirements. The fine-tuning pipeline typically includes preparing a custom dataset, selecting appropriate hyperparameters, and implementing training loops that focus on optimizing the decoder weights for specialized segmentation tasks. 
+
+For a complete implementation walkthrough, refer to the `fine-tuning.ipynb` notebook in the `sam/` folder, which provides detailed code examples and explanations of the entire fine-tuning process.
+
+### Inference with Point and Bounding Box Prompting
+
+SAM's interactive segmentation capabilities allow for inference using sparse prompts such as points and bounding boxes to generate precise masks. Points can be provided as either foreground or background indicators, guiding the model to segment specific objects, while bounding boxes help constrain the region of interest for more accurate segmentation results. The model processes these prompts alongside the encoded image features to predict high-quality segmentation masks in real-time, enabling interactive applications. 
+
+The complete inference pipeline with various prompting strategies is demonstrated in the `inference.ipynb` notebook in the `sam/` folder, which covers loading pretrained models, processing prompts, and visualizing the resulting segmentation masks. 
+
 

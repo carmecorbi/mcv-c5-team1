@@ -1,5 +1,8 @@
 <h2 align="center">WEEK 1: Tasks</h2>
 
+> [!IMPORTANT]
+> The presentation of W1 from this group is available [here](https://docs.google.com/presentation/d/1onJR_VTOPrIKAmnns2oJ8fN6PDFmgm4PDqSOmdVWWFY/edit?usp=sharing). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
+
 ## Table of Contents
 
 - [Project Structure W1](#project-structure-w1)
