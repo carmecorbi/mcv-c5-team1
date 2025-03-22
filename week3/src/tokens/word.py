@@ -1,6 +1,6 @@
 from nltk.tokenize import word_tokenize
 from nltk.probability import FreqDist
-from src.tokens.prepare_data import load_data
+from src.dataset.prepare_data import load_data
 from collections import defaultdict
 from typing import Union, List
 
@@ -28,7 +28,7 @@ class WordTokenizer:
         
         print("Length of special_words:", len(special_chars))
         print("Special words:", special_chars)
-        print("First few vocab items:", vocab[:5])
+        print("First few vocab items:", vocab[:20])
 
     def encode(self, text):
         """

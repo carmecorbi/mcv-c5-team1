@@ -2,9 +2,8 @@ import os
 import json
 import pickle
 import pandas as pd
+
 from sklearn.model_selection import train_test_split
-from torch import nn
-from torch.utils.data import DataLoader
 
 
 def load_data(csv_path):
@@ -12,8 +11,18 @@ def load_data(csv_path):
 
     data = pd.read_csv(csv_path)
     df = data[['Image_Name', 'Title']]
+    
+    # Remove rows with NaN values in either column
+    df = df.dropna(subset=['Image_Name', 'Title'])
+    
+    # Remove rows with empty strings in either column
+    df = df[(df['Image_Name'] != '') & (df['Title'] != '')]
+    
+    # Filter out rows with '#NAME?'
     df = df[df['Image_Name'] != '#NAME?']  # Filter out rows with '#NAME?'
-    df['Title'] = df['Title'].fillna('').astype(str)
+    
+    # Set title to string type
+    df['Title'] = df['Title'].astype(str)
     return df
 
 def extract_characters(df, char_set_path: str):
@@ -75,29 +84,18 @@ def load_partitions_from_csv(train_csv: str, val_csv: str, test_csv: str, partit
     return partitions
 
 def main_prepare_data_split():
-    char_set_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/char_set.pkl'
-
     csv_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/raw_data.csv'
+    partitions_dir = '/ghome/c5mcv01/mcv-c5-team1/week3/data'
     
     df = load_data(csv_path)
-    #chars_set = extract_characters(df, char_set_path)
-    #train, val, test = split_data(df, partitions_dir, test_size=0.2, val_size=0.5)
-
+    _ = split_data(df, partitions_dir, test_size=0.2, val_size=0.5)
 
     total_images = df.shape[0]
-    print("Total images:", total_images)
+    print("Total images:", total_images) 
 
-    all_chars = extract_characters(df, char_set_path)  
+if __name__ == "__main__":
+    main_prepare_data_split()
 
-
-    print("Character Set Loaded:", all_chars)
-
-    # Verify the dictionaries
-    NUM_CHAR = len(char2idx)   
-
-#if __name__ == "__main__":
-
-    
 
 
 

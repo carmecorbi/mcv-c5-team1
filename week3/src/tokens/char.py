@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.dataset.prepare_data import load_data
+
 
 class CharTokenizer:
     def __init__(self, vocab, special_chars, max_len=None):
@@ -21,7 +23,7 @@ class CharTokenizer:
         
         print("Length of special_chars:", len(special_chars))
         print("Special chars:", special_chars)
-        print("First few vocab items:", vocab[:5])
+        print("First few vocab items:", vocab[:25])
     
     def encode(self, text):
         """
@@ -43,7 +45,11 @@ class CharTokenizer:
     def _encode_single(self, text):
         """Helper method to encode a single text input"""
         # Convert text to character list
-        char_list = list(text)
+        try:
+            char_list = list(text)
+        except TypeError:
+            print(f"WARNING: Error converting text to character list: {text}")
+            char_list = [' ']
         
         # Add special characters
         final_list = [self.chars[0]]  # Start token
@@ -103,3 +109,32 @@ class CharTokenizer:
     
     def __len__(self):
         return len(self.vocab)
+    
+    
+def get_vocabulary(csv_path):
+    """
+    Load data from a CSV file.
+    
+    Args:
+        csv_path (str): Path to the CSV file
+        
+    Returns:
+        tuple: Tuple containing the following elements:
+            all_chars_list (list): List of unique characters in the dataset
+            char2idx (dict): Mapping from character to index
+            idx2char (dict): Mapping from index to character
+    """
+    # Load data
+    df = load_data(csv_path)
+    special_chars = ['<SOS>', '<EOS>', '<PAD>']
+
+    # Extract unique characters from the 'Title' column
+    all_chars = set()
+    for caption in df['Title']:
+        all_chars.update(caption)
+    all_chars_list = special_chars + sorted(list(all_chars))
+
+    # Create the char2idx and idx2char dictionaries
+    char2idx = {char: idx for idx, char in enumerate(sorted(all_chars_list))}
+    idx2char = {idx: char for char, idx in char2idx.items()}
+    return all_chars_list, char2idx, idx2char

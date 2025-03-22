@@ -41,10 +41,25 @@ class Metric:
         Computes BLEU, ROUGE-L, and METEOR scores.
         This method can be called to compute all metrics at once.
         """
-        bleu_score_1 = self.compute_bleu(predictions, references, max_order=1)  # BLEU-1
-        bleu_score_2 = self.compute_bleu(predictions, references, max_order=2)  # BLEU-2
-        rouge_L_score = self.compute_rouge(predictions, references)  # ROUGE-L
-        meteor_score_value = self.compute_meteor(predictions, references)  # METEOR
+        try:
+            bleu_score_1 = self.compute_bleu(predictions, references, max_order=1)  # BLEU-1
+        except ZeroDivisionError:
+            bleu_score_1 = 0.0
+            
+        try:
+            bleu_score_2 = self.compute_bleu(predictions, references, max_order=2)  # BLEU-2
+        except ZeroDivisionError:
+            bleu_score_2 = 0.0
+            
+        try:
+            rouge_L_score = self.compute_rouge(predictions, references)  # ROUGE-L
+        except ZeroDivisionError:
+            rouge_L_score = 0.0
+            
+        try:
+            meteor_score_value = self.compute_meteor(predictions, references)  # METEOR
+        except ZeroDivisionError:
+            meteor_score_value = 0.0
         
         # Return all metrics in a dictionary
         return {

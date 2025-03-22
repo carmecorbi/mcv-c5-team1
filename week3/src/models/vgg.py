@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
+import torchvision.models as models
 
-from transformers import ResNetModel
 
 
 class Model(nn.Module):
@@ -9,7 +9,9 @@ class Model(nn.Module):
         super().__init__()
         
         self.device = device if device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.resnet = ResNetModel.from_pretrained('microsoft/resnet-18').to(self.device)
+        self.vgg = models.vgg16(pretrained=True).features.to(self.device)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))  # Para reducir a 1x1x512
+        self.flatten = nn.Flatten()  # Para convertir a (batch, 512)
         self.gru = nn.GRU(512, 512, num_layers=1)
         self.proj = nn.Linear(512, num_char)
         self.embed = nn.Embedding(num_char, 512)
@@ -18,8 +20,9 @@ class Model(nn.Module):
 
     def forward(self, img):
         batch_size = img.shape[0]
-        feat = self.resnet(img)
-        feat = feat.pooler_output.squeeze(-1).squeeze(-1).unsqueeze(0) # 1, batch, 512
+        feat = self.avgpool(feat)  # Reduce a (batch, 512, 1, 1)
+        feat = self.flatten(feat)  # Convierte a (batch, 512)
+        feat = feat.unsqueeze(0)  # Para que coincida con GRU: (1, batch, 512)
         start = torch.tensor(self.char2idx['<SOS>']).to(self.device)
         start_embed = self.embed(start) # 512
         start_embeds = start_embed.repeat(batch_size, 1).unsqueeze(0) # 1, batch, 512

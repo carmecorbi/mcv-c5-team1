@@ -6,7 +6,7 @@ import numpy as np
 
 
 class BertTokenizer:
-    def __init__(self, max_length: int = 201):
+    def __init__(self, max_length: int = 60):
         """Word-piece tokenizer using BERT tokenizer.
 
         Args:
