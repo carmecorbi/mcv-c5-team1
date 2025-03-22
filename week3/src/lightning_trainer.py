@@ -163,8 +163,8 @@ def train_with_lightning(
         devices='auto',
         logger=logger,
         callbacks=[
-            pl.callbacks.ModelCheckpoint(monitor='val_loss', mode='min'),
-            pl.callbacks.EarlyStopping(monitor='val_loss', patience=3, mode='min')
+            pl.callbacks.ModelCheckpoint(monitor='val_loss', mode='min', save_last=True),
+            pl.callbacks.EarlyStopping(monitor='train_loss', patience=5, mode='min')
         ]
     )
     

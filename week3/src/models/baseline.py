@@ -5,7 +5,7 @@ from transformers import ResNetModel
 
 
 class Model(nn.Module):
-    def __init__(self, num_char: int, char2idx: dict, text_max_len: int = 201, device: torch.device = None):
+    def __init__(self, num_char: int, char2idx: dict, text_max_len: int = 201, device: torch.device = None, freeze_backbone: bool = False):
         super().__init__()
         
         self.device = device if device else torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -13,6 +13,13 @@ class Model(nn.Module):
         self.gru = nn.GRU(512, 512, num_layers=1)
         self.proj = nn.Linear(512, num_char)
         self.embed = nn.Embedding(num_char, 512)
+        
+        # Freeze ResNet
+        if freeze_backbone:
+            for param in self.resnet.parameters():
+                print(f"Freezing {param.shape}")
+                param.requires_grad = False
+        
         self.text_max_len = text_max_len
         self.char2idx = char2idx
 
