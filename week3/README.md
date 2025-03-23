@@ -90,7 +90,10 @@ In this approach, the model uses a BERT-based tokenizer from HuggingFace, which 
 **Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
 **Decoding**: Convert token IDs back into word sequences using the tokenizer.
 
-### 
+### Word-level Text Representation
+In this approach, text is tokenized at the word-level. Each word in the caption is treated as a separate token, and spaces are also included as individual tokens.
+**Encoding**: The caption is split into words, and tokens are mapped to indices. Special tokens like <SOS> (start), <EOS> (end), and <PAD> (padding) are added.
+**Decoding**: The token indices are converted back into a sequence of words. The <EOS> token marks the end of the caption, and the <SOS> token is removed if present at the start.
 
 ## Change the Encoder of the Baseline Model to VGG-16
 
