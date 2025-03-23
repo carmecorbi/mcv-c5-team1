@@ -17,14 +17,14 @@ The dataset consists of **13,466 images** of various food dishes. It has been sp
 - **Validation Set (10%)**: 1,347 images
 - **Test Set (10%)**: 1,347 images
 
-The objective of this dataset is to **predict food dish titles** based on images of dishes. The dataset is available from Kaggle and was originally expected to contain 13,582 images and their corresponding annotations (5 columns). However, after cleaning the data, **13,501 images** were actually available for further use.
+The dataset is available from Kaggle and was originally expected to contain 13,582 images and their corresponding annotations (5 columns). However, after cleaning the data, **13,501 images** were actually available for further use.
 
-**Download the dataset**: Run the following command to download the dataset.
+To **download the dataset**, run the following command:
    ```bash
    python src/dataset/download.py
 ```
 ### Dataset Cleaning Process
-Before proceeding with training the model, the dataset underwent a cleaning process:
+Before training the model, the dataset underwent a cleaning process:
 
 1. **Removed Rows with Empty or Missing Data:**
    - Rows with empty strings in the `Image_Name` or `Title` columns were removed.
@@ -35,7 +35,7 @@ Before proceeding with training the model, the dataset underwent a cleaning proc
 
 After cleaning, the dataset was reduced to **13,446 images**.
 
-**Clean and split the dataset**: Run the following command:
+**To clean and split the dataset**, run the following command:
 ```bash
 python src/dataset/prepare_data.py
 ```
@@ -49,7 +49,7 @@ In the baseline model, the task is to predict the food dish title from an image.
 
 The process follows the character-level representation approach, meaning that we treat each word in the dish title as a sequence of characters, not words. 
 
-**Train baseline model**: Run the following command:
+**To train the baseline model**, run the following command:
 ```bash
 python src/train_example_char.py
 ```
@@ -75,11 +75,11 @@ The following metrics were used to evaluate the model’s performance:
 ## Change the Text Representation Level among Wordpiece-Level and Word-level
 
 ### Wordpiece-level Text Representation
-In this approach, the model uses a BERT-based tokenizer from HuggingFace, which tokenizes text into subword units (wordpieces).
-**Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
-**Decoding**: Convert token IDs back into word sequences using the tokenizer.
+In this approach, the model uses a **BERT-based tokenizer** from HuggingFace, which tokenizes text into subword units (wordpieces).
+- **Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
+- **Decoding**: Convert token IDs back into word sequences using the tokenizer.
 
-**Train baseline model + wordpiece-level**: Run the following command:
+To train the baseline model with wordpiece-level representation, run the following command:
 ```bash
 python src/train_example_bert.py
 ```
@@ -95,10 +95,10 @@ python src/train_example_bert.py
 
 ### Word-level Text Representation
 In this approach, text is tokenized at the word-level. Each word in the caption is treated as a separate token, and spaces are also included as individual tokens.
-**Encoding**: The caption is split into words, and tokens are mapped to indices. Special tokens like <SOS> (start), <EOS> (end), and <PAD> (padding) are added.
-**Decoding**: The token indices are converted back into a sequence of words. The <EOS> token marks the end of the caption, and the <SOS> token is removed if present at the start.
+- **Encoding**: The caption is split into words, and tokens are mapped to indices. Special tokens like <SOS> (start), <EOS> (end), and <PAD> (padding) are added.
+- **Decoding**: The token indices are converted back into a sequence of words. The <EOS> token marks the end of the caption, and the <SOS> token is removed if present at the start.
 
-**Train baseline model + word-level**: Run the following command:
+To train the baseline model with word-level representation, run the following command:
 ```bash
 python src/train_example_word.py
 ```
@@ -113,13 +113,16 @@ python src/train_example_word.py
 | **Loss**    | 0.26       | 3.98            | 1.85      |
 
 ### Conclusions
-Among the three tokenization approaches, word-piece (Bert) clearly outperforms both character-level (which failed completely) and word-level representations. All models suffer from severe overfitting, with the word-piece model showing a large generalization gap despite getting the best training metrics. 
-These findings suggest that while tokenization strategy significantly impacts model capabilities, additional regularization, model modifications, or pre-training are necessary to address generalization issues.
+Among the three tokenization approaches,**wordpiece-level tokenization (BERT)** clearly outperforms both character-level and word-level representations. However, all models suffered from severe overfitting, with the wordpiece model showing a large generalization gap despite achieving the best training metrics.
+
+These findings suggest that while the choice of tokenization strategy significantly impacts model performance, additional regularization, model modifications, or pre-training may be necessary to address generalization issues.
+
+
 
 ## Change the Encoder of the Baseline Model to VGG-16
-In this task, we replaced the ResNet-18 encoder with a VGG-16 encoder. The VGG-16 model is a convolutional neural network (CNN) architecture with 16 layers, which is commonly used in image classification tasks. 
+In this task, we replaced the ResNet-18 encoder with a **VGG-16 encoder**. VGG-16 is a convolutional neural network (CNN) architecture with 16 layers, often used for image classification tasks.
 
-The GRU decoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
+The **GRU decoder** remains unchanged from the baseline model, and the text representation level used is **wordpiece-level**.
 
 **Train Encoder VGG-16**:
 
@@ -137,9 +140,9 @@ The GRU decoder remains unchanged from the baseline model and the text represent
 | VGG-16      |            |            |             |            |          |
 
 ## Change the Decoder of the Baseline Model To LSTM
-In this task, we replaced the GRU decoder with an LSTM decoder. LSTM (Long Short-Term Memory) is a type of Recurrent Neural Network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
+In this task, we replaced the **GRU decoder** with an **LSTM decoder**. LSTM (Long Short-Term Memory) is a type of recurrent neural network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
 
-The ResNet-18 encoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
+The **ResNet-18 encoder** remains unchanged from the baseline model, and the text representation level used is **wordpiece-level**.
 
 **Train Decoder LSTM**:
 
