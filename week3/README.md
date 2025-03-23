@@ -83,6 +83,15 @@ In this approach, the model uses a BERT-based tokenizer from HuggingFace, which 
 ```bash
 python src/train_example_bert.py
 ```
+#### Results
+
+| **Metric**  | **Train**  | **Validation**  | **Test**  |
+|-------------|------------|-----------------|-----------|
+| **BLEU-1**  | 0.64       | 0.08            | 0.07      |
+| **BLEU-2**  | 0.53    | 4.78e-3               | 4.41e-3         |
+| **ROUGE-L** | 0.67    | 0.06               | 0.06   |
+| **METEOR**  | 0.63    | 0.04               | 0.03   |
+| **Loss**    | 0.16       | 1.24            | 1.27      |
 
 ### Word-level Text Representation
 In this approach, text is tokenized at the word-level. Each word in the caption is treated as a separate token, and spaces are also included as individual tokens.
@@ -93,6 +102,15 @@ In this approach, text is tokenized at the word-level. Each word in the caption 
 ```bash
 python src/train_example_word.py
 ```
+
+#### Results
+| **Metric**  | **Train**  | **Validation**  | **Test**  |
+|-------------|------------|-----------------|-----------|
+| **BLEU-1**  | 0.38       | 0.02            | 8.14e-3      |
+| **BLEU-2**  | 0.31    | 0.01               | 4.84e-4         |
+| **ROUGE-L** | 0.73    | 0.05               | 0.03   |
+| **METEOR**  | 0.66    | 0.03               | 0.02   |
+| **Loss**    | 0.26       | 3.98            | 1.85      |
 
 ## Change the Encoder of the Baseline Model to VGG-16
 
