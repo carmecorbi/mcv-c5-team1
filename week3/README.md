@@ -8,6 +8,7 @@
 - [Task 4: Train and Evaluate the Baseline Model with the Food Dataset](#task-4-train-and-evaluate-the-baseline-model-with-the-food-dataset)
 - [Tasks 6 & 7: Modify the Baseline Model, Train and Evaluate Custom Models](#tasks-6--7-modify-the-baseline-model-train-and-evaluate-custom-models)
   - [Change the Text Representation Level among Wordpiece-Level and Word-level](#change-the-text-representation-level-among-wordpiece-level-and-word-level)
+  - [Change the Encoder of the Baseline Model to VGG-16](#change-the-encoder-of-the-baseline-model-to-vgg-16)
   - [Change the Decoder of the Baseline Model To LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
 
 ## Project Structure W2
