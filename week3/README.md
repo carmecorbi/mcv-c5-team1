@@ -121,9 +121,29 @@ In this task, we replaced the ResNet-18 encoder with a VGG-16 encoder. The VGG-1
 
 The GRU decoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
 
+**Train Encoder VGG-16**:
+
+### Results
+| **Encoder** | **BLEU-1** | **BLEU-2** | **ROUGE-L** | **METEOR** | **Loss** |
+|-------------|------------|------------|-------------|------------|----------|
+| **Train**   |            |            |             |            |          |
+| ResNet-18   | 0.64       | 0.53       | 0.67        | 0.63       | 0.16     |
+| VGG-16      |            |            |             |            |          |
+| **Val**     |            |            |             |            |          |
+| ResNet-18   | 0.08       | 4.78e-3    | 0.06        | 0.04       | 1.24     |
+| VGG-16      |            |            |             |            |          |
+| **Test**    |            |            |             |            |          |
+| ResNet-18   | 0.07       | 4.41e-3    | 0.06        | 0.03       | 1.27     |
+| VGG-16      |            |            |             |            |          |
+
 ## Change the Decoder of the Baseline Model To LSTM
 In this task, we replaced the GRU decoder with an LSTM decoder. LSTM (Long Short-Term Memory) is a type of Recurrent Neural Network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
 
 The ResNet-18 encoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
+
+**Train Decoder LSTM**:
+
+### Results
+
 
 
