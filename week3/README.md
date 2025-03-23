@@ -8,7 +8,6 @@
 - [Change the decoder of the baseline model to LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
 
 
-
 ## Train and evaluate the baseline model with the food dataset
 
 ## Change the text representation level among wordpiece-level and word-level. 
