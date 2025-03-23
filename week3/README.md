@@ -112,6 +112,11 @@ python src/train_example_word.py
 | **METEOR**  | 0.66    | 0.03               | 0.02   |
 | **Loss**    | 0.26       | 3.98            | 1.85      |
 
+### Conclusions
+Among the three tokenization approaches, word-piece (Bert) clearly outperforms both character-level (which failed completely) and word-level representations. All models suffer from severe overfitting, with the word-piece model showing a large generalization gap despite getting the best training metrics. 
+These findings suggest that while tokenization strategy significantly impacts model capabilities, additional regularization, model modifications, or pre-training are necessary to address generalization issues.
+
+
 ## Change the Encoder of the Baseline Model to VGG-16
 
 ## Change the Decoder of the Baseline Model To LSTM
