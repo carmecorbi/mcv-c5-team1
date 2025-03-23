@@ -23,6 +23,22 @@ The objective of this dataset is to **predict food dish titles** based on images
    ```bash
    python src/dataset/download.py
 ```
+### Dataset Cleaning Process
+Before proceeding with training the model, the dataset underwent a cleaning process:
+
+1. **Removed Rows with Empty or Missing Data:**
+   - Rows with empty strings in the `Image_Name` or `Title` columns were removed.
+   - Rows with `NaN` values in the `Image_Name` or `Title` columns were removed.
+   
+2. **Filtered Out Invalid Image Names:**
+   - Rows with the value `#NAME?` in the `Image_Name` column were removed.
+
+After cleaning, the dataset was reduced to **13,446 images**.
+
+**Clean and split the dataset** Run the following command:
+```bash
+python src/dataset/prepare_data.py
+```
 
 ## Change the text representation level among wordpiece-level and word-level. 
 
