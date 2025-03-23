@@ -8,7 +8,7 @@
 - [Change the Decoder of the Baseline Model To LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
 
 
-## Train and evaluate the baseline model with the food dataset
+## Train and Evaluate the Baseline Model with the Food Dataset
 
 ### Dataset overview
 The dataset consists of **13,466 images** of various food dishes. It has been split into training, validation, and test sets as follows:
@@ -83,7 +83,7 @@ The following metrics were used to evaluate the model’s performance:
 | **METEOR**  | 3.99e-2    | 0               | 6.40e-6   |
 | **Loss**    | 0.38       | 0.65            | 0.67      |
 
-## Change the text representation level among wordpiece-level and word-level. 
+## Change the Text Representation Level among Wordpiece-Level and Word-level
 
 ### Wordpiece-level Text Representation
 In this approach, the model uses a BERT-based tokenizer from HuggingFace, which tokenizes text into subword units (wordpieces).
@@ -92,9 +92,9 @@ In this approach, the model uses a BERT-based tokenizer from HuggingFace, which 
 
 ### 
 
-## Change the encoder of the baseline model: VGG-16
+## Change the Encoder of the Baseline Model to VGG-16
 
-## Change the decoder of the baseline model: LSTM
+## Change the Decoder of the Baseline Model To LSTM
 
 
 
