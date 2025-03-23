@@ -29,7 +29,7 @@ val_csv_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/val.csv'
 test_csv_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/test.csv'
 
 # Create a directory for saving study results
-STUDY_DIR = 'optuna_studies'
+STUDY_DIR = 'optuna_studies_new'
 os.makedirs(STUDY_DIR, exist_ok=True)
 
 def objective(trial: Trial):
@@ -44,6 +44,9 @@ def objective(trial: Trial):
     if use_gracient_clip:
         gradient_clip_val = trial.suggest_float("gradient_clip_val", 0.1, 10.0, log=True)
     freeze_backbone = trial.suggest_categorical("freeze_backbone", [True, False])
+    
+    # 2.1. Optimizers
+    optimizer_name = trial.suggest_categorical("optimizer", ["adam", "adamw", "sgd"])
     
     # Scheduler parameters
     use_scheduler = trial.suggest_categorical("use_scheduler", [True, False])
@@ -72,7 +75,7 @@ def objective(trial: Trial):
     use_attention = trial.suggest_categorical("use_attention", [True, False])
     
     # Number of layers
-    num_layers = trial.suggest_int("num_layers", 1, 3)
+    num_layers = trial.suggest_int("num_layers", 2, 3)
     
     # Get char2idx
     _, char2idx, _ = get_vocabulary(csv_path)
@@ -111,8 +114,8 @@ def objective(trial: Trial):
     ).to(DEVICE)
     
     # Build experiment name
-    exp_name = f"optuna_trial_{trial.number}_lr{learning_rate:.6f}_dropout{dropout_rate:.2f}"
-    _, trainer = train_with_lightning(
+    exp_name = f"optuna2_trial_{trial.number}_lr{learning_rate:.6f}_dropout{dropout_rate:.2f}"
+    _, _, best_val_loss = train_with_lightning(
         model=model,
         criterion=nn.CrossEntropyLoss(),
         tokenizer=bert_tokenizer,
@@ -120,6 +123,7 @@ def objective(trial: Trial):
         val_loader=dataloader_valid,
         test_loader=dataloader_test,
         max_epochs=MAX_EPOCHS,
+        optimizer_name=optimizer_name,
         learning_rate=learning_rate,
         use_teacher_forcing=use_teacher_forcing,
         teacher_forcing_ratio=teacher_forcing_ratio,
@@ -127,13 +131,12 @@ def objective(trial: Trial):
         scheduler_type=scheduler_type,
         scheduler_params=scheduler_params,
         early_stopping_criteria="val_loss",
+        save_dir=f'/ghome/c5mcv01/mcv-c5-team1/week3/{STUDY_DIR}',
         exp_name=exp_name
     )
     
     # TODO: Change all of this to use the actual metric from the model
-    val_metrics = trainer.callback_metrics
-    print(f"Trial {trial.number} - Validation loss: {val_metrics['val_loss'].item()}")
-    return val_metrics["val_loss"].item()
+    return best_val_loss
 
 def main():
     # Create a timestamp for the study

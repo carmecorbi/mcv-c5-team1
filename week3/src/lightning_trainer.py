@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import pytorch_lightning as pl
+import pandas as pd
 
 from lightning.pytorch.loggers import CSVLogger
 from src.metrics.metrics import Metric
@@ -184,6 +185,7 @@ def train_with_lightning(
     val_loader, 
     test_loader, 
     max_epochs=10,
+    optimizer_name='adam',
     learning_rate=1e-3,
     use_teacher_forcing=False,
     teacher_forcing_ratio=0.5,
@@ -199,11 +201,21 @@ def train_with_lightning(
     # Set up logger
     logger = CSVLogger(save_dir, name=exp_name)
     
+    if optimizer_name == 'adam':
+        optimizer_class = torch.optim.Adam
+    elif optimizer_name == 'sgd':
+        optimizer_class = torch.optim.SGD
+    elif optimizer_name == 'adamw':
+        optimizer_class = torch.optim.AdamW
+    else:
+        raise ValueError(f"Invalid optimizer name: {optimizer_name}")
+    
     # Create Lightning module
     lightning_model = LightningTrainer(
         model=model,
         criterion=criterion,
         tokenizer=tokenizer,
+        optimizer_class=optimizer_class,
         learning_rate=learning_rate,
         use_teacher_forcing=use_teacher_forcing,
         teacher_forcing_ratio=teacher_forcing_ratio,
@@ -232,6 +244,13 @@ def train_with_lightning(
         val_dataloaders=val_loader
     )
     
+    # Get the val loss from loggers metrics
+    csv_path = f"{save_dir}/{exp_name}/metrics.csv"
+    metrics_df = pd.read_csv(csv_path)
+    print(metrics_df.columns)
+    val_loss = metrics_df['val_loss'].dropna()  # Drop NaN values (if any)
+    best_val_loss = val_loss.min()
+    
     # Test the model
     trainer.test(dataloaders=test_loader)
-    return lightning_model, trainer
+    return lightning_model, trainer, best_val_loss
