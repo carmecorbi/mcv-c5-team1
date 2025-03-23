@@ -82,6 +82,8 @@ The following metrics were used to evaluate the model’s performance:
 -**ROUGE-L**: Measures the Longest Common Subsequence (LCS) between the predicted and reference captions.
 - **METEOR**: Evaluates similarity based on unigram precision, recall, word matches, lengths, and word order.
 
+For evaluation, use the script `evaluation.py` by changing the `checkpoint_path` of the model.
+
 #### Results
 
 | **Metric**  | **Train**  | **Validation**  | **Test**  |
