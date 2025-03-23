@@ -64,6 +64,31 @@ The model was trained using the following configuration:
 ```bash
 python src/train_example_char.py
 ```
+### Evaluation
+
+We evaluate the baseline model using the following metrics:
+
+#### BLEU-1
+- Measures the precision of 1-gram (unigram) matches between predicted and reference captions, with a brevity penalty for shorter predictions.
+
+#### BLEU-2
+- Measures the precision of 2-gram (bigram) matches between predicted and reference captions, with a brevity penalty.
+
+#### ROUGE-L
+- Measures the Longest Common Subsequence (LCS) between predicted and reference captions.
+
+#### METEOR
+- Evaluates similarity based on unigram Precision, Recall, word matches, lengths, and word order.
+
+#### Results
+
+| **Metric**  | **Train**  | **Validation**  | **Test**  |
+|-------------|------------|-----------------|-----------|
+| **BLEU-1**  | 2.79e-3    | 0               | 0         |
+| **BLEU-2**  | 7.07e-4    | 0               | 0         |
+| **ROUGE-L** | 7.34e-2    | 0               | 8.07e-6   |
+| **METEOR**  | 3.99e-2    | 0               | 6.40e-6   |
+| **Loss**    | 0.38       | 0.65            | 0.67      |
 
 ## Change the text representation level among wordpiece-level and word-level. 
 
