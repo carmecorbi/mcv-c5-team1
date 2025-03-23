@@ -146,18 +146,23 @@ The **GRU decoder** remains unchanged from the baseline model, and the text repr
 
 **Train Encoder VGG-16**:
 
+To train the baseline model with **wordpiece-level** representation and **VGG-16 Encoder**, run the following command:
+```bash
+python src/train_example_bert_vgg.py
+```
+
 #### Results
 | **Encoder** | **BLEU-1** | **BLEU-2** | **ROUGE-L** | **METEOR** | **Loss** |
 |-------------|------------|------------|-------------|------------|----------|
 | **Train**   |            |            |             |            |          |
 | ResNet-18   | 0.64       | 0.53       | 0.67        | 0.63       | 0.16     |
-| VGG-16      |            |            |             |            |          |
+| VGG-16      | 0.54       | 0.41       | 0.56        | 0.50       | 0.21     |
 | **Val**     |            |            |             |            |          |
 | ResNet-18   | 0.08       | 4.78e-3    | 0.06        | 0.04       | 1.24     |
-| VGG-16      |            |            |             |            |          |
+| VGG-16      | 0.08       | 8.74e-4    | 0.06        | 0.04       | 1.23     |
 | **Test**    |            |            |             |            |          |
 | ResNet-18   | 0.07       | 4.41e-3    | 0.06        | 0.03       | 1.27     |
-| VGG-16      |            |            |             |            |          |
+| VGG-16      | 0.07       | 2.24e-3    | 0.05        | 0.04       | 1.26     |
 
 ### Change the Decoder of the Baseline Model To LSTM
 In this task, we replaced the **GRU decoder** with an **LSTM decoder**. LSTM (Long Short-Term Memory) is a type of recurrent neural network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
