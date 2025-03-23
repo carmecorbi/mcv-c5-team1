@@ -119,9 +119,11 @@ These findings suggest that while tokenization strategy significantly impacts mo
 ## Change the Encoder of the Baseline Model to VGG-16
 In this task, we replaced the ResNet-18 encoder with a VGG-16 encoder. The VGG-16 model is a convolutional neural network (CNN) architecture with 16 layers, which is commonly used in image classification tasks. 
 
-The GRU decoder remains unchanged from the baseline model and the text representation level is Wordpiece-level. 
+The GRU decoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
 
 ## Change the Decoder of the Baseline Model To LSTM
+In this task, we replaced the GRU decoder with an LSTM decoder. LSTM (Long Short-Term Memory) is a type of Recurrent Neural Network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
 
+The ResNet-18 encoder remains unchanged from the baseline model and the text representation level used is Wordpiece-level. 
 
 
