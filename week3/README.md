@@ -49,6 +49,17 @@ In the baseline model, the task is to predict the food dish title from an image.
 
 The process follows the character-level representation approach, meaning that we treat each word in the dish title as a sequence of characters, not words. 
 
+### Training Strategy
+
+The model was trained using the following configuration:
+
+- **Batch Size**: The training was done in batches of 60 images to ensure efficient training while balancing memory usage.
+- **Epochs**: The model was trained for 100 epochs, allowing enough time for the network to learn and converge.
+- **Learning Rate**: The learning rate was set to 1e-3 to ensure smooth and stable learning.
+- **Optimizer**: The Adam optimizer was used due to its efficiency in training deep learning models.
+- **Loss Function**: The model used **Cross-Entropy Loss**, which is appropriate for sequence prediction tasks like this one.
+- **Early Stopping**: Early stopping was enabled to prevent overfitting by monitoring the training loss and stopping training if the loss did not improve after a certain number of epochs.
+
 ## Change the text representation level among wordpiece-level and word-level. 
 
 ## Change the encoder of the baseline model: VGG-16
