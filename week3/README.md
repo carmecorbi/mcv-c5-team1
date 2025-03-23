@@ -2,10 +2,10 @@
 
 ## Table of Contents
 
-- [Train and evaluate the baseline model with the food dataset](#train-and-evaluate-the-baseline-model-with-the-food-dataset)
-- [Change the text representation level among wordpiece-level and word-level](#change-the-text-representation-level-among-wordpiece-level-and-word-level)
-- [Change the encoder of the baseline model to VGG-16](#change-the-encoder-of-the-baseline-model-to-vgg-16)
-- [Change the decoder of the baseline model to LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
+- [Train and Evaluate the Baseline Model with the Food Dataset](#train-and-evaluate-the-baseline-model-with-the-food-dataset)
+- [Change the Text Representation Level among Wordpiece-Level and Word-level](#change-the-text-representation-level-among-wordpiece-level-and-word-level)
+- [Change the Encoder of the Baseline Model to VGG-16](#change-the-encoder-of-the-baseline-model-to-vgg-16)
+- [Change the Decoder of the Baseline Model To LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
 
 
 ## Train and evaluate the baseline model with the food dataset
@@ -89,6 +89,8 @@ The following metrics were used to evaluate the model’s performance:
 In this approach, the model uses a BERT-based tokenizer from HuggingFace, which tokenizes text into subword units (wordpieces).
 **Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
 **Decoding**: Convert token IDs back into word sequences using the tokenizer.
+
+### 
 
 ## Change the encoder of the baseline model: VGG-16
 
