@@ -1,14 +1,44 @@
-<h2 align="center">WEEK 3: Tasks</h2>
+<h2 align="center">WEEK 3: Multimodal Recognition (Image Captioning)</h2>
 
 ## Table of Contents
+
+- [Project Structure W2](#project-structure-w2)
+- [Task 1: Download the dataset](#task-1-download-the-dataset-food-ingredients-and-recipes-dataset-and-split-the-data-into-80-10-10-for-training-validation-and-test-sets)
+  - [Download Dataset](#download-dataset)
+  - [Preprocess and Split Data](#preprocess-and-split-data)
+- [Task 2: Use PyTorch to write your own dataloader](#task-2-use-pytorch-to-write-your-own-dataloader-with-image-input-data-and-its-recipe-title-groundtruth)
 
 - [Train and Evaluate the Baseline Model with the Food Dataset](#train-and-evaluate-the-baseline-model-with-the-food-dataset)
 - [Change the Text Representation Level among Wordpiece-Level and Word-level](#change-the-text-representation-level-among-wordpiece-level-and-word-level)
 - [Change the Encoder of the Baseline Model to VGG-16](#change-the-encoder-of-the-baseline-model-to-vgg-16)
 - [Change the Decoder of the Baseline Model To LSTM](#change-the-decoder-of-the-baseline-model-to-lstm)
 
+## Project Structure W2
 
-## Train and Evaluate the Baseline Model with the Food Dataset
+## Task 1: Download the dataset “Food Ingredients and Recipes Dataset”, and split the data into 80-10-10 for training, validation and test sets
+
+1. **Download Dataset**:  
+   Use the script:  
+   ```bash
+   cd mcv-c5-team1/week3/src/dataset/
+   python download.py
+   ```
+
+1. **Preprocess and Split Data**:
+   Run the following script to clean and split the data into **train (80%), validation (10%), and test (10%)** sets:
+   ```bash
+   cd mcv-c5-team1/week3/src/dataset/
+   python prepare_data.py
+   ```
+   This will create CSV files (`train.csv`, `val.csv`, `test.csv`, `raw_data.csv`) in the `data/` directory.
+
+## Task 2: Use PyTorch to write your own dataloader with image (input data) and its recipe title (groundtruth)
+
+In this task, we have created a custom PyTorch Dataset class in the script `/mcv-c5-team1/week3/src/dataset/data.py`. 
+
+This class loads and preprocesses images and their corresponding recipe titles, applying necessary transformations to the images and tokenizing the titles for model training.
+
+## Task 3: Train and Evaluate the Baseline Model with the Food Dataset
 
 ### Dataset overview
 The dataset consists of **13,466 images** of various food dishes. It has been split into training, validation, and test sets as follows:
