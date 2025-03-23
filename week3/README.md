@@ -57,10 +57,10 @@ python src/train_example_char.py
 
 The following metrics were used to evaluate the model’s performance:
 
-- BLEU-1: Measures the precision of 1-gram (unigram) matches between the predicted and reference captions, with a brevity penalty for shorter predictions.
-- BLEU-2: Measures the precision of 2-gram (bigram) matches between the predicted and reference captions, with a brevity penalty.
-- ROUGE-L: Measures the Longest Common Subsequence (LCS) between the predicted and reference captions.
-- METEOR: Evaluates similarity based on unigram precision, recall, word matches, lengths, and word order.
+- **BLEU-1**: Measures the precision of 1-gram (unigram) matches between the predicted and reference captions, with a brevity penalty for shorter predictions.
+- **BLEU-2**: Measures the precision of 2-gram (bigram) matches between the predicted and reference captions, with a brevity penalty.
+-**ROUGE-L**: Measures the Longest Common Subsequence (LCS) between the predicted and reference captions.
+- **METEOR**: Evaluates similarity based on unigram precision, recall, word matches, lengths, and word order.
 
 #### Results
 
@@ -144,6 +144,21 @@ The ResNet-18 encoder remains unchanged from the baseline model and the text rep
 **Train Decoder LSTM**:
 
 ### Results
+| **Decoder**       | **BLEU-1** | **BLEU-2** | **ROUGE-L** | **METEOR** | **Loss** |
+|-------------------|------------|------------|-------------|------------|----------|
+| **Train**         |            |            |             |            |          |
+| GRU               | 0.64       | 0.53       | 0.67        | 0.63       | 0.16     |
+| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (2 layers)   | 0.83       | 0.79       | 0.84        | 0.82       | 0.08     |
+| **Val**           |            |            |             |            |          |
+| GRU               | 0.08       | 4.78e-3    | 0.06        | 0.04       | 1.24     |
+| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (2 layers)   | 0.08       | 0.07       | 0.07        | 0.04       | 1.20     |
+| **Test**          |            |            |             |            |          |
+| GRU               | 0.07       | 4.41e-3    | 0.06        | 0.03       | 1.27     |
+| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (2 layers)   | 0.08       | 0.06       | 0.07        | 0.04       | 1.23     |
+
 
 
 
