@@ -35,7 +35,7 @@ Before proceeding with training the model, the dataset underwent a cleaning proc
 
 After cleaning, the dataset was reduced to **13,446 images**.
 
-**Clean and split the dataset** Run the following command:
+**Clean and split the dataset**: Run the following command:
 ```bash
 python src/dataset/prepare_data.py
 ```
@@ -59,6 +59,11 @@ The model was trained using the following configuration:
 - **Optimizer**: The Adam optimizer was used due to its efficiency in training deep learning models.
 - **Loss Function**: The model used **Cross-Entropy Loss**, which is appropriate for sequence prediction tasks like this one.
 - **Early Stopping**: Early stopping was enabled to prevent overfitting by monitoring the training loss and stopping training if the loss did not improve after a certain number of epochs.
+
+**Train baseline model**: Run the following command:
+```bash
+python src/train_example_char.py
+```
 
 ## Change the text representation level among wordpiece-level and word-level. 
 
