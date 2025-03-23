@@ -4,8 +4,6 @@
 
 - [Project Structure W2](#project-structure-w2)
 - [Task 1: Download the dataset](#task-1-download-the-dataset-food-ingredients-and-recipes-dataset-and-split-the-data-into-80-10-10-for-training-validation-and-test-sets)
-  - [Download Dataset](#download-dataset)
-  - [Preprocess and Split Data](#preprocess-and-split-data)
 - [Task 2: Use PyTorch to write your own dataloader](#task-2-use-pytorch-to-write-your-own-dataloader-with-image-input-data-and-its-recipe-title-groundtruth)
 
 - [Train and Evaluate the Baseline Model with the Food Dataset](#train-and-evaluate-the-baseline-model-with-the-food-dataset)
