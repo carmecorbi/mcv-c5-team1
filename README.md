@@ -11,7 +11,7 @@
 </p>
 
 > [!IMPORTANT]
-> The presentation of W2 from this group is available [here](https://docs.google.com/presentation/d/1-VsnziZDube8XFzq-4NXA-_pu9qTRQsRqr77MLSaIro/edit?usp=sharing). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
+> The presentation of W3 from this group is available [here](https://docs.google.com/presentation/d/1c8k0dAS7QEeoy0GYLkxylIw-KRnB-LcSswfWHyV6l_4/edit?usp=sharing). The access link for our Overleaf project on image captioning for the third and fourth week is available [here](https://overleaf.cvc.uab.cat/read/fvdttsmgdtbs#c694bb). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
 
 ## Table of Contents
 
@@ -22,6 +22,7 @@
 - [Project Structure](#project-structure)
 - [WEEK 1](#week-1)
 - [WEEK 2](#week-2)
+- [WEEK 3](#week-3)
 - [Team Members](#team-members)
 - [License](#license)
 
