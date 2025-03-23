@@ -49,17 +49,6 @@ In the baseline model, the task is to predict the food dish title from an image.
 
 The process follows the character-level representation approach, meaning that we treat each word in the dish title as a sequence of characters, not words. 
 
-### Training Strategy
-
-The model was trained using the following configuration:
-
-- **Batch Size**: The training was done in batches of 60 images to ensure efficient training while balancing memory usage.
-- **Epochs**: The model was trained for 100 epochs, allowing enough time for the network to learn and converge.
-- **Learning Rate**: The learning rate was set to 1e-3 to ensure smooth and stable learning.
-- **Optimizer**: The Adam optimizer was used due to its efficiency in training deep learning models.
-- **Loss Function**: The model used **Cross-Entropy Loss**, which is appropriate for sequence prediction tasks like this one.
-- **Early Stopping**: Early stopping was enabled to prevent overfitting by monitoring the training loss and stopping training if the loss did not improve after a certain number of epochs.
-
 **Train baseline model**: Run the following command:
 ```bash
 python src/train_example_char.py
@@ -90,10 +79,20 @@ In this approach, the model uses a BERT-based tokenizer from HuggingFace, which 
 **Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
 **Decoding**: Convert token IDs back into word sequences using the tokenizer.
 
+**Train baseline model + wordpiece-level**: Run the following command:
+```bash
+python src/train_example_bert.py
+```
+
 ### Word-level Text Representation
 In this approach, text is tokenized at the word-level. Each word in the caption is treated as a separate token, and spaces are also included as individual tokens.
 **Encoding**: The caption is split into words, and tokens are mapped to indices. Special tokens like <SOS> (start), <EOS> (end), and <PAD> (padding) are added.
 **Decoding**: The token indices are converted back into a sequence of words. The <EOS> token marks the end of the caption, and the <SOS> token is removed if present at the start.
+
+**Train baseline model + word-level**: Run the following command:
+```bash
+python src/train_example_word.py
+```
 
 ## Change the Encoder of the Baseline Model to VGG-16
 
