@@ -25,12 +25,17 @@ class Model(nn.Module):
 
     def forward(self, img):
         batch_size = img.shape[0]
+        
+        # Extract features
         feat = self.resnet(img)
         feat = feat.pooler_output.squeeze(-1).squeeze(-1).unsqueeze(0) # 1, batch, 512
+        
+        # Start token embedding
         start = torch.tensor(self.char2idx['<SOS>']).to(self.device)
         start_embed = self.embed(start) # 512
         start_embeds = start_embed.repeat(batch_size, 1).unsqueeze(0) # 1, batch, 512
         inp = start_embeds
+        
         hidden = feat
         for t in range(self.text_max_len - 1): # rm <SOS>
             out, hidden = self.gru(inp, hidden)

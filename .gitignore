@@ -14,6 +14,7 @@ GlobalWheat/
 config/
 results/
 results_*/
+lightning_logs/
 optuna_*/
 runs/
 week1/src/domain_shift/DEArt_split

@@ -14,6 +14,10 @@ class LightningTrainer(pl.LightningModule):
         tokenizer,
         optimizer_class=torch.optim.Adam,
         learning_rate=1e-3,
+        scheduler_type=None,
+        scheduler_params=None,
+        use_teacher_forcing=False,
+        teacher_forcing_ratio=0.5,
         **kwargs
     ):
         """
@@ -36,13 +40,19 @@ class LightningTrainer(pl.LightningModule):
         
         self.optimizer_class = optimizer_class
         self.learning_rate = learning_rate
+        self.use_teacher_forcing = use_teacher_forcing
+        self.teacher_forcing_ratio = teacher_forcing_ratio
+        self.scheduler_type = scheduler_type
+        self.scheduler_params = scheduler_params or {}
         self.kwargs = kwargs
         
         # Save hyperparameters for checkpointing
         self.save_hyperparameters(ignore=['model', 'criterion', 'tokenizer'])
         
-    def forward(self, x):
+    def forward(self, x, caption=None, teacher_forcing_ratio=0.5):
         """Forward pass of the model"""
+        if self.use_teacher_forcing:
+            return self.model(x, caption, teacher_forcing_ratio)
         return self.model(x)
     
     def _compute_metrics(self, pred, caption):
@@ -57,8 +67,6 @@ class LightningTrainer(pl.LightningModule):
         
         # Format for metric calculation
         caption_decoded = np.array([[text] for text in caption_decoded], dtype=object)
-        
-        print(pred_decoded)
         try:
             metrics = self.metric(pred_decoded, caption_decoded)
         except Exception as e:
@@ -73,7 +81,10 @@ class LightningTrainer(pl.LightningModule):
         img, caption = batch
         
         # Forward pass
-        pred = self(img)
+        if self.use_teacher_forcing:
+            pred = self(img, caption, self.teacher_forcing_ratio)
+        else:
+            pred = self(img)
         
         # Compute loss
         loss = self.criterion(pred, caption)
@@ -103,7 +114,7 @@ class LightningTrainer(pl.LightningModule):
         # Log metrics
         self.log('val_loss', loss, prog_bar=True, on_epoch=True)
         for metric_name, metric_value in metrics.items():
-            self.log(f'train_{metric_name}', metric_value, prog_bar=True, on_epoch=True)
+            self.log(f'val_{metric_name}', metric_value, prog_bar=True, on_epoch=True)
         return loss
     
     def test_step(self, batch, batch_idx):
@@ -122,12 +133,47 @@ class LightningTrainer(pl.LightningModule):
         # Log metrics
         self.log('test_loss', loss, prog_bar=True, on_epoch=True)
         for metric_name, metric_value in metrics.items():
-            self.log(f'train_{metric_name}', metric_value, prog_bar=True, on_epoch=True)
+            self.log(f'test_{metric_name}', metric_value, prog_bar=True, on_epoch=True)
         return loss
         
     def configure_optimizers(self):
         """Configure optimizer"""
-        return self.optimizer_class(self.parameters(), lr=self.learning_rate)
+        optimizer = self.optimizer_class(self.parameters(), lr=self.learning_rate)
+        
+        if self.scheduler_type is None:
+            return optimizer
+        
+        scheduler_config = {
+            "optimizer": optimizer,
+        }
+        
+        if self.scheduler_type == 'step':
+            step_size = self.scheduler_params.get("step_size", 10)
+            gamma = self.scheduler_params.get("gamma", 0.1)
+            scheduler = torch.optim.lr_scheduler.StepLR(
+                optimizer, 
+                step_size=step_size,
+                gamma=gamma
+            )
+            scheduler_config["lr_scheduler"] = scheduler
+        elif self.scheduler_type == 'cosine':
+            t_max = self.scheduler_params.get("T_max", self.trainer.max_epochs)
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+                optimizer,
+                T_max=t_max
+            )
+            scheduler_config["lr_scheduler"] = scheduler
+        elif self.scheduler_type == 'linear':
+            # Linear scheduler using OneCycleLR with linear anneal
+            scheduler = torch.optim.lr_scheduler.OneCycleLR(
+                optimizer,
+                max_lr=self.learning_rate,
+                total_steps=self.trainer.estimated_stepping_batches,
+                anneal_strategy='linear'
+            )
+            scheduler_config["lr_scheduler"] = scheduler
+            scheduler_config["interval"] = "step"
+        return scheduler_config
 
 
 def train_with_lightning(
@@ -139,8 +185,14 @@ def train_with_lightning(
     test_loader, 
     max_epochs=10,
     learning_rate=1e-3,
+    use_teacher_forcing=False,
+    teacher_forcing_ratio=0.5,
+    gradient_clip_val=None,
+    scheduler_type=None,
+    scheduler_params=None,
     save_dir='/ghome/c5mcv01/mcv-c5-team1/week3/results',
     exp_name='baseline',
+    early_stopping_criteria='train_loss',
     **kwargs
 ):
     """Helper function to train with Lightning"""
@@ -153,6 +205,10 @@ def train_with_lightning(
         criterion=criterion,
         tokenizer=tokenizer,
         learning_rate=learning_rate,
+        use_teacher_forcing=use_teacher_forcing,
+        teacher_forcing_ratio=teacher_forcing_ratio,
+        scheduler_type=scheduler_type,
+        scheduler_params=scheduler_params,
         **kwargs
     )
     
@@ -162,9 +218,10 @@ def train_with_lightning(
         accelerator='auto',  # Automatically select GPU if available
         devices='auto',
         logger=logger,
+        gradient_clip_val=gradient_clip_val,
         callbacks=[
             pl.callbacks.ModelCheckpoint(monitor='val_loss', mode='min', save_last=True),
-            pl.callbacks.EarlyStopping(monitor='train_loss', patience=5, mode='min')
+            pl.callbacks.EarlyStopping(monitor=early_stopping_criteria, patience=5, mode='min')
         ]
     )
     

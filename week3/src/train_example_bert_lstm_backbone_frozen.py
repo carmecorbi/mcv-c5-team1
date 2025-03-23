@@ -22,7 +22,6 @@ LEARNING_RATE = 1e-3
 # This is for BertTokenizer
 TEXT_MAX_LEN = 60
 
-
 # TODO: Change these paths
 csv_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/raw_data.csv'
 img_path = '/ghome/c5mcv01/mcv-c5-team1/week3/data/images'
@@ -79,6 +78,8 @@ lightning_model, trainer = train_with_lightning(
     test_loader=dataloader_test,
     max_epochs=EPOCHS,
     learning_rate=LEARNING_RATE,
-    exp_name="bert_tokenizer_lstm_backbone_frozen"
+    use_teacher_forcing=True,
+    teacher_forcing_ratio=0.5,
+    exp_name="bert_tokenizer_lstm_teacher_forcing_test"
 )
 
