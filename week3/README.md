@@ -164,6 +164,8 @@ python src/train_example_bert_vgg.py
 | ResNet-18   | 0.07       | 4.41e-3    | 0.06        | 0.03       | 1.27     |
 | VGG-16      | 0.07       | 2.24e-3    | 0.05        | 0.04       | 1.26     |
 
+Based on these results, the best encoder for this task is **ResNet-18**, we will use this encoder if further experiments.
+
 ### Change the Decoder of the Baseline Model To LSTM
 In this task, we replaced the **GRU decoder** with an **LSTM decoder**. LSTM (Long Short-Term Memory) is a type of recurrent neural network (RNN) that is well-suited for sequence prediction tasks, especially those involving long-term dependencies.
 
@@ -171,22 +173,28 @@ The **ResNet-18 encoder** remains unchanged from the baseline model, and the tex
 
 **Train Decoder LSTM**:
 
+To train this model baseline model with **wordpiece-level** representation and **LSTM Decoder**, run the following command:
+```bash
+python src/train_example_bert_lstm_backbone_frozen.py
+```
+
 #### Results
 | **Decoder**       | **BLEU-1** | **BLEU-2** | **ROUGE-L** | **METEOR** | **Loss** |
 |-------------------|------------|------------|-------------|------------|----------|
 | **Train**         |            |            |             |            |          |
 | GRU               | 0.64       | 0.53       | 0.67        | 0.63       | 0.16     |
-| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (1 layer)    | 0.06       | 0.0        | 0.06        | 0.03       | 1.22     |
 | LSTM (2 layers)   | 0.83       | 0.79       | 0.84        | 0.82       | 0.08     |
 | **Val**           |            |            |             |            |          |
 | GRU               | 0.08       | 4.78e-3    | 0.06        | 0.04       | 1.24     |
-| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (1 layer)    | 0.06       | 0.0        | 0.07        | 0.03       | 0.03     |
 | LSTM (2 layers)   | 0.08       | 0.07       | 0.07        | 0.04       | 1.20     |
 | **Test**          |            |            |             |            |          |
 | GRU               | 0.07       | 4.41e-3    | 0.06        | 0.03       | 1.27     |
-| LSTM (1 layer)    |            |            |             |            |          |
+| LSTM (1 layer)    | 0.06       | 0.0        | 0.07        | 0.03       | 1.28     |
 | LSTM (2 layers)   | 0.08       | 0.06       | 0.07        | 0.04       | 1.23     |
 
+Based on these results, the best decoder for this task is **LSTM with 2 layers**, we will use this setting for further experiments.
 
 
 
