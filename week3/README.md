@@ -67,7 +67,7 @@ In the baseline model, the task is to predict the food dish title from an image.
    
 2. **GRU (Decoder)**: The GRU network is used as the decoder, which generates the sequence of characters (the food dish title) based on the features provided by the ResNet-18 encoder. 
 
-The process follows the character-level representation approach, meaning that we treat each word in the dish title as a sequence of characters, not words. 
+The process follows the **character-level** representation approach, meaning that we treat each word in the dish title as a sequence of characters, not words. 
 
 **To train the baseline model**, run the following command:
 ```bash
