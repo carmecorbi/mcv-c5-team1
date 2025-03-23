@@ -58,7 +58,6 @@ class Model(nn.Module):
         """
         Apply attention mechanism to focus on relevant image features
         
-        TODO: This function must be properly checked and tested
         """
         # Reshape and repeat hidden state
         hidden_expanded = hidden[-1].unsqueeze(1).repeat(1, feature_map.size(1), 1)  # [batch, seq_len, hidden_dim]
