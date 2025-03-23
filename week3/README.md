@@ -116,8 +116,10 @@ python src/train_example_word.py
 Among the three tokenization approaches, word-piece (Bert) clearly outperforms both character-level (which failed completely) and word-level representations. All models suffer from severe overfitting, with the word-piece model showing a large generalization gap despite getting the best training metrics. 
 These findings suggest that while tokenization strategy significantly impacts model capabilities, additional regularization, model modifications, or pre-training are necessary to address generalization issues.
 
-
 ## Change the Encoder of the Baseline Model to VGG-16
+In this task, we replaced the ResNet-18 encoder with a VGG-16 encoder. The VGG-16 model is a convolutional neural network (CNN) architecture with 16 layers, which is commonly used in image classification tasks. 
+
+The GRU decoder remains unchanged from the baseline model and the text representation level is Wordpiece-level. 
 
 ## Change the Decoder of the Baseline Model To LSTM
 
