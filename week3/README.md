@@ -101,7 +101,7 @@ In this approach, the model uses a **BERT-based tokenizer** from HuggingFace, wh
 - **Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
 - **Decoding**: Convert token IDs back into word sequences using the tokenizer.
 
-To train the baseline model with wordpiece-level representation, run the following command:
+To train the baseline model with **wordpiece-level** representation, run the following command:
 ```bash
 python src/train_example_bert.py
 ```
@@ -110,9 +110,9 @@ python src/train_example_bert.py
 | **Metric**  | **Train**  | **Validation**  | **Test**  |
 |-------------|------------|-----------------|-----------|
 | **BLEU-1**  | 0.64       | 0.08            | 0.07      |
-| **BLEU-2**  | 0.53    | 4.78e-3               | 4.41e-3         |
-| **ROUGE-L** | 0.67    | 0.06               | 0.06   |
-| **METEOR**  | 0.63    | 0.04               | 0.03   |
+| **BLEU-2**  | 0.53       | 4.78e-3         | 4.41e-3   |
+| **ROUGE-L** | 0.67       | 0.06            | 0.06      |
+| **METEOR**  | 0.63       | 0.04            | 0.03      |
 | **Loss**    | 0.16       | 1.24            | 1.27      |
 
 #### Word-level Text Representation
@@ -120,7 +120,7 @@ In this approach, text is tokenized at the word-level. Each word in the caption 
 - **Encoding**: The caption is split into words, and tokens are mapped to indices. Special tokens like <SOS> (start), <EOS> (end), and <PAD> (padding) are added.
 - **Decoding**: The token indices are converted back into a sequence of words. The <EOS> token marks the end of the caption, and the <SOS> token is removed if present at the start.
 
-To train the baseline model with word-level representation, run the following command:
+To train the baseline model with **word-level** representation, run the following command:
 ```bash
 python src/train_example_word.py
 ```
