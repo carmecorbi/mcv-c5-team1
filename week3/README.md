@@ -66,19 +66,12 @@ python src/train_example_char.py
 ```
 ### Evaluation
 
-We evaluate the baseline model using the following metrics:
+The following metrics were used to evaluate the model’s performance:
 
-#### BLEU-1
-- Measures the precision of 1-gram (unigram) matches between predicted and reference captions, with a brevity penalty for shorter predictions.
-
-#### BLEU-2
-- Measures the precision of 2-gram (bigram) matches between predicted and reference captions, with a brevity penalty.
-
-#### ROUGE-L
-- Measures the Longest Common Subsequence (LCS) between predicted and reference captions.
-
-#### METEOR
-- Evaluates similarity based on unigram Precision, Recall, word matches, lengths, and word order.
+- BLEU-1: Measures the precision of 1-gram (unigram) matches between the predicted and reference captions, with a brevity penalty for shorter predictions.
+- BLEU-2: Measures the precision of 2-gram (bigram) matches between the predicted and reference captions, with a brevity penalty.
+- ROUGE-L: Measures the Longest Common Subsequence (LCS) between the predicted and reference captions.
+- METEOR: Evaluates similarity based on unigram precision, recall, word matches, lengths, and word order.
 
 #### Results
 
@@ -91,6 +84,11 @@ We evaluate the baseline model using the following metrics:
 | **Loss**    | 0.38       | 0.65            | 0.67      |
 
 ## Change the text representation level among wordpiece-level and word-level. 
+
+### Wordpiece-level Text Representation
+In this approach, the model uses a BERT-based tokenizer from HuggingFace, which tokenizes text into subword units (wordpieces).
+**Encoding**: Convert a sequence of words into a list of token IDs using the BERT wordpiece ↔ idx mapping. Special tokens <CLS> (start) and <SEP> (end) are used, with padding added to ensure all input sequences are of equal length.
+**Decoding**: Convert token IDs back into word sequences using the tokenizer.
 
 ## Change the encoder of the baseline model: VGG-16
 
