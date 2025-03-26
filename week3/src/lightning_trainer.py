@@ -245,7 +245,7 @@ def train_with_lightning(
     )
     
     # Get the val loss from loggers metrics
-    csv_path = f"{save_dir}/{exp_name}/metrics.csv"
+    csv_path = f"{save_dir}/{exp_name}/version_0/metrics.csv"
     metrics_df = pd.read_csv(csv_path)
     print(metrics_df.columns)
     val_loss = metrics_df['val_loss'].dropna()  # Drop NaN values (if any)
