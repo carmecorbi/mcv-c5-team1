@@ -42,6 +42,32 @@ python3 -m src.models.vit_gpt2 --task inference --infer_image /ghome/c5mcv01/mcv
 
 These results show how the model generates image descriptions based on its pretrained knowledge. 
 
+### Evaluation:
+
+To evaluate the pretrained model, we can use the following command:
+
+```bash
+python3 -m src.models.vit_gpt2 -t evaluation \
+    -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+    --eval_set test
+```
+
+The evaluation is performed using the following metrics:
+- **BLEU-1**: Measures the precision of unigrams (individual words).
+- **BLEU-2**: Measures the precision of bigrams (pairs of words).
+- **ROUGE-L**: Assesses the longest common subsequence between the predicted and ground truth captions.
+- **METEOR**: Evaluates the predictions based on exact, stem, synonym, and paraphrase matches.
+
+#### Evaluation Results:
+
+| Metric   | Value   |
+|----------|---------|
+| BLEU-1   | 0.0348  |
+| BLEU-2   | 0.0004  |
+| ROUGE-L  | 0.0564  |
+| METEOR   | 0.0409  |
+
+
 ## Task 1.2: Fine-tuning strategies
 
 ### ViT (Fine-Tune), GPT2 (Frozen)
