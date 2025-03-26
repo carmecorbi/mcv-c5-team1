@@ -24,6 +24,24 @@
 
 ## Task 1.1: Direct evaluation using pretrained weights from huggingface model "nlpconnect image-captioning"
 
+To evaluate the pretrained model, we first perform inference on some test images.  
+
+### Example inference command:
+
+```bash
+python3 -m src.models.vit_gpt2 --task inference --infer_image /ghome/c5mcv01/mcv-c5-team1/week3/data/images/-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813.jpg
+```
+
+### Results on test images:
+
+| Image                         | Ground Truth Caption                          | Predicted Caption                          |
+|--------------------------------|----------------------------------------------|--------------------------------------------|
+| ![-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813](https://github.com/user-attachments/assets/3d888b90-9f3c-48b6-b136-576338d88e08) | 'bloody mary tomato toast with celery and horseradish'           | 'two slices of pizza sitting on top of each other'        |
+| ![salted-apple-pretzel-pie](https://github.com/user-attachments/assets/a05d0feb-1f72-4abb-8eb4-81488f69124a) | 'salted apple pretzel pie' | 'a plate of food on a table' |
+| ![vanilla-cupcakes-353909](https://github.com/user-attachments/assets/ea2d4bb7-2ab2-4fb3-b658-e9bd5a8dfa1d) | 'vanilla cupcakes' | 'a table topped with a bunch of cupcakes' |
+
+These results show how the model generates image descriptions based on its pretrained knowledge. 
+
 ## Task 1.2: Fine-tuning strategies
 
 ### ViT (Fine-Tune), GPT2 (Frozen)
