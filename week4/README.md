@@ -72,11 +72,80 @@ Metrics are really low for this model, suggesting it is not able to correctly id
 
 ### ViT (Fine-Tune), GPT2 (Frozen)
 
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            -fd --num_epochs=100 --model_name=vit_gpt2_forzen_decoder
+```
+
+
 ### ViT (Frozen), GPT2 (Fine-Tune)
+
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            -fe --num_epochs=100 --model_name=vit_gpt2_forzen_encoder
+```
 
 ### ViT (Fine-Tune), GPT2 (Fine-Tune)
 
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            --num_epochs=100 --model_name=vit_gpt2_fully_unfrozen
+```
+
 ## Task 1.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
+
+<table>
+  <thead>
+    <tr>
+      <th>Strategy</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="3"><b>Frozen Decoder</b></td>
+      <td>Train</td><td>0.30</td><td>0.20</td><td>0.35</td><td>0.31</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.08</td><td>0.01</td><td>0.07</td><td>0.05</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.08</td><td>0.01</td><td>0.08</td><td>0.05</td>
+    </tr>
+    <tr><td colspan="6"></td></tr>
+    <tr>
+      <td rowspan="3"><b>Frozen Encoder</b></td>
+      <td>Train</td><td>0.47</td><td>0.43</td><td>0.47</td><td>0.45</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr><td colspan="6"></td></tr>
+    <tr>
+      <td rowspan="3"><b>Fully Unfrozen (Best)</b></td>
+      <td>Train</td><td>0.95</td><td>0.94</td><td>0.97</td><td>0.94</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.14</td><td>0.05</td><td>0.14</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Task 1.4: Compare and discuss your results against those obtained using last week's methods
 
