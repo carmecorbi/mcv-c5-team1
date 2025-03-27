@@ -60,13 +60,13 @@ The evaluation is performed using the following metrics:
 
 #### Evaluation Results:
 
-| Metric   | Value   |
-|----------|---------|
-| BLEU-1   | 0.0348  |
-| BLEU-2   | 0.0004  |
-| ROUGE-L  | 0.0564  |
-| METEOR   | 0.0409  |
+| Set   | BLEU-1 | BLEU-2  | ROUGE-L | METEOR |
+|-------|--------|---------|---------|--------|
+| Train | 0.03   | 4.54e-4 | 0.05    | 0.04   |
+| Val   | 0.04   | 9.58e-4 | 0.05    | 0.04   |
+| Test  | 0.04   | 3.74e-4 | 0.06    | 0.04   |
 
+Metrics are really low for this model, suggesting it is not able to correctly identify different dishes and probably predicting generic sentences. The model was pretrained on a different domain dataset, so in here the difference of train, val and test is just for the purpose of comparison with fine-tuned versions.
 
 ## Task 1.2: Fine-tuning strategies
 
