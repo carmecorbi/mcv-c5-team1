@@ -32,7 +32,7 @@ To evaluate the pretrained model, we first perform inference on some test images
 python3 -m src.models.vit_gpt2 --task inference --infer_image /ghome/c5mcv01/mcv-c5-team1/week3/data/images/-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813.jpg
 ```
 
-### Results on test images:
+### Results:
 
 | Image                         | Ground Truth Caption                          | Predicted Caption                          |
 |--------------------------------|----------------------------------------------|--------------------------------------------|
@@ -151,11 +151,11 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
 
 ### Qualitative Results:
 
-| Image                         | Ground Truth Caption                          | Predicted Caption with Pretrained Model    | Predicted Caption with Fully Unfrozen   |
-|--------------------------------|----------------------------------------------|--------------------------------------------|--------------------------------------------|
-| ![-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813](https://github.com/user-attachments/assets/3d888b90-9f3c-48b6-b136-576338d88e08) | 'bloody mary tomato toast with celery and horseradish'           | 'two slices of pizza sitting on top of each other'        | 'Portobello Tomato Toast with Feta' |
-| ![salted-apple-pretzel-pie](https://github.com/user-attachments/assets/a05d0feb-1f72-4abb-8eb4-81488f69124a) | 'salted apple pretzel pie' | 'a plate of food on a table' | 'Salted Apple Pretzel Pie' |
-| ![vanilla-cupcakes-353909](https://github.com/user-attachments/assets/ea2d4bb7-2ab2-4fb3-b658-e9bd5a8dfa1d) | 'vanilla cupcakes' | 'a table topped with a bunch of cupcakes' | 'Vegan, Gluten-Free Vanilla Cupcakes' |
+| Image      | Set                   | Ground Truth Caption                          | Predicted Caption with Pretrained Model    | Predicted Caption with Fully Unfrozen   |
+|--------------------------------|----------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
+| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c) | Test | 'mochi covered strawberries'           | 'a white plate topped with strawberries and blueberries'        | 'Strawberry-Miso Tofu Balls' |
+| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | Test | 'nutter butter cookies' | 'a table topped with lots of doughnuts' | 'S'mores Cheesecake' |
+| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | Test | 'fried egg and sausage ciabatta breakfast pizzas' | 'a white plate topped with a piece of bread' | 'Eggs Toast with Fried Eggs and Toasted Brioche' |
 
 ## Task 1.4: Compare and discuss your results against those obtained using last week's methods
 
