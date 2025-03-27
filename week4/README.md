@@ -100,6 +100,8 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
 
 ## Task 1.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
 
+### Quantitative Results:
+
 <table>
   <thead>
     <tr>
@@ -146,6 +148,14 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
     </tr>
   </tbody>
 </table>
+
+### Qualitative Results:
+
+| Image                         | Ground Truth Caption                          | Predicted Caption with Pretrained Model    | Predicted Caption with Fully Unfrozen   |
+|--------------------------------|----------------------------------------------|--------------------------------------------|--------------------------------------------|
+| ![-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813](https://github.com/user-attachments/assets/3d888b90-9f3c-48b6-b136-576338d88e08) | 'bloody mary tomato toast with celery and horseradish'           | 'two slices of pizza sitting on top of each other'        | 'Portobello Tomato Toast with Feta' |
+| ![salted-apple-pretzel-pie](https://github.com/user-attachments/assets/a05d0feb-1f72-4abb-8eb4-81488f69124a) | 'salted apple pretzel pie' | 'a plate of food on a table' | 'Salted Apple Pretzel Pie' |
+| ![vanilla-cupcakes-353909](https://github.com/user-attachments/assets/ea2d4bb7-2ab2-4fb3-b658-e9bd5a8dfa1d) | 'vanilla cupcakes' | 'a table topped with a bunch of cupcakes' | 'Vegan, Gluten-Free Vanilla Cupcakes' |
 
 ## Task 1.4: Compare and discuss your results against those obtained using last week's methods
 
