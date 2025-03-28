@@ -32,7 +32,7 @@ To evaluate the pretrained model, we first perform inference on some test images
 python3 -m src.models.vit_gpt2 --task inference --infer_image /ghome/c5mcv01/mcv-c5-team1/week3/data/images/-bloody-mary-tomato-toast-with-celery-and-horseradish-56389813.jpg
 ```
 
-### Results on test images:
+### Results:
 
 | Image                         | Ground Truth Caption                          | Predicted Caption                          |
 |--------------------------------|----------------------------------------------|--------------------------------------------|
@@ -60,23 +60,102 @@ The evaluation is performed using the following metrics:
 
 #### Evaluation Results:
 
-| Metric   | Value   |
-|----------|---------|
-| BLEU-1   | 0.0348  |
-| BLEU-2   | 0.0004  |
-| ROUGE-L  | 0.0564  |
-| METEOR   | 0.0409  |
+| Set   | BLEU-1 | BLEU-2  | ROUGE-L | METEOR |
+|-------|--------|---------|---------|--------|
+| Train | 0.03   | 4.54e-4 | 0.05    | 0.04   |
+| Val   | 0.04   | 9.58e-4 | 0.05    | 0.04   |
+| Test  | 0.04   | 3.74e-4 | 0.06    | 0.04   |
 
+Metrics are really low for this model, suggesting it is not able to correctly identify different dishes and probably predicting generic sentences. The model was pretrained on a different domain dataset, so in here the difference of train, val and test is just for the purpose of comparison with fine-tuned versions.
 
 ## Task 1.2: Fine-tuning strategies
 
 ### ViT (Fine-Tune), GPT2 (Frozen)
 
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            -fd --num_epochs=100 --model_name=vit_gpt2_forzen_decoder
+```
+
+
 ### ViT (Frozen), GPT2 (Fine-Tune)
+
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            -fe --num_epochs=100 --model_name=vit_gpt2_forzen_encoder
+```
 
 ### ViT (Fine-Tune), GPT2 (Fine-Tune)
 
+```bash
+python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+                            -o  /ghome/c5mcv01/mcv-c5-team1/week4/results \
+                            -t train \
+                            --num_epochs=100 --model_name=vit_gpt2_fully_unfrozen
+```
+
 ## Task 1.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
+
+### Quantitative Results:
+
+<table>
+  <thead>
+    <tr>
+      <th>Strategy</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="3"><b>Frozen Decoder</b></td>
+      <td>Train</td><td>0.30</td><td>0.20</td><td>0.35</td><td>0.31</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.08</td><td>0.01</td><td>0.07</td><td>0.05</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.08</td><td>0.01</td><td>0.08</td><td>0.05</td>
+    </tr>
+    <tr><td colspan="6"></td></tr>
+    <tr>
+      <td rowspan="3"><b>Frozen Encoder</b></td>
+      <td>Train</td><td>0.47</td><td>0.43</td><td>0.47</td><td>0.45</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr><td colspan="6"></td></tr>
+    <tr>
+      <td rowspan="3"><b>Fully Unfrozen (Best)</b></td>
+      <td>Train</td><td>0.95</td><td>0.94</td><td>0.97</td><td>0.94</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.14</td><td>0.05</td><td>0.14</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+  </tbody>
+</table>
+
+### Qualitative Results:
+
+| Image      | Set                   | Ground Truth Caption                          | Predicted Caption with Pretrained Model    | Predicted Caption with Fully Unfrozen   |
+|--------------------------------|----------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
+| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c) | Test | 'mochi covered strawberries'           | 'a white plate topped with strawberries and blueberries'        | 'Strawberry-Miso Tofu Balls' |
+| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | Test | 'nutter butter cookies' | 'a table topped with lots of doughnuts' | 'S'mores Cheesecake' |
+| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | Test | 'fried egg and sausage ciabatta breakfast pizzas' | 'a white plate topped with a piece of bread' | 'Eggs Toast with Fried Eggs and Toasted Brioche' |
 
 ## Task 1.4: Compare and discuss your results against those obtained using last week's methods
 
