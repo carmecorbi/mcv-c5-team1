@@ -163,6 +163,58 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
 
 ## Task 2.1: Direct evaluation using Llama 3.2-11B model (multimodal)
 
+As the Llama 3.2-11B model is not available, we use the Gemma 4B model for this task: [Gemma 3-4B IT](https://huggingface.co/google/gemma-3-4b-it).
+
+### Model Input Structure
+
+The model processes input through a structured message format that defines roles in the conversation. The input follows this structure:
+
+```python
+messages = [
+    {
+        "role": "system",
+        "content": [{"type": "text", "text": "You have to do image captioning with the images I provide to you. Only do the image captioning as an expert in dishes. \nBe as specific as possible with the dish, only provide the caption, nothing more, nothing less."}]
+    },
+    {
+        "role": "user",
+        "content": [
+            {
+                "type": "image", 
+                "path": image_path
+            }
+        ]
+    }
+]
+```
+
+- The **system role** sets the model's behavior, instructing it to act as an expert in dish recognition and generate captions with high specificity.
+- The **user role** provides the image to be processed, ensuring that the model focuses on generating a relevant caption without additional responses.
+
+### Inference:
+
+To run the model and generate image captions, execute the following command:
+
+```bash
+python3 -m src.models.llm -i /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+```
+
+**Example Output:**
+
+```
+Generated caption: Dutch peanut cookies with vanilla buttercream.
+```
+
+### Qualitative Results:
+
+| Image | Ground Truth Caption                              | Predicted Caption with Pretrained Model Gemma 4B |
+| ----- | ------------------------------------------------- | ------------------------------------------------ |
+| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c)  | 'mochi covered strawberries'                      | 'Chocolate Mousse Mochi with Fresh Strawberries' |
+| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | 'nutter butter cookies'                           | 'Dutch peanut cookies with vanilla buttercream.' |
+| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | 'fried egg and sausage ciabatta breakfast pizzas' | 'Irish Breakfast Toast with Fried Egg and Bacon' |
+
+The results highlight that the model successfully generates relevant dish captions but sometimes introduces regional variations or slight misinterpretations of the dish composition.
+
+
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
