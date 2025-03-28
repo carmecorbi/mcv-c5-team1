@@ -1,5 +1,5 @@
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
-from transformers import TrainingArguments, Trainer, Seq2SeqTrainingArguments, Seq2SeqTrainer
+from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, EarlyStoppingCallback
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from PIL import Image
@@ -20,7 +20,13 @@ class Vit_GPT2():
                  img_processor_path: str = "nlpconnect/vit-gpt2-image-captioning", 
                  tokenizer_path: str = "nlpconnect/vit-gpt2-image-captioning",
                  max_len: int = 16,
-                 num_beams: int = 4):
+                 num_beams: int = 4,
+                 attn_pdrop: int = 0.1,
+                 embd_pdrop: int = 0.1,
+                 resid_pdrop: int = 0.1,
+                 attention_probs_dropout_prob: int = 0,
+                 hidden_dropout_prob: int = 0,
+                 freeze_vit: bool=False, freeze_gpt2: bool=False):
         """Initialize the model.
 
         Args:
@@ -32,6 +38,14 @@ class Vit_GPT2():
         """
         # Load model, image processor and tokenizer
         self.model = VisionEncoderDecoderModel.from_pretrained(model_path)
+        print(f"model params: {self.model.config.decoder}")
+        self.model.config.decoder.attn_pdrop = attn_pdrop
+        self.model.config.decoder.embd_pdrop = embd_pdrop
+        self.model.config.decoder.resid_pdrop = resid_pdrop
+
+        self.model.config.encoder.attention_probs_dropout_prob = attention_probs_dropout_prob
+        self.model.config.encoder.hidden_dropout_prob = hidden_dropout_prob
+
         self.feature_extractor = ViTImageProcessor.from_pretrained(img_processor_path)
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
         self.compute_metric = Metric()
@@ -40,6 +54,17 @@ class Vit_GPT2():
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using {self.device} device")
         self.model.to(self.device)
+        
+        # Freeze ViT of GPT2 models
+        if freeze_vit:
+            for name, param in self.model.encoder.named_parameters():
+                print(f"Freezing encoder param: {name}")
+                param.requires_grad = False
+
+        if freeze_gpt2:
+            for name, param in self.model.decoder.named_parameters():
+                print(f"Freezing decoder param: {name}")
+                param.requires_grad = False
         
         # Set parameters
         self.max_len = max_len
@@ -122,7 +147,7 @@ class Vit_GPT2():
               train_set: torch.utils.data.Dataset, 
               val_set: torch.utils.data.Dataset, 
               model_name: str = "vit-gpt2-image-captioning", 
-              freeze_vit: bool=False, freeze_gpt2: bool=False, epochs: int = 1, output_dir: str = None):
+              freeze_vit: bool=False, freeze_gpt2: bool=False, epochs: int = 1, output_dir: str = None, **kwargs):
         """Train the model on a dataset.
 
         Args:
@@ -143,14 +168,33 @@ class Vit_GPT2():
                 print(f"Freezing decoder param: {name}")
                 param.requires_grad = False
 
+        lr_scheduler = kwargs.get("lr_scheduler", "inverse_sqrt")
+        assert lr_scheduler in ["linear", "inverse_sqrt", "cosine_with_min_lr", "warmup_stable_decay"], "LR scheduler type not valid"
+        
+        lr_scheduler_kwargs = None
+        if lr_scheduler == "cosine_with_min_lr":
+            lr_scheduler_kwargs = {
+                "min_lr_rate": 0.2
+            }
+        elif lr_scheduler == "warmup_stable_decay":
+            lr_scheduler_kwargs = {
+                "num_decay_steps": 300,
+                "num_stable_steps": 8400 - kwargs.get("warmup_steps",0) - 3000
+            }
+
         training_args = Seq2SeqTrainingArguments(
             output_dir=f"{output_dir}/{model_name}",
-            learning_rate=5e-5,
+            learning_rate=kwargs.get("learning_rate", 0.001),
             num_train_epochs=epochs,
             fp16=True,
-            per_device_train_batch_size=64,
-            per_device_eval_batch_size=64,
+            per_device_train_batch_size=kwargs.get("batch_size", 64),
+            per_device_eval_batch_size=kwargs.get("batch_size", 64),
             gradient_accumulation_steps=2,
+            weight_decay=kwargs.get("weight_decay", 0.0001),
+            warmup_steps=kwargs.get("warmup_steps", 0), 
+            lr_scheduler_kwargs = lr_scheduler_kwargs,
+            lr_scheduler_type=lr_scheduler,
+            max_grad_norm=kwargs.get("gradient_clip_val", 0.0001),                 
             save_total_limit=3,
             eval_strategy="epoch",
             eval_steps=1,
@@ -170,9 +214,49 @@ class Vit_GPT2():
             train_dataset=train_set,
             eval_dataset=val_set,
             # compute_metrics=custom_compute_metrics,
-            data_collator=custom_data_collator
+            data_collator=custom_data_collator,
+            callbacks=[EarlyStoppingCallback(early_stopping_patience=10, early_stopping_threshold=0)]
         )
         trainer.train()
+
+        # Get the best validation loss from the logs
+        best_eval_loss = min(trainer.state.log_history, key=lambda x: x.get("eval_loss", float("inf"))).get("eval_loss")
+
+        print(f"Best Validation Loss: {best_eval_loss}")
+
+        # Return the best validation loss
+        return best_eval_loss
+    
+    def print_parameters(self) -> None:
+        """Print the number of total and trainable parameters for the entire model, encoder and decoder.
+        """
+        def count_parameters(model: torch.nn.Module):
+            """Helper function to count total and trainable parameters."""
+            total_params = sum(p.numel() for p in model.parameters())
+            trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+            return total_params, trainable_params
+        
+        # Count parameters for the entire model
+        total_model_params, trainable_model_params = count_parameters(self.model)
+        print("Entire Model:")
+        print(f"Total Parameters: {total_model_params:,}")
+        print(f"Trainable Parameters: {trainable_model_params:,}")
+        print(f"Percentage of Trainable Parameters: {trainable_model_params/total_model_params*100:.2f}%\n")
+
+        # Count parameters for the encoder
+        total_encoder_params, trainable_encoder_params = count_parameters(self.model.encoder)
+        print("Encoder:")
+        print(f"Total Parameters: {total_encoder_params:,}")
+        print(f"Trainable Parameters: {trainable_encoder_params:,}")
+        print(f"Percentage of Trainable Parameters: {trainable_encoder_params/total_encoder_params*100:.2f}%\n")
+
+        # Count parameters for the decoder
+        total_decoder_params, trainable_decoder_params = count_parameters(self.model.decoder)
+        print("Decoder:")
+        print(f"Total Parameters: {total_decoder_params:,}")
+        print(f"Trainable Parameters: {trainable_decoder_params:,}")
+        print(f"Percentage of Trainable Parameters: {trainable_decoder_params/total_decoder_params*100:.2f}%")
+
 
 def custom_data_collator(features):
     """
@@ -201,7 +285,7 @@ def custom_data_collator(features):
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser(description='ViT-GPT2')
-    parser.add_argument('-d', '--data_dir', help="Path to dataset", required=True)
+    parser.add_argument('-d', '--data_dir', help="Path to dataset", required=False, default="/ghome/c5mcv01/mcv-c5-team1/week3/data")
     parser.add_argument('-i', '--infer_image', help="Path to image to infer", required=False)
     parser.add_argument('-o', '--output_dir', help="Output directory for the model", default=None, required=False)
     parser.add_argument('-t', '--task', help="Task to perform: inference, evaluation or train", required=True, choices=["inference", "evaluation", "train"])
@@ -217,6 +301,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     model = Vit_GPT2(model_path=args.model_file, tokenizer_path=args.tokenizer_path, max_len=args.max_len)
+
+
     train_csv_path = os.path.join(args.data_dir, "train.csv")
     val_csv_path = os.path.join(args.data_dir, "val.csv")
     test_csv_path = os.path.join(args.data_dir, "test.csv")
