@@ -279,8 +279,8 @@ Results:
 | Set   | BLEU-1 | BLEU-2  | ROUGE-L | METEOR |
 |-------|--------|---------|---------|--------|
 | Train |    |     |     |    |
-| Val   |    |     |     |    |
-| Test  |    |     |     |    |
+| Val   | 0.10   | 0.01    | 0.23    | 0.20   |
+| Test  | 0.10   | 0.01    | 0.22    | 0.20   |
 
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
