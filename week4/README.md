@@ -102,6 +102,14 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
 
 ### Quantitative Results:
 
+To evaluate the fine-tuned models, we can use the following command:
+
+```bash
+python3 -m src.models.vit_gpt2 -t evaluation \
+    -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+    -m /ghome/c5mcv01/mcv-c5-team1/week4/results/vit_gpt2_fully_unfrozen/checkpoint-8400 --eval_set test \
+```
+
 <table>
   <thead>
     <tr>
@@ -144,10 +152,52 @@ python3 -m src.models.vit_gpt2 -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
       <td>Val</td><td>0.14</td><td>0.05</td><td>0.14</td><td>0.09</td>
     </tr>
     <tr>
-      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+      <td>Test</td><td>0.15</td><td>0.05</td><td>0.14</td><td>0.09</td>
     </tr>
   </tbody>
 </table>
+
+### Optuna with the best model:
+
+After evaluating different configurations, we found that the best-performing model was the **Fully Unfrozen** one. Therefore, we performed hyperparameter optimization using Optuna to further enhance its performance.
+
+**Key Hyperparameters Tuned:**
+
+- **Learning Rate:** Adjusted logarithmically between 1e-5 and 1e-2.
+
+- **Scheduler Type:** Chosen from linear, inverse_sqrt, cosine_with_min_lr, or warmup_stable_decay.
+
+- **Gradient Clipping:** Optionally enabled with values in the range [0.1, 10.0].
+
+- **Dropout Rates:** Tuned for attention, embedding, residual, and hidden layers in the range [0.1, 0.5].
+
+- **Weight Decay:** Regularization parameter between 1e-5 and 1e-3.
+
+- **Warmup Steps:** Number of steps for learning rate warmup, ranging from 500 to 2000.
+
+Run this command to use optuna:
+
+```bash
+python3 -m src.run_optuna
+```
+
+Result with the Best Validation Loss:
+
+`Best is trial 34 with value: 0.4573763906955719.`
+
+Now we evaluate the model obtained with trial 34 with this command:
+
+```bash
+python3 -m src.models.vit_gpt2 -t evaluation  \
+    -d /ghome/c5mcv01/mcv-c5-team1/week3/data \
+    -m /ghome/c5mcv01/mcv-c5-team1/week4/optuna_studies_task1/optuna_task1_trial_34_FullyUnfrozen_dropout/checkpoint-1183 --eval_set test \
+```
+
+| Set   | BLEU-1 | BLEU-2  | ROUGE-L | METEOR |
+|-------|--------|---------|---------|--------|
+| Train | 0.30   | 0.23    | 0.32    | 0.29   |
+| Val   | 0.11   | 0.03    | 0.11    | 0.07   |
+| Test  | 0.11   | 0.04    | 0.11    | 0.08   |
 
 ### Qualitative Results:
 
