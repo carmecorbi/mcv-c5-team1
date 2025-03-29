@@ -199,6 +199,8 @@ python3 -m src.models.vit_gpt2 -t evaluation  \
 | Val   | 0.11   | 0.03    | 0.11    | 0.07   |
 | Test  | 0.11   | 0.04    | 0.11    | 0.08   |
 
+Despite performing hyperparameter tuning with Optuna, we did not achieve better results compared to the original fine-tuned model. Therefore, we use the original fine-tuned model for inference.
+
 ### Qualitative Results:
 
 | Image      | Set                   | Ground Truth Caption                          | Predicted Caption with Pretrained Model    | Predicted Caption with Fully Unfrozen   |
@@ -245,7 +247,7 @@ messages = [
 To run the model and generate image captions, execute the following command:
 
 ```bash
-python3 -m src.models.llm -i /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+python3 -m src.models.llm -i /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg -t infer
 ```
 
 **Example Output:**
@@ -264,6 +266,21 @@ Generated caption: Dutch peanut cookies with vanilla buttercream.
 
 The results highlight that the model successfully generates relevant dish captions but sometimes introduces regional variations or slight misinterpretations of the dish composition.
 
+### Quantitative Results:
+
+To evaluate the model, we can use the following command:
+
+```bash
+python3 -m src.models.llm -d /ghome/c5mcv01/mcv-c5-team1/week3/data -t eval --eval_set test
+```
+
+Results:
+
+| Set   | BLEU-1 | BLEU-2  | ROUGE-L | METEOR |
+|-------|--------|---------|---------|--------|
+| Train |    |     |     |    |
+| Val   |    |     |     |    |
+| Test  |    |     |     |    |
 
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
