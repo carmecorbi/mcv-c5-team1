@@ -292,6 +292,10 @@ python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' --n
 
 ### Llama 3.2-3B Fine-Tuning:
 
+```bash
+python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' --num_epochs 15 --batch_size 2
+```
+
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
 
 ## Task 2.4: Compare and discuss the results obtained from all methods
