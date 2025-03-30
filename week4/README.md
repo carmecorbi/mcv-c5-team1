@@ -284,6 +284,14 @@ Results:
 
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
+### Llama 3.2-1B Fine-Tuning:
+
+```bash
+python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' --num_epochs 15
+```
+
+### Llama 3.2-3B Fine-Tuning:
+
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
 
 ## Task 2.4: Compare and discuss the results obtained from all methods
