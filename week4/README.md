@@ -290,6 +290,12 @@ Results:
 python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' --num_epochs 15
 ```
 
+#### Inference:
+
+```bash
+python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+```
+
 ### Llama 3.2-3B Fine-Tuning:
 
 ```bash
