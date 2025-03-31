@@ -302,6 +302,30 @@ python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t 
 python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' --num_epochs 15 --batch_size 2
 ```
 
+#### Inference:
+
+```bash
+python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+```
+
+### Qualitative Results:
+
+| Image | Ground Truth Caption                              | Predicted Caption with Llama 3.2-1B Fine-Tuning | Predicted Caption with Llama 3.2-3B Fine-Tuning |
+| ----- | ------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
+| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c)  | 'mochi covered strawberries'                      | 'Matcha-Dipped Salmon with Asparagus and Mint' | 'Strawberries with Berries and Yogurt' |
+| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | 'nutter butter cookies'                           | 'Rosemary Orange Turnovers' | '3-Ingredient Coconut Cardamom Cookies' |
+| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | 'fried egg and sausage ciabatta breakfast pizzas' | 'Poached Eggs and Spinach on Toast with Vinegar' | 'Poached Egg on Toast' |
+
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
+
+For evaluation run:
+
+```bash
+python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t eval --eval_set test
+```
+
+```bash
+python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t eval --eval_set test
+```
 
 ## Task 2.4: Compare and discuss the results obtained from all methods
