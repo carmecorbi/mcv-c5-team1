@@ -328,4 +328,40 @@ python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t 
 python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t eval --eval_set test
 ```
 
+<table>
+  <thead>
+    <tr>
+      <th>Strategy</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="3"><b>Llama 3.2 1B</b></td>
+      <td>Train</td><td>0.30</td><td>0.20</td><td>0.35</td><td>0.31</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.08</td><td>0.01</td><td>0.07</td><td>0.05</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.08</td><td>0.01</td><td>0.08</td><td>0.05</td>
+    </tr>
+    <tr><td colspan="6"></td></tr>
+    <tr>
+      <td rowspan="3"><b>Llama 3.2 3B</b></td>
+      <td>Train</td><td>0.47</td><td>0.43</td><td>0.47</td><td>0.45</td>
+    </tr>
+    <tr>
+      <td>Val</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.14</td><td>0.05</td><td>0.13</td><td>0.09</td>
+    </tr>
+  </tbody>
+</table>
+
 ## Task 2.4: Compare and discuss the results obtained from all methods
