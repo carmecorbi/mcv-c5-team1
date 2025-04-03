@@ -311,14 +311,14 @@ python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-3B
 
 #### Inference:
 
-```bash
+
 ```bash
 python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-3B \
     --hf_token 'hugging face access token' \
     --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
     --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
 ```
-```
+
 
 ### Qualitative Results:
 
