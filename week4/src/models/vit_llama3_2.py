@@ -196,7 +196,7 @@ def get_pretrained_model(token: str, model_name):
     return image_processor, multimodal_model, llm_tokenizer
     
 def inference(token: str, kwargs):
-    image_processor, multimodal_model = get_pretrained_model(token, kwargs.model_name)
+    image_processor, multimodal_model, _ = get_pretrained_model(token, kwargs.model_name)
     
     # Inference of the image
     img = Image.open(kwargs.infer_image_path).convert("RGB")
@@ -289,7 +289,7 @@ if __name__ == "__main__":
         inference(hf_token, args)
     elif args.task == "eval":
         assert args.model_file is not None, "Model file path is required for evaluation (--model_file)"
-        image_processor, multimodal_model, llm_tokenizer = get_pretrained_model(hf_token)
+        image_processor, multimodal_model, llm_tokenizer = get_pretrained_model(hf_token, args.model_name)
         
         # Load datasets
         train_df, val_df, test_df = pd.read_csv(args.train_csv_path), pd.read_csv(args.val_csv_path), pd.read_csv(args.test_csv_path)
