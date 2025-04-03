@@ -358,10 +358,10 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
   <tbody>
     <tr>
       <td rowspan="3"><b>Llama 3.2 1B</b></td>
-      <td>Train</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Train</td><td>0.96</td><td>0.94</td><td>0.97</td><td>0.94</td>
     </tr>
     <tr>
-      <td>Val</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
     </tr>
     <tr>
       <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.09</td>
@@ -369,10 +369,10 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
     <tr><td colspan="6"></td></tr>
     <tr>
       <td rowspan="3"><b>Llama 3.2 3B</b></td>
-      <td>Train</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Train</td><td>0.31</td><td>0.16</td><td>0.36</td><td>0.28</td>
     </tr>
     <tr>
-      <td>Val</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Val</td><td>0.12</td><td>0.03</td><td>0.16</td><td>0.10</td>
     </tr>
     <tr>
       <td>Test</td><td>0.12</td><td>0.02</td><td>0.15</td><td>0.10</td>
@@ -380,4 +380,4 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
   </tbody>
 </table>
 
-## Task 2.4: Compare and discuss the results obtained from all methods
+
