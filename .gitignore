@@ -28,6 +28,7 @@ week2/src/domain_shift/labelme2COCOcopy.py
 week2/src/domain_shift/exp_Mask2Former_finetuning.py
 week2/src/domain_shift/other_files
 week2/src/domain_shift/exp_Mask2Former_inference.py
+logs/
 
 
 # Log files

@@ -10,7 +10,7 @@ import torch
 
 
 class Data(Dataset):
-    def __init__(self, data, partition, img_path: str, tokenizer: Tokenizer, image_processor: ViTImageProcessor, text_max_len: int = 201):
+    def __init__(self, data, partition, img_path: str, tokenizer: Tokenizer, image_processor: ViTImageProcessor, text_max_len: int = 201, return_path=False):
         self.data = data
         self.img_path = img_path
         self.partition = partition
@@ -20,6 +20,7 @@ class Data(Dataset):
         
         self.num_captions = 1
         self.max_len = text_max_len
+        self.return_path = return_path
 
     def __len__(self):
         return len(self.partition)
@@ -40,7 +41,10 @@ class Data(Dataset):
         # Caption processing
         caption = item["Title"].reset_index(drop=True)[random.choice(list(range(self.num_captions)))]
         cap_idx = self.tokenizer.encode(caption)
-        return img, torch.tensor(cap_idx)
+        
+        if not self.return_path:
+            return img, torch.tensor(cap_idx)
+        return img, torch.tensor(cap_idx), f'{self.img_path}/{img_name}.jpg'
     
     
 # Example of usage
