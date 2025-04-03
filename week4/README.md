@@ -287,25 +287,37 @@ Results:
 ### Llama 3.2-1B Fine-Tuning:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' --num_epochs 15
+python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' --num_epochs 15 \
+    --output_dir results/vit_llama3_2_1B_cleaned
 ```
 
 #### Inference:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_1B_cleaned/checkpoints/best_model.pt \
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
 ```
 
 ### Llama 3.2-3B Fine-Tuning:
 
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' --num_epochs 15 --batch_size 2
+python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' --num_epochs 15  --batch_size 2 \
+    --output_dir results/vit_llama3_2_3B_cleaned
 ```
 
 #### Inference:
 
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+```bash
+python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+```
 ```
 
 ### Qualitative Results:
@@ -321,11 +333,15 @@ python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t 
 For evaluation run:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t eval --eval_set test
+python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_1B_cleaned/checkpoints/best_model.pt \
 ```
 
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t eval --eval_set test
+python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
 ```
 
 <table>
