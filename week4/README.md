@@ -15,7 +15,6 @@
   - [Task 2.1: Direct evaluation using Llama 3.2-11B model (multimodal)](#task-21-direct-evaluation-using-llama-32-11b-model-multimodal)
   - [Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA](#task-22-use-your-well-trained-vit-encoder-as-a-frozen-image-feature-extractor-and-fine-tune-decoders-llama-32-1b-and-llama-32-3b-using-lora)
   - [Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR](#task-23-report-a-single-table-comparing-the-above-methods-using-bleu-1-bleu-2-rouge-l-and-meteor)
-  - [Task 2.4: Compare and discuss the results obtained from all methods](#task-24-compare-and-discuss-the-results-obtained-from-all-methods)
 
 
 # Project Structure W4
@@ -380,4 +379,20 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
   </tbody>
 </table>
 
+# Cleaning dataset
 
+## Step 1: Cleaning Images containing only TEXT
+
+```bash
+python3 cleaning_text.py
+```
+
+## Step 2: Cleaning Duplicate Images with Different Captions
+
+```bash
+python3 cleaning_images.py
+```
+## Step 3: Cleaning Person Images
+```bash
+python3 cleaning_persons.py --csv_path cleaned_merged.csv --output_path final.csv --images_dir /ghome/c5mcv01/mcv-c5-team1/week3/data/images
+```
