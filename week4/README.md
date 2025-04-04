@@ -379,20 +379,20 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
   </tbody>
 </table>
 
-# Cleaning dataset
+## Cleaning dataset
 
-## Step 1: Cleaning Images containing only TEXT
+### Step 1: Cleaning Images containing only TEXT
 
 ```bash
 python3 cleaning_text.py
 ```
 
-## Step 2: Cleaning Duplicate Images with Different Captions
+### Step 2: Cleaning Duplicate Images with Different Captions
 
 ```bash
 python3 cleaning_images.py
 ```
-## Step 3: Cleaning Person Images
+### Step 3: Cleaning Person Images
 ```bash
 python3 cleaning_persons.py --csv_path cleaned_merged.csv --output_path final.csv --images_dir /ghome/c5mcv01/mcv-c5-team1/week3/data/images
 ```
