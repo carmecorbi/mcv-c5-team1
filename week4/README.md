@@ -369,7 +369,7 @@ python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-1B
 python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-1B \
     --hf_token 'hugging face access token' \
     --model_file results/vit_llama3_2_1B_cleaned/checkpoints/best_model.pt \
-    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/milk-chocolate-peanut-butter-sandwich-cookies-233945.jpg
 ```
 
 ### Llama 3.2-3B Fine-Tuning:
@@ -387,7 +387,7 @@ python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-3B
 python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-3B \
     --hf_token 'hugging face access token' \
     --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
-    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/milk-chocolate-peanut-butter-sandwich-cookies-233945.jpg
 ```
 
 
@@ -395,9 +395,9 @@ python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-3B
 
 | Image | Ground Truth Caption                              | Predicted Caption with Llama 3.2-1B Fine-Tuning | Predicted Caption with Llama 3.2-3B Fine-Tuning |
 | ----- | ------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
-| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c)  | 'mochi covered strawberries'                      | 'Matcha-Dipped Salmon with Asparagus and Mint' | 'Strawberries with Berries and Yogurt' |
-| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | 'nutter butter cookies'                           | 'Rosemary Orange Turnovers' | '3-Ingredient Coconut Cardamom Cookies' |
-| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | 'fried egg and sausage ciabatta breakfast pizzas' | 'Poached Eggs and Spinach on Toast with Vinegar' | 'Poached Egg on Toast' |
+| ![butter-cookies-with-raisins-5316](https://github.com/user-attachments/assets/c24984e4-ea55-4cc6-881c-87cff75bcbec) | 'butter cookies with raisins'                      | 'Spiced Sesame Balls' | 'Pistachio Cardamom Crescents' |
+| ![spinach-gnocchi-51262540](https://github.com/user-attachments/assets/7eb02af3-71bc-4628-8108-55c8276204b3) | 'spinach gnocchi' | 'Christmas Tree Fritters' | 'Fried Green Olives with Shrimp and Oregano' |
+| ![milk-chocolate-peanut-butter-sandwich-cookies-233945](https://github.com/user-attachments/assets/25c7ce80-abab-47fa-b3df-e70992bbb08b) | 'milk chocolate peanut butter sandwich cookies' | 'Cinnamon Apple Pie with Cheddar Crust' | 'Caramel Madness' |
 
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
 
