@@ -281,12 +281,11 @@ Results:
 | Val   | 0.10   | 0.01    | 0.23    | 0.20   |
 | Test  | 0.10   | 0.01    | 0.22    | 0.20   |
 
-
 ## Cleaning dataset
 
-Based on the poor performance observed in Task 1, we decided to clean the dataset. The dataset included many images and captions that could hinder model learning, such as images containing only text, duplicated visuals with different captions, or images with people.
+Based on the poor performance observed in Task 1, we decide to clean the dataset. The dataset includes many images and captions that could hinder model learning, such as images containing only text, duplicated visuals with different captions, or images with people.
 
-This cleaning process was split into three main steps:
+This cleaning process is split into three main steps:
 
 ### Step 1: Cleaning Images Containing Only Text
 
@@ -294,10 +293,10 @@ This cleaning process was split into three main steps:
   A Python OCR library used for text detection (English only).
   
 - **Process**:
-  1. Scanned all images using OCR.
-  2. Reviewed images that contained only text.
-  3. Kept a few relevant ones (e.g., *Chicken Lettuce Cups*).
-  4. Removed the rest from the dataset `.csv`.
+  1. Scan all images using OCR.
+  2. Review images that contain only text.
+  3. Keep a few relevant ones (e.g., *Chicken Lettuce Cups*).
+  4. Remove the rest from the dataset `.csv`.
 
 - **Command**:
   ```bash
@@ -317,9 +316,9 @@ This cleaning process was split into three main steps:
   Used to compute a unique hash for each image and detect duplicates.
 
 - **Process**:
-  1. Generated MD5 hash for each image.
-  2. Identified duplicates (same image, different captions).
-  3. Merged entries keeping the first image name and combining unique captions.
+  1. Generate MD5 hash for each image.
+  2. Identify duplicates (same image, different captions).
+  3. Merge entries, keeping the first image name and combining unique captions.
 
 - **Command**:
   ```bash
@@ -339,8 +338,8 @@ This cleaning process was split into three main steps:
   For object detection with a confidence threshold of `0.75`.
 
 - **Process**:
-  1. Ran person detection on all images.
-  2. Removed images where at least one person was detected (with ≥ 75% confidence).
+  1. Apply person detection to all images.
+  2. Remove images where at least one person is detected (with ≥ 75% confidence).
 
 - **Command**:
   ```bash
