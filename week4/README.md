@@ -14,6 +14,8 @@
   - [Task 2.1: Direct evaluation using Llama 3.2-11B model (multimodal)](#task-21-direct-evaluation-using-llama-32-11b-model-multimodal)
   - [Cleaning dataset](#cleaning-dataset)
   - [Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA](#task-22-use-your-well-trained-vit-encoder-as-a-frozen-image-feature-extractor-and-fine-tune-decoders-llama-32-1b-and-llama-32-3b-using-lora)
+  - [Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR](#task-23-report-a-single-table-comparing-the-above-methods-using-bleu-1-bleu-2-rouge-l-and-meteor)
+  - [Fine-Tuning with Varying LoRA Parameters](#fine-tuning-with-varying-lora-parameters)
 
 
 # Project Structure W4
@@ -452,4 +454,153 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
 </table>
 
 Results Analysis: The Llama 3.2 1B model shows strong overfitting, with extremely high performance on the training set but poor generalization to validation and test sets. In contrast, Llama 3.2 3B, while performing worse on the training set, demonstrates better generalization across validation and test sets. 
+
+## Fine-Tuning with Varying LoRA Parameters
+
+We conducted additional experiments fine-tuning the ViT + LLaMA 3.2 1B model using different LoRA parameter configurations. In previous experiments, we observed that both the 1B and 3B versions of LLaMA 3.2 achieved similar performance, with both models showing signs of overfitting. As a result, we continued experimenting with the 1B model due to its faster training time.
+
+In this section, we isolate the effect of three key LoRA hyperparameters by modifying **one parameter at a time** while keeping the others at their default values. To reduce overfitting, the number of training epochs was decreased from **15 to 10** in all cases.
+
+### LoRA Parameters Investigated:
+- **Alpha** (LoRA scaling): `[16, 32 (default), 64]`
+- **Dropout**: `[0.1 (default), 0.25, 0.5]`
+- **R** (Attention Dimension / Rank): `[4, 8 (default), 16]`
+
+### Training Commands Used:
+```bash
+# Varying LoRA Rank (r)
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_r4 --lora_r 4
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_r16 --lora_r 16
+
+# Varying Dropout
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_dropout25 --lora_dropout 0.25
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_dropout50 --lora_dropout 0.50
+
+# Varying Alpha
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_alpha16 --lora_alpha 16
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_alpha64 --lora_alpha 64
+```
+
+---
+
+### Quantitative Results: LoRA Alpha Scaling
+
+<table>
+  <thead>
+    <tr>
+      <th>Alpha</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">16</td>
+      <td>Val</td><td>0.03</td><td>0.002</td><td>0.04</td><td>0.02</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.03</td><td>0.0007</td><td>0.04</td><td>0.03</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>32</b></td>
+      <td>Val</td><td><b>0.10</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">64</td>
+      <td>Val</td><td>0.08</td><td>0.02</td><td>0.10</td><td>0.08</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.07</td><td>0.02</td><td>0.10</td><td>0.07</td>
+    </tr>
+  </tbody>
+</table>
+
+
+---
+
+### Quantitative Results: LoRA Dropout
+
+<table>
+  <thead>
+    <tr>
+      <th>Dropout</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">0.1</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>0.25</b></td>
+      <td>Val</td><td><b>0.11</b></td><td><b>0.03</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.03</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">0.5</td>
+      <td>Val</td><td>0.11</td><td>0.02</td><td>0.14</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.14</td><td>0.10</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### Quantitative Results: LoRA Rank (r)
+
+<table>
+  <thead>
+    <tr>
+      <th>r</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">4</td>
+      <td>Val</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>8</b></td>
+      <td>Val</td><td><b>0.10</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">16</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.08</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+  </tbody>
+</table>
+
+Among all the LoRA parameter variations, the only configuration that consistently improved performance was increasing the **dropout** to 0.25, which led to slight gains across all evaluation metrics. Other changes to **alpha** and **r** did not result in clear improvements, suggesting that regularization via dropout was more effective than adjusting model capacity in this context.
 
