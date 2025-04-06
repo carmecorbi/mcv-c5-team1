@@ -3,7 +3,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import LoraConfig, get_peft_model
 
 
-def add_peft(model):
+def add_peft(model, alpha=32, dropout=0.1, r=8):
     """
     Adds PEFT to a model.
 
@@ -14,10 +14,11 @@ def add_peft(model):
     - Pre-trained language model with PEFT applied.
     """
     # Define PEFT configuration
+    # use_rslora can be set to true
     peft_config = LoraConfig(
-        lora_alpha=32,
-        lora_dropout=0.1,
-        r=8,
+        lora_alpha=alpha,
+        lora_dropout=dropout,
+        r=r,
         bias="none",
         task_type="CAUSAL_LM",
         target_modules=["q_proj", "k_proj", "v_proj", "o_proj", 

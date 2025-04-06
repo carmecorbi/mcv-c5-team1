@@ -73,7 +73,9 @@ def train(token: str, kwargs):
         prompt_text="The description of the given image is: ")
     
     # Use LoraConfig for PEFT if needed
-    multimodal_model.language_model = llm.add_peft(multimodal_model.language_model)
+    # TODO: Change configuration of LoRA here
+    multimodal_model.language_model = llm.add_peft(
+        multimodal_model.language_model, alpha=kwargs.lora_alpha, dropout=kwargs.lora_dropout, r=kwargs.lora_r)
     
     # Training configuration
     num_epochs = kwargs.num_epochs
@@ -141,6 +143,10 @@ def train(token: str, kwargs):
         if epoch % 5 == 0:
             os.makedirs(os.path.dirname(f"{kwargs.output_dir}/checkpoints/epoch_{epoch+1}.pt"), exist_ok=True)
             multimodal_model._save_model(f"{kwargs.output_dir}/checkpoints/epoch_{epoch+1}.pt")
+
+        # Save last checkpoint
+        os.makedirs(os.path.dirname(f"{kwargs.output_dir}/checkpoints/last_checkpoint.pt"), exist_ok=True)
+        multimodal_model._save_model(f"{kwargs.output_dir}/checkpoints/last_checkpoint.pt")
         
         # Print training and validation loss
         print(f"Epoch {epoch+1} completed. Training Loss: {avg_train_loss:.4f}, Validation Loss: {avg_val_loss:.4f}")
@@ -167,7 +173,7 @@ def train(token: str, kwargs):
             f.write(f"Actual Possible Captions: {caption}\n")
             f.write(f"Generated Caption: {generated_caption}\n")
             
-def get_pretrained_model(token: str, model_name):
+def get_finetuned_model(token: str, model_name, model_file, lora_r=8):
     llm_tokenizer, llm_model = llm.get_llm(
         model_name, 
         access_token=token
@@ -188,15 +194,15 @@ def get_pretrained_model(token: str, model_name):
             language_model=llm_model,
             lm_peft = llm.add_peft,
             prompt_text="The description of the given image is: ")
-    multimodal_model.language_model = llm.add_peft(multimodal_model.language_model)
-    multimodal_model._load_model(args.model_file)
+    multimodal_model.language_model = llm.add_peft(multimodal_model.language_model, r=lora_r)
+    multimodal_model._load_model(model_file)
 
     multimodal_model.eval()
     
     return image_processor, multimodal_model, llm_tokenizer
     
 def inference(token: str, kwargs):
-    image_processor, multimodal_model, _ = get_pretrained_model(token, kwargs.model_name)
+    image_processor, multimodal_model, _ = get_finetuned_model(token, kwargs.model_name, kwargs.model_file)
     
     # Inference of the image
     img = Image.open(kwargs.infer_image_path).convert("RGB")
@@ -259,7 +265,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     # Task and model configuration
-    parser.add_argument('-m', '--model_file', default=None, help="Path to the pretrained model .")
+    parser.add_argument('-m', '--model_file', default=None, help="Path to the finetuned model .")
     parser.add_argument('-t', '--task', help="Task to perform: inference, evaluation or train", required=True, choices=["infer", "eval", "train"], default="train")
     parser.add_argument('--hf_token', help="Hugging Face token for accessing models and datasets.", required=True)
     parser.add_argument('--model_name', default="meta-llama/Llama-3.2-1B", help="Name of the model.", choices=["meta-llama/Llama-3.2-1B", "meta-llama/Llama-3.2-3B"])
@@ -276,6 +282,11 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, help="Batch size for training and validation.", default=12)
     parser.add_argument('--num_epochs', type=int, help="Number of epochs for training.", default=10)
     parser.add_argument('--eval_set', help="Evaluation set to use", default="test", choices=["train", "test", "val"])
+
+    # LoRA configuration
+    parser.add_argument("--lora_alpha", help="LoRA alpha parameter for LLM finetuning.", default=32, type=int)
+    parser.add_argument("--lora_dropout", help="LoRA dropout parameter for LLM finetuning.", default=0.1, type=float)
+    parser.add_argument("--lora_r", help="LoRA R parameter for LLM finetuning.", default=8, type=int)
     args = parser.parse_args()
     
     # Get the Hugging Face token from the command line arguments
@@ -289,7 +300,7 @@ if __name__ == "__main__":
         inference(hf_token, args)
     elif args.task == "eval":
         assert args.model_file is not None, "Model file path is required for evaluation (--model_file)"
-        image_processor, multimodal_model, llm_tokenizer = get_pretrained_model(hf_token, args.model_name)
+        image_processor, multimodal_model, llm_tokenizer = get_finetuned_model(hf_token, args.model_name, args.model_file, args.lora_r)
         
         # Load datasets
         train_df, val_df, test_df = pd.read_csv(args.train_csv_path), pd.read_csv(args.val_csv_path), pd.read_csv(args.test_csv_path)
