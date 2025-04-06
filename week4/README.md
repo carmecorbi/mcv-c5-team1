@@ -281,6 +281,81 @@ Results:
 | Val   | 0.10   | 0.01    | 0.23    | 0.20   |
 | Test  | 0.10   | 0.01    | 0.22    | 0.20   |
 
+
+## Cleaning dataset
+
+Based on the poor performance observed in Task 1, we decided to clean the dataset. The dataset included many images and captions that could hinder model learning, such as images containing only text, duplicated visuals with different captions, or images with people.
+
+This cleaning process was split into three main steps:
+
+### Step 1: Cleaning Images Containing Only Text
+
+- **Model Used**: [EasyOCR](https://github.com/JaidedAI/EasyOCR)  
+  A Python OCR library used for text detection (English only).
+  
+- **Process**:
+  1. Scanned all images using OCR.
+  2. Reviewed images that contained only text.
+  3. Kept a few relevant ones (e.g., *Chicken Lettuce Cups*).
+  4. Removed the rest from the dataset `.csv`.
+
+- **Command**:
+  ```bash
+  python3 cleaning_text.py
+  ```
+
+- **Dataset Overview**:
+  - Before: `13,466` images  
+  - After: `13,264` images  
+  - Removed: `202` images
+
+---
+
+### Step 2: Removing Duplicate Images with Different Captions
+
+- **Method Used**: [hashlib MD5](https://docs.python.org/3/library/hashlib.html)  
+  Used to compute a unique hash for each image and detect duplicates.
+
+- **Process**:
+  1. Generated MD5 hash for each image.
+  2. Identified duplicates (same image, different captions).
+  3. Merged entries keeping the first image name and combining unique captions.
+
+- **Command**:
+  ```bash
+  python3 cleaning_images.py
+  ```
+
+- **Dataset Overview**:
+  - Before: `13,264` images  
+  - After: `12,972` images  
+  - Removed: `292` duplicates
+
+---
+
+### Step 3: Removing Images with People
+
+- **Model Used**: [YOLOv8n](https://github.com/ultralytics/ultralytics)  
+  For object detection with a confidence threshold of `0.75`.
+
+- **Process**:
+  1. Ran person detection on all images.
+  2. Removed images where at least one person was detected (with ≥ 75% confidence).
+
+- **Command**:
+  ```bash
+  python3 cleaning_persons.py \
+    --csv_path cleaned_merged.csv \
+    --output_path final.csv \
+    --images_dir /ghome/c5mcv01/mcv-c5-team1/week3/data/images
+  ```
+
+- **Dataset Overview**:
+  - Before: `12,972` images  
+  - After: `12,934` images  
+  - Removed: `38` images
+
+
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
 ### Llama 3.2-1B Fine-Tuning:
@@ -379,20 +454,4 @@ python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-lla
   </tbody>
 </table>
 
-## Cleaning dataset
 
-### Step 1: Cleaning Images containing only TEXT
-
-```bash
-python3 cleaning_text.py
-```
-
-### Step 2: Cleaning Duplicate Images with Different Captions
-
-```bash
-python3 cleaning_images.py
-```
-### Step 3: Cleaning Person Images
-```bash
-python3 cleaning_persons.py --csv_path cleaned_merged.csv --output_path final.csv --images_dir /ghome/c5mcv01/mcv-c5-team1/week3/data/images
-```
