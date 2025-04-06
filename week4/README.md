@@ -335,7 +335,7 @@ This cleaning process was split into three main steps:
 
 ### Step 3: Removing Images with People
 
-- **Model Used**: [YOLOv8n](https://github.com/ultralytics/ultralytics)  
+- **Model Used**: [YOLOv8n](https://docs.ultralytics.com/es/models/yolov8/#performance-metrics)  
   For object detection with a confidence threshold of `0.75`.
 
 - **Process**:
