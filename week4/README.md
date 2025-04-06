@@ -10,12 +10,12 @@
     - [ViT (Frozen), GPT2 (Fine-Tune)](#vit-frozen-gpt2-fine-tune)
     - [ViT (Fine-Tune), GPT2 (Fine-Tune)](#vit-fine-tune-gpt2-fine-tune)
   - [Task 1.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR](#task-13-report-a-single-table-comparing-the-above-methods-using-bleu-1-bleu-2-rouge-l-and-meteor)
-  - [Task 1.4: Compare and discuss your results against those obtained using last week's methods](#task-14-compare-and-discuss-your-results-against-those-obtained-using-last-weeks-methods)
 - [Task 2: Image Captioning with LLMs](#task-2-image-captioning-with-llms)
   - [Task 2.1: Direct evaluation using Llama 3.2-11B model (multimodal)](#task-21-direct-evaluation-using-llama-32-11b-model-multimodal)
+  - [Cleaning dataset](#cleaning-dataset)
   - [Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA](#task-22-use-your-well-trained-vit-encoder-as-a-frozen-image-feature-extractor-and-fine-tune-decoders-llama-32-1b-and-llama-32-3b-using-lora)
   - [Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR](#task-23-report-a-single-table-comparing-the-above-methods-using-bleu-1-bleu-2-rouge-l-and-meteor)
-  - [Task 2.4: Compare and discuss the results obtained from all methods](#task-24-compare-and-discuss-the-results-obtained-from-all-methods)
+  - [Fine-Tuning with Varying LoRA Parameters](#fine-tuning-with-varying-lora-parameters)
 
 
 # Project Structure W4
@@ -209,7 +209,6 @@ Despite performing hyperparameter tuning with Optuna, we did not achieve better 
 | ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | Test | 'nutter butter cookies' | 'a table topped with lots of doughnuts' | 'S'mores Cheesecake' |
 | ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | Test | 'fried egg and sausage ciabatta breakfast pizzas' | 'a white plate topped with a piece of bread' | 'Eggs Toast with Fried Eggs and Toasted Brioche' |
 
-## Task 1.4: Compare and discuss your results against those obtained using last week's methods
 
 # Task 2: Image Captioning with LLMs
 
@@ -282,50 +281,140 @@ Results:
 | Val   | 0.10   | 0.01    | 0.23    | 0.20   |
 | Test  | 0.10   | 0.01    | 0.22    | 0.20   |
 
+## Cleaning dataset
+
+Based on the poor performance observed in Task 1, we decide to clean the dataset. The dataset includes many images and captions that could hinder model learning, such as images containing only text, duplicated visuals with different captions, or images with people.
+
+This cleaning process is split into three main steps:
+
+### Step 1: Cleaning Images Containing Only Text
+
+- **Model Used**: [EasyOCR](https://github.com/JaidedAI/EasyOCR)  
+  A Python OCR library used for text detection (English only).
+  
+- **Process**:
+  1. Scan all images using OCR.
+  2. Review images that contain only text.
+  3. Keep a few relevant ones (e.g., *Chicken Lettuce Cups*).
+  4. Remove the rest from the dataset `.csv`.
+
+- **Command**:
+  ```bash
+  python3 cleaning_text.py
+  ```
+
+- **Dataset Overview**:
+  - Before: `13,466` images  
+  - After: `13,264` images  
+  - Removed: `202` images
+
+---
+
+### Step 2: Removing Duplicate Images with Different Captions
+
+- **Method Used**: [hashlib MD5](https://docs.python.org/3/library/hashlib.html)  
+  Used to compute a unique hash for each image and detect duplicates.
+
+- **Process**:
+  1. Generate MD5 hash for each image.
+  2. Identify duplicates (same image, different captions).
+  3. Merge entries, keeping the first image name and combining unique captions.
+
+- **Command**:
+  ```bash
+  python3 cleaning_images.py
+  ```
+
+- **Dataset Overview**:
+  - Before: `13,264` images  
+  - After: `12,972` images  
+  - Removed: `292` duplicates
+
+---
+
+### Step 3: Removing Images with People
+
+- **Model Used**: [YOLOv8n](https://docs.ultralytics.com/es/models/yolov8/#performance-metrics)  
+  For object detection with a confidence threshold of `0.75`.
+
+- **Process**:
+  1. Apply person detection to all images.
+  2. Remove images where at least one person is detected (with ≥ 75% confidence).
+
+- **Command**:
+  ```bash
+  python3 cleaning_persons.py \
+    --csv_path cleaned_merged.csv \
+    --output_path final.csv \
+    --images_dir /ghome/c5mcv01/mcv-c5-team1/week3/data/images
+  ```
+
+- **Dataset Overview**:
+  - Before: `12,972` images  
+  - After: `12,934` images  
+  - Removed: `38` images
+
+
 ## Task 2.2: Use your well trained ViT encoder as a frozen image feature extractor, and fine-tune decoders (Llama 3.2-1B and Llama 3.2-3B) using LoRA
 
 ### Llama 3.2-1B Fine-Tuning:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' --num_epochs 15
+python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' --num_epochs 15 \
+    --output_dir results/vit_llama3_2_1B_cleaned
 ```
 
 #### Inference:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_1B_cleaned/checkpoints/best_model.pt \
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/milk-chocolate-peanut-butter-sandwich-cookies-233945.jpg
 ```
 
 ### Llama 3.2-3B Fine-Tuning:
 
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' --num_epochs 15 --batch_size 2
+python3 -m src.models.vit_llama3_2 -t train --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' --num_epochs 15  --batch_size 2 \
+    --output_dir results/vit_llama3_2_3B_cleaned
 ```
 
 #### Inference:
 
+
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t infer --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/nutter-butter-cookies.jpg
+python3 -m src.models.vit_llama3_2 -t infer --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
+    --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week3/data/images/milk-chocolate-peanut-butter-sandwich-cookies-233945.jpg
 ```
+
 
 ### Qualitative Results:
 
 | Image | Ground Truth Caption                              | Predicted Caption with Llama 3.2-1B Fine-Tuning | Predicted Caption with Llama 3.2-3B Fine-Tuning |
 | ----- | ------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------ |
-| ![mochi-covered-strawberries-56389993](https://github.com/user-attachments/assets/4829ddef-2153-4b04-aa1a-4b05bfa8906c)  | 'mochi covered strawberries'                      | 'Matcha-Dipped Salmon with Asparagus and Mint' | 'Strawberries with Berries and Yogurt' |
-| ![nutter-butter-cookies](https://github.com/user-attachments/assets/69c0aec6-abdf-48b6-8491-679086e52bdc) | 'nutter butter cookies'                           | 'Rosemary Orange Turnovers' | '3-Ingredient Coconut Cardamom Cookies' |
-| ![fried-egg-and-sausage-ciabatta-breakfast-pizzas-241096](https://github.com/user-attachments/assets/d1f090c4-86f9-43e2-81e6-d52a245ed885) | 'fried egg and sausage ciabatta breakfast pizzas' | 'Poached Eggs and Spinach on Toast with Vinegar' | 'Poached Egg on Toast' |
+| ![butter-cookies-with-raisins-5316](https://github.com/user-attachments/assets/c24984e4-ea55-4cc6-881c-87cff75bcbec) | 'butter cookies with raisins'                      | 'Spiced Sesame Balls' | 'Pistachio Cardamom Crescents' |
+| ![spinach-gnocchi-51262540](https://github.com/user-attachments/assets/7eb02af3-71bc-4628-8108-55c8276204b3) | 'spinach gnocchi' | 'Christmas Tree Fritters' | 'Fried Green Olives with Shrimp and Oregano' |
+| ![milk-chocolate-peanut-butter-sandwich-cookies-233945](https://github.com/user-attachments/assets/25c7ce80-abab-47fa-b3df-e70992bbb08b) | 'milk chocolate peanut butter sandwich cookies' | 'Cinnamon Apple Pie with Cheddar Crust' | 'Caramel Madness' |
 
 ## Task 2.3: Report a single table comparing the above methods using BLEU-1, BLEU-2, ROUGE-L, and METEOR
 
 For evaluation run:
 
 ```bash
-python3 -m src.models.vit_llama3_2_1B --hf_token 'hugging face access token' -t eval --eval_set test
+python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-llama/Llama-3.2-1B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_1B_cleaned/checkpoints/best_model.pt \
 ```
 
 ```bash
-python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t eval --eval_set test
+python3 -m src.models.vit_llama3_2 -t eval --eval_set test --model_name meta-llama/Llama-3.2-3B \
+    --hf_token 'hugging face access token' \
+    --model_file results/vit_llama3_2_3B_cleaned/checkpoints/best_model.pt \
 ```
 
 <table>
@@ -342,26 +431,176 @@ python3 -m src.models.vit_llama3_2_3B --hf_token 'hugging face access token' -t 
   <tbody>
     <tr>
       <td rowspan="3"><b>Llama 3.2 1B</b></td>
-      <td>Train</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Train</td><td>0.99</td><td>0.97</td><td>0.99</td><td>0.97</td>
     </tr>
     <tr>
-      <td>Val</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
     </tr>
     <tr>
-      <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.09</td>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.10</td>
     </tr>
     <tr><td colspan="6"></td></tr>
     <tr>
       <td rowspan="3"><b>Llama 3.2 3B</b></td>
-      <td>Train</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Train</td><td>0.29</td><td>0.21</td><td>0.32</td><td>0.28</td>
     </tr>
     <tr>
-      <td>Val</td><td>0</td><td>0</td><td>0</td><td>0</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.12</td><td>0.09</td>
     </tr>
     <tr>
-      <td>Test</td><td>0.12</td><td>0.02</td><td>0.15</td><td>0.10</td>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.09</td>
     </tr>
   </tbody>
 </table>
 
-## Task 2.4: Compare and discuss the results obtained from all methods
+Results Analysis: The Llama 3.2 1B model shows strong overfitting, with extremely high performance on the training set but poor generalization to validation and test sets. In contrast, Llama 3.2 3B, while performing worse on the training set, demonstrates better generalization across validation and test sets. 
+
+## Fine-Tuning with Varying LoRA Parameters
+
+We conducted additional experiments fine-tuning the ViT + LLaMA 3.2 1B model using different LoRA parameter configurations. In previous experiments, we observed that both the 1B and 3B versions of LLaMA 3.2 achieved similar performance, with both models showing signs of overfitting. As a result, we continued experimenting with the 1B model due to its faster training time.
+
+In this section, we isolate the effect of three key LoRA hyperparameters by modifying **one parameter at a time** while keeping the others at their default values. To reduce overfitting, the number of training epochs was decreased from **15 to 10** in all cases.
+
+### LoRA Parameters Investigated:
+- **Alpha** (LoRA scaling): `[16, 32 (default), 64]`
+- **Dropout**: `[0.1 (default), 0.25, 0.5]`
+- **R** (Attention Dimension / Rank): `[4, 8 (default), 16]`
+
+### Training Commands Used:
+```bash
+# Varying LoRA Rank (r)
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_r4 --lora_r 4
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_r16 --lora_r 16
+
+# Varying Dropout
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_dropout25 --lora_dropout 0.25
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_dropout50 --lora_dropout 0.50
+
+# Varying Alpha
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_alpha16 --lora_alpha 16
+python3 -m src.models.vit_llama3_2 -t train --hf_token 'hugging face access token' --num_epochs 10 --output_dir results/vit_llama3_2_1B_cleaned_alpha64 --lora_alpha 64
+```
+
+---
+
+### Quantitative Results: LoRA Alpha Scaling
+
+<table>
+  <thead>
+    <tr>
+      <th>Alpha</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">16</td>
+      <td>Val</td><td>0.03</td><td>0.002</td><td>0.04</td><td>0.02</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.03</td><td>0.0007</td><td>0.04</td><td>0.03</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>32</b></td>
+      <td>Val</td><td><b>0.10</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">64</td>
+      <td>Val</td><td>0.08</td><td>0.02</td><td>0.10</td><td>0.08</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.07</td><td>0.02</td><td>0.10</td><td>0.07</td>
+    </tr>
+  </tbody>
+</table>
+
+
+---
+
+### Quantitative Results: LoRA Dropout
+
+<table>
+  <thead>
+    <tr>
+      <th>Dropout</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">0.1</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>0.25</b></td>
+      <td>Val</td><td><b>0.11</b></td><td><b>0.03</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.03</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">0.5</td>
+      <td>Val</td><td>0.11</td><td>0.02</td><td>0.14</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.11</td><td>0.02</td><td>0.14</td><td>0.10</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### Quantitative Results: LoRA Rank (r)
+
+<table>
+  <thead>
+    <tr>
+      <th>r</th>
+      <th>Set</th>
+      <th>BLEU-1</th>
+      <th>BLEU-2</th>
+      <th>ROUGE-L</th>
+      <th>METEOR</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">4</td>
+      <td>Val</td><td>0.11</td><td>0.02</td><td>0.13</td><td>0.10</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+    <tr>
+      <td rowspan="2"><b>8</b></td>
+      <td>Val</td><td><b>0.10</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.09</b></td>
+    </tr>
+    <tr>
+      <td>Test</td><td><b>0.11</b></td><td><b>0.02</b></td><td><b>0.13</b></td><td><b>0.10</b></td>
+    </tr>
+    <tr>
+      <td rowspan="2">16</td>
+      <td>Val</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.08</td>
+    </tr>
+    <tr>
+      <td>Test</td><td>0.10</td><td>0.02</td><td>0.13</td><td>0.09</td>
+    </tr>
+  </tbody>
+</table>
+
+Among all the LoRA parameter variations, the only configuration that consistently improved performance was increasing the **dropout** to 0.25, which led to slight gains across all evaluation metrics. Other changes to **alpha** and **r** did not result in clear improvements, suggesting that regularization via dropout was more effective than adjusting model capacity in this context.
+
