@@ -198,6 +198,106 @@ This will save synthetic data (captions and images) under `results/synthetic_dat
 - **Language model**: `google/gemma-3-1b-it` (via Hugging Face)
 - **Diffusion model**: `stabilityai/stable-diffusion-2-1`
 
+---
 
+### Step 2: Split dataset into Train / Val / Test
 
+Once the image-caption pairs have been generated, the next step is to partition the dataset for training, validation, and testing. This step uses both original and synthetic data and ensures proper proportions between them.
+
+Run the following command:
+
+```bash
+python3 src/dataset/prepare_data.py
+```
+
+This script will:
+
+1. **Merge synthetic captions** (from multiple `.out` logs).
+2. **Remove duplicates** among synthetic samples.
+3. **Clean captions** (optional, lowercase + remove extra spaces).
+4. **Split data** into:
+   - **Train**: 80% total
+   - **Validation**: 10% total  
+     - 50% from original  
+     - 50% from synthetic
+   - **Test**: 10% total  
+     - 100% from original
+
+The resulting partitions are saved as:
+
+```bash
+week5/data/train.csv
+week5/data/val.csv
+week5/data/test.csv
+```
+
+Each CSV contains two columns:
+- `Image_Name`: name of the image file (without extension)
+- `Title`: list with a single caption string (e.g. `["pizza with cheese"]`)
+
+**Note:** You can configure the paths, job logs, and filenames inside the script as needed.
+
+---
+
+### Step 3: Fine-tune the Multimodal Model
+
+In this step, we fine-tune the multimodal model combining a ViT image encoder and a LLaMA 3.2 language model, focusing on evaluating whether additional training data improves performance.
+
+#### Updated Dataset
+
+We use newly generated and augmented image-caption data for training and validation:
+
+- `week5/data/train.csv`
+- `week5/data/val.csv`
+- `week5/data/test.csv`
+
+These datasets are based on improvements made over the previous week's version to explore the effect of more diverse captions and potentially better generalization.
+
+#### Model Overview
+- **Vision Encoder**: `ViT-base-patch16-224`
+- **Language Model**: `LLaMA 3.2` (1B)
+- **LoRA Fine-tuning**: Efficient tuning of the LLM
+- **Modality Fusion**: Visual tokens projected and prepended as prompt
+
+#### Training
+
+To start training:
+
+```bash
+python3 -m src.models.vit_llama3_2 \
+  -t train \
+  --hf_token <your_huggingface_token> \
+  --num_epochs 10 \
+  --output_dir results/vit_llama3_2_1B_defaultLoRA
+```
+
+Other optional flags:
+- `--batch_size`, `--lora_alpha`, `--lora_dropout`, `--lora_r`
+- Paths default to the updated CSVs in `week5/data/`
+
+#### Inference Example
+
+```bash
+python3 -m src.models.vit_llama3_2 \
+  -t infer \
+  --model_name meta-llama/Llama-3.2-1B \
+  --hf_token <your_huggingface_token> \
+  --model_file /ghome/c5mcv01/mcv-c5-team1/week5/results/vit_llama3_2_1B_defaultLoRA/checkpoints/last_checkpoint.pt \
+  --infer_image_path /ghome/c5mcv01/mcv-c5-team1/week5/data/images/yogurtbraised-chicken-legs-with-garlic-and-ginger.jpg
+```
+
+#### Evaluation
+
+To evaluate model performance on a specific split:
+
+```bash
+python3 -m src.models.vit_llama3_2 \
+  -t eval \
+  --model_name meta-llama/Llama-3.2-1B \
+  --hf_token <your_huggingface_token> \
+  --model_file /ghome/c5mcv01/mcv-c5-team1/week5/results/vit_llama3_2_1B_defaultLoRA/checkpoints/last_checkpoint.pt \
+  --eval_set test
+```
+
+Options for `--eval_set`: `train`, `val`, or `test`.
 
