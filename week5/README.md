@@ -4,6 +4,8 @@
 
 - [Task A: Install Stable Diffusion (SD), and play with 2.1, XL, Turbo...](#task-a-install-stable-diffusion-sd-and-play-with-21-xl-turbo)
 - [Task B: Explore effects of ‘DDPM vs. DDIM’, ‘positive & negative prompting’, ‘strength of CFG’, ‘num. of denoising steps’, etc.](#task-b-explore-effects-of-ddpm-vs-ddim-positive--negative-prompting-strength-of-cfg-num-of-denoising-steps-etc)
+- [Task C: Analysis and problem statement](#task-c-analysis-and-problem-statement)
+- [Task D: Building a Complex Pipeline](#task-d-building-a-complex-pipeline)
 
 ---
 
