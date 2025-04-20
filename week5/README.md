@@ -6,7 +6,7 @@
 - [Task B: Explore effects of ‘DDPM vs. DDIM’, ‘positive & negative prompting’, ‘strength of CFG’, ‘num. of denoising steps’, etc.](#task-b-explore-effects-of-ddpm-vs-ddim-positive--negative-prompting-strength-of-cfg-num-of-denoising-steps-etc)
 - [Task C: Analysis and problem statement](#task-c-analysis-and-problem-statement)
 - [Task D: Building a Complex Pipeline](#task-d-building-a-complex-pipeline)
-
+- [Task E: Example of an application of generative AI](#task-e-example-of-an-application-of-generative-ai)
 ---
 
 ## Task A: Install Stable Diffusion (SD), and play with 2.1, XL, Turbo...
@@ -241,9 +241,9 @@ Each CSV contains two columns:
 
 ---
 
-### Step 3: Fine-tune the Multimodal Model
+## Task E: Example of an application of generative AI
 
-In this step, we fine-tune the multimodal model combining a ViT image encoder and a LLaMA 3.2 language model, focusing on evaluating whether additional training data improves performance.
+In this step, we fine-tune our multimodal captioning model from last week, which combines a ViT image encoder and a LLaMA 3.2 language model. The focus is on evaluating whether additional training data improves the model’s performance.
 
 #### Updated Dataset
 
