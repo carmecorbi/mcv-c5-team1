@@ -152,3 +152,52 @@ python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stabl
 
 ![image](https://github.com/user-attachments/assets/55e890df-3436-4947-a17b-36e7dda74f59)
 
+## Task C: Analysis and problem statement
+
+### Problem 
+
+- Overfitting on the training set due to captions being too specific to images. 
+- Lack of diversity and minimal repeated patterns in the dataset. 
+- Dataset is highly single-case specific, hindering proper generalization of the model.
+
+### Research Question 
+How can we leverage synthetic image generation via Stable Diffusion and automated prompt generation to create diverse, high-quality synthetic samples that improve generalization in image captioning tasks?
+
+## Task D: Building a Complex Pipeline
+
+### Step 1: Generating Synthetic Captions and Images
+
+In this first part of the pipeline, we automatically generate diverse textual captions and corresponding synthetic images using a combination of a language model (Gemma 3B) and a Stable Diffusion model.
+
+#### Process Overview
+
+1. **Input**: A CSV file containing original dish or drink titles.
+2. **Text Augmentation**:
+   - For each original caption, 3 new variations are generated using a large language model (`google/gemma-3-1b-it`).
+   - The prompt encourages variations that remain faithful to the original concept while introducing diversity via ingredients, styles, or preparation.
+3. **Image Generation**:
+   - Each of the 3 new captions is passed through a pre-trained Stable Diffusion model (`stabilityai/stable-diffusion-2-1`) to generate a corresponding synthetic image.
+   - Positive and negative prompting is applied to ensure high-quality, realistic food/drink images.
+4. **Output**:
+   - Images are saved in a specified output directory.
+   - A new CSV (`synthetic_captions.csv`) is created with the generated image names and their respective new captions.
+
+#### Run the script
+
+To execute this step, run:
+
+```bash
+python3 src/generate_data.py \
+  --token 'huggingface token' \
+  --output_dir results/synthetic_data_good 
+```
+
+This will save synthetic data (captions and images) under `results/synthetic_data_good`.
+
+#### Models used:
+- **Language model**: `google/gemma-3-1b-it` (via Hugging Face)
+- **Diffusion model**: `stabilityai/stable-diffusion-2-1`
+
+
+
+
