@@ -1,5 +1,8 @@
 <h1 align="center">WEEK 4: Multimodal Recognition (Image Captioning-2)</h1>
 
+> [!IMPORTANT]
+> The presentation of W4 from this group is available [here](https://docs.google.com/presentation/d/1oIzaA7k2VZU-GLhzZjniNisA11Gmp07b1mq10XYI3HM/edit?usp=sharing). The access link for our Overleaf project on image captioning for the third and fourth week is available [here](https://overleaf.cvc.uab.cat/read/fvdttsmgdtbs#c694bb). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
+
 # Table of Contents
 
 - [Project Structure W4](#project-structure-w4)
