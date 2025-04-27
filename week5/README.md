@@ -118,12 +118,12 @@ python3 src/inference.py --prompt 'Tuscan Porterhouse Steak with Red Wine-Pepper
 - Stable diffusion 2.1 model with DDPM Scheduler
 
 ```bash
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 5 --output_dir results/results_2_1
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 25 --output_dir results/results_2_1
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 50 --output_dir results/results_2_1
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 75 --output_dir results/results_2_1
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 100 --output_dir results/results_2_1
-python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --number_inference_steps 150 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 5 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 25 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 50 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 75 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 100 --output_dir results/results_2_1
+python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id stabilityai/stable-diffusion-2-1 --num_inference_steps 150 --output_dir results/results_2_1
 ```
 
 ![image](https://github.com/user-attachments/assets/8112c48d-476d-4a25-ad21-7605e973abf4)
@@ -131,12 +131,12 @@ python3 src/inference.py --prompt 'Almond Horchata' --scheduler ddpm --model_id 
 - Stable diffusion 3.5 model
 
 ```bash
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 5
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 25
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 50
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 75
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 100
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --number_inference_steps 150
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 5
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 25
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 50
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 75
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 100
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-medium --output_dir results/results_3_5 --token 'huggingface token' --num_inference_steps 150
 ```
 
 ![image](https://github.com/user-attachments/assets/2c66d41f-089c-4099-95d8-2bb95029a868)
@@ -144,12 +144,12 @@ python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stabl
 - Stable diffusion 3.5 Large Turbo model
 
 ```bash
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 5
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 25
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 50
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 75
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 100
-python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --number_inference_steps 150
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 5
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 25
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 50
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 75
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 100
+python3 src/inference.py --prompt 'Almond Horchata' --model_id stabilityai/stable-diffusion-3.5-large-turbo --output_dir results/results_3_5_turbo --token 'huggingface token' --num_inference_steps 150
 ```
 
 ![image](https://github.com/user-attachments/assets/55e890df-3436-4947-a17b-36e7dda74f59)
