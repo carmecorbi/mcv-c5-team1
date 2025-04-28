@@ -1,5 +1,8 @@
 <h1 align="center">WEEK 5: Diffusion Models</h1>
 
+> [!IMPORTANT]
+> The presentation of W5 from this group is available [here](https://docs.google.com/presentation/d/1Itgb_vsBNl3-whXkk5efoCqTRTv36CwDU30h5DM8vBs/edit?usp=sharing). The access link for our Overleaf project on image captioning for the third and fourth week is available [here](https://overleaf.cvc.uab.cat/read/fvdttsmgdtbs#c694bb). If for some reason you don't have permissions to access it, contact any of the administrators of this repository.
+
 # Table of Contents
 
 - [Task A: Install Stable Diffusion (SD), and play with 2.1, XL, Turbo...](#task-a-install-stable-diffusion-sd-and-play-with-21-xl-turbo)
